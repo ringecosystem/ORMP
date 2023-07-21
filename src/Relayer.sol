@@ -18,7 +18,13 @@
 pragma solidity 0.8.17;
 
 import "./LibMessage.sol";
-import "./interfaces/IChannel.sol";
+
+interface IChannel {
+    function recv_message(
+        Message calldata message,
+        bytes calldata proof
+    ) external;
+}
 
 contract Relayer {
     event Assigned(uint32 indexed index, uint fee);
@@ -44,7 +50,8 @@ contract Relayer {
     }
 
     modifier onlyApproved {
-        require(isApproved(msg.sender), "!approve"):
+        require(isApproved(msg.sender), "!approve");
+        _;
     }
 
     constructor(address endpoint, address channel) {
@@ -90,7 +97,7 @@ contract Relayer {
         return totalFee;
     }
 
-    function relay(message calldata message, bytes calldata proof) external onlyApproved {
-        IChannel(channel).recv_message(message, proof);
+    function relay(Message calldata message, bytes calldata proof) external onlyApproved {
+        IChannel(CHANNEL).recv_message(message, proof);
     }
 }

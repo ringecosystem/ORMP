@@ -21,7 +21,7 @@ import "./proof/StorageProof.sol";
 import "./imt/IncrementalMerkleTree.sol";
 import "./interfaces/IVerifier.sol";
 
-contract MulticastChannelVerifier is IVerifier {
+contract InboundVerifier is IVerifier {
     event Registry(uint32 indexed fromChainId, address out);
 
     struct Proof {
