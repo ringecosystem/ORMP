@@ -17,6 +17,7 @@
 
 pragma solidity 0.8.17;
 
+// https://eips.ethereum.org/EIPS/eip-5164
 abstract contract Application {
     address public immutable TRUSTED_ENDPOINT;
 

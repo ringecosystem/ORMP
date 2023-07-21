@@ -33,13 +33,10 @@ contract Endpoint is LibMessage {
     address public immutable CONFIG;
     address public immutable CHANNEL;
 
-    /// messageId => failed message
+    /// msg_hash => failed
     mapping(bytes32 => bool) public fails;
 
-    constructor(
-        address config,
-        address channel
-    ) {
+    constructor(address config, address channel) {
         CONFIG = config;
         CHANNEL = channel;
     }

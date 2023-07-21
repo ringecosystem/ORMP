@@ -22,7 +22,7 @@ contract Relayer {
     event SetPrice(uint32 indexed chainId, uint64 baseGas, uint64 gasPerByte);
 
     struct Price {
-        uint64 baseGas;
+        uint64 baseGas; // gas in source chain = 200000 gas in target chain
         uint64 gasPerByte;
     }
 
@@ -53,9 +53,12 @@ contract Relayer {
         payable(owner).transfer(amount);
     }
 
+    // params = [extraGas]
     function fee(uint32 toChainId, address ua, uint size, bytes calldata params) public view returns (uint) {
+        uint extraGas = abi.decode(params, (uint));
         Price memory p = priceOf[toChainId];
-        return p.baseGas + p.gasPerByte * size;
+        uint gas = p.baseGas + extraGas * p.baseGas / 200000;
+        return gas + p.gasPerByte * size;
     }
 
     function assign(uint32 index, uint32 toChainId, address ua, uint size, bytes calldata params) external payable returns (uint) {
