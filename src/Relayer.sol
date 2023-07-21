@@ -63,6 +63,10 @@ contract Relayer {
 
     receive() external payable {}
 
+    function changeOwner(address owner_) external onlyOwner {
+        owner = owner_;
+    }
+
     function isApproved(address relayer) public view returns (bool) {
         return approvedOf[relayer];
     }

@@ -43,6 +43,10 @@ contract Oracle {
 
     receive() external payable {}
 
+    function changeOwner(address owner_) external onlyOwner {
+        owner = owner_;
+    }
+
     function withdraw(uint amount) external onlyOwner {
         payable(owner).transfer(amount);
     }
