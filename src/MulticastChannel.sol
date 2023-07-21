@@ -96,6 +96,8 @@ contract MulticastChannel is LibMessage {
         bytes calldata proof
     ) external {
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.fromChainId, message.to);
+        require(uaConfig.relayer == msg.sender);
+
         bytes32 merkle_root = IHashOracle(uaConfig.oracle).merkle_root(message.fromChainId);
         // check message is from the correct source chain position
         IVerifier(uaConfig.verifier).verify_message_proof(

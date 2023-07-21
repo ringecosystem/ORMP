@@ -17,9 +17,13 @@
 
 pragma solidity 0.8.17;
 
+import "./LibMessage.sol";
+import "./interfaces/IChannel.sol";
+
 contract Relayer {
     event Assigned(uint32 indexed index, uint fee);
     event SetPrice(uint32 indexed chainId, uint64 baseGas, uint64 gasPerByte);
+    event SetApproved(address relayer, bool approve);
 
     struct Price {
         uint64 baseGas; // gas in source chain = 200000 gas in target chain
@@ -27,30 +31,47 @@ contract Relayer {
     }
 
     address public immutable ENDPOINT;
+    address public immutable CHANNEL;
     address public owner;
 
     // chainId => price
     mapping(uint32 => Price) public priceOf;
+    mapping(address => bool) public approvedOf;
 
     modifier onlyOwner {
         require(msg.sender == owner, "!owner");
         _;
     }
 
-    constructor(address endpoint) {
+    modifier onlyApproved {
+        require(isApproved(msg.sender), "!approve"):
+    }
+
+    constructor(address endpoint, address channel) {
         ENDPOINT = endpoint;
+        CHANNEL = channel;
         owner = msg.sender;
+        setApproved(msg.sender, true);
     }
 
     receive() external payable {}
 
-    function setPrice(uint32 chainId, uint64 baseGas, uint64 gasPerByte) external onlyOwner {
+    function isApproved(address relayer) public view returns (bool) {
+        return approvedOf[relayer];
+    }
+
+    function setApproved(address relayer, bool approve) public onlyOwner {
+        approvedOf[relayer] = approve;
+        emit SetApproved(relayer, approve);
+    }
+
+    function setPrice(uint32 chainId, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
         priceOf[chainId] = Price(baseGas, gasPerByte);
         emit SetPrice(chainId, baseGas, gasPerByte);
     }
 
-    function withdraw(uint amount) external onlyOwner {
-        payable(owner).transfer(amount);
+    function withdraw(address to, uint amount) external onlyApproved {
+        payable(to).transfer(amount);
     }
 
     // params = [extraGas]
@@ -67,5 +88,9 @@ contract Relayer {
         require(msg.value == totalFee, "!fee");
         emit Assigned(index, totalFee);
         return totalFee;
+    }
+
+    function relay(message calldata message, bytes calldata proof) external onlyApproved {
+        IChannel(channel).recv_message(message, proof);
     }
 }

@@ -58,7 +58,7 @@ contract Endpoint is LibMessage {
         //refound
         if (msg.value > relayerFee + oracleFee) {
             uint refound = msg.value - (relayerFee + oracleFee);
-            payable(msg.sender).transfer(refound);
+            payable(ua).transfer(refound);
         }
     }
 

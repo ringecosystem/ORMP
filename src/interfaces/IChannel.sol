@@ -24,4 +24,9 @@ interface IChannel {
         address to,
         bytes calldata encoded
     ) external returns (uint32);
+
+    function recv_message(
+        Message calldata message,
+        bytes calldata proof
+    ) external;
 }
