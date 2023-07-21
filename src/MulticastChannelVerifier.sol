@@ -19,9 +19,9 @@ pragma solidity 0.8.17;
 
 import "./proof/StorageProof.sol";
 import "./imt/IncrementalMerkleTree.sol";
-import "./interfaces/IMessageVerifier.sol";
+import "./interfaces/IVerifier.sol";
 
-contract MulticastChannelVerifier is IMessageVerifier {
+contract MulticastChannelVerifier is IVerifier {
     event Registry(uint32 indexed fromChainId, address out);
 
     struct Proof {

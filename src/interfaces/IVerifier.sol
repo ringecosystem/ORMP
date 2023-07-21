@@ -17,7 +17,7 @@
 
 pragma solidity 0.8.17;
 
-interface IMessageVerifier {
+interface IVerifier {
     function verify_message_proof(
         uint32 fromChainId,
         bytes32 merkle_root,

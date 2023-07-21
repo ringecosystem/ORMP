@@ -21,7 +21,7 @@ import "./LibMessage.sol";
 import "./imt/IncrementalMerkleTree.sol";
 import "./interfaces/IUserConfig.sol";
 import "./interfaces/IHashOracle.sol";
-import "./interfaces/IMessageVerifier.sol";
+import "./interfaces/IVerifier.sol";
 
 interface IEndpoint {
     function recv(Message calldata message) external returns (bool dispatch_result);
@@ -98,7 +98,7 @@ contract MulticastChannel is LibMessage {
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.fromChainId, message.to);
         bytes32 merkle_root = IHashOracle(uaConfig.oracle).merkle_root(message.fromChainId);
         // check message is from the correct source chain position
-        IMessageVerifier(uaConfig.verifier).verify_message_proof(
+        IVerifier(uaConfig.verifier).verify_message_proof(
             message.fromChainId,
             merkle_root,
             hash(message),
