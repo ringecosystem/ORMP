@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 import "./LibMessage.sol";
-import "./IncrementalMerkleTree.sol";
+import "./imt/IncrementalMerkleTree.sol";
 import "./interfaces/IUserConfig.sol";
 import "./interfaces/IHashOracle.sol";
 import "./interfaces/IMessageVerifier.sol";

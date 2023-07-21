@@ -17,7 +17,7 @@
 
 pragma solidity 0.8.17;
 
-import "./RLPDecode.sol";
+import "../rlp/RLPDecode.sol";
 
 /// @title State
 /// @notice State specification

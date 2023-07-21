@@ -4,9 +4,9 @@
 
 pragma solidity 0.8.17;
 
-import { Bytes } from "./Bytes.sol";
+import { Bytes } from "../bytes/Bytes.sol";
+import { RLPDecode } from "../rlp/RLPDecode.sol";
 import { Nibble } from "./Nibble.sol";
-import { RLPDecode } from "./RLPDecode.sol";
 
 /**
  * @title MerkleTrie

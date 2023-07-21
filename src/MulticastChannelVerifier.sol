@@ -17,8 +17,8 @@
 
 pragma solidity 0.8.17;
 
-import "./StorageProof.sol";
-import "./IncrementalMerkleTree.sol";
+import "./proof/StorageProof.sol";
+import "./imt/IncrementalMerkleTree.sol";
 import "./interfaces/IMessageVerifier.sol";
 
 contract MulticastChannelVerifier is IMessageVerifier {
