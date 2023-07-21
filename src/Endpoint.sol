@@ -20,25 +20,9 @@ pragma solidity 0.8.17;
 import "./LibMessage.sol";
 import "./call/ExcessivelySafeCall.sol";
 import "./interfaces/IUserConfig.sol";
-
-interface IChannel {
-    function send_message(
-        address from,
-        uint32 toChainId,
-        address to,
-        bytes calldata encoded
-    ) external returns (uint32);
-}
-
-interface IRelayer {
-    function fee(uint32 toChainId, address ua, uint size, bytes calldata params) external view returns (uint);
-    function assign(uint32 index, uint32 toChainId, address ua, uint size, bytes calldata params) external payable returns (uint);
-}
-
-interface IOracle {
-    function fee(uint32 toChainId, address ua) external view returns (uint);
-    function assign(uint32 index, uint32 toChainId, address ua) external payable returns (uint);
-}
+import "./interfaces/IChannel.sol";
+import "./interfaces/IRelayer.sol";
+import "./interfaces/IOracle.sol";
 
 contract Endpoint is LibMessage {
     using ExcessivelySafeCall for address;
