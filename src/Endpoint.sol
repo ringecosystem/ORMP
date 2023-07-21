@@ -41,6 +41,7 @@ contract Endpoint is LibMessage {
         CHANNEL = channel;
     }
 
+    // https://eips.ethereum.org/EIPS/eip-5750
     function send(uint32 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable {
         address ua = msg.sender;
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(toChainId, to);
@@ -53,7 +54,12 @@ contract Endpoint is LibMessage {
 
         uint relayerFee = _handleRelayer(uaConfig.relayer, index, toChainId, ua, encoded.length, params);
         uint oracleFee = _handleOracle(uaConfig.oracle, index, toChainId, ua);
-        require(relayerFee + oracleFee == msg.value, "!fee");
+
+        //refound
+        if (msg.value > relayerFee + oracleFee) {
+            uint refound = msg.value - (relayerFee + oracleFee);
+            payable(msg.sender).transfer(refound);
+        }
     }
 
     function _handleRelayer(address relayer, uint32 index, uint32 toChainId, address ua, uint size, bytes calldata params) internal returns (uint) {
