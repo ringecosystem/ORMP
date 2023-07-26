@@ -24,7 +24,7 @@ import "./interfaces/IChannel.sol";
 import "./interfaces/IRelayer.sol";
 import "./interfaces/IOracle.sol";
 
-contract Endpoint is LibMessage {
+contract Endpoint {
     using ExcessivelySafeCall for address;
 
     event ClearFailedMessage(bytes32 indexed msg_hash);
@@ -44,8 +44,8 @@ contract Endpoint is LibMessage {
     // https://eips.ethereum.org/EIPS/eip-5750
     function send(uint32 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable {
         address ua = msg.sender;
-        Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(toChainId, to);
-        uint32 index = IChannel(CHANNEL).send_message(
+        Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
+        uint index = IChannel(CHANNEL).send_message(
             ua,
             toChainId,
             to,
@@ -62,7 +62,15 @@ contract Endpoint is LibMessage {
         }
     }
 
-    function _handleRelayer(address relayer, uint32 index, uint32 toChainId, address ua, uint size, bytes calldata params) internal returns (uint) {
+    function fee(uint32 toChainId, address to, bytes calldata encoded, bytes calldata params) external view returns (uint) {
+        address ua = msg.sender;
+        Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
+        uint relayerFee = IRelayer(uaConfig.relayer).fee(toChainId, ua, encoded.length, params);
+        uint oracleFee = IOracle(uaConfig.oracle).fee(toChainId, ua);
+        return relayerFee + oracleFee;
+    }
+
+    function _handleRelayer(address relayer, uint index, uint32 toChainId, address ua, uint size, bytes calldata params) internal returns (uint) {
         uint fee = IRelayer(relayer).fee(toChainId, ua, size, params);
         return IRelayer(relayer).assign{value: fee}(
             index,
@@ -73,7 +81,7 @@ contract Endpoint is LibMessage {
         );
     }
 
-    function _handleOracle(address oracle, uint32 index, uint32 toChainId, address ua) internal returns (uint) {
+    function _handleOracle(address oracle, uint index, uint32 toChainId, address ua) internal returns (uint) {
         uint fee = IOracle(oracle).fee(toChainId, ua);
         return IOracle(oracle).assign{value: fee}(
             index,
@@ -93,7 +101,7 @@ contract Endpoint is LibMessage {
 
     function clear_failed_message(Message calldata message) external {
         bytes32 msg_hash = hash(message);
-        require(fails[msg_hash] == true, "InvalidFailedMessage");
+        require(fails[msg_hash] == true, "!failed");
         require(message.to == msg.sender, "!auth");
         delete fails[msg_hash];
         emit ClearFailedMessage(msg_hash);
@@ -102,7 +110,7 @@ contract Endpoint is LibMessage {
     /// Retry failed message
     function retry_failed_message(Message calldata message) external returns (bool dispatch_result) {
         bytes32 msg_hash = hash(message);
-        require(fails[msg_hash] == true, "InvalidFailedMessage");
+        require(fails[msg_hash] == true, "!failed");
         dispatch_result = _dispatch(message);
         if (dispatch_result) {
             delete fails[msg_hash];

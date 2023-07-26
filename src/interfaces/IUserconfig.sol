@@ -20,15 +20,9 @@ pragma solidity 0.8.17;
 struct Config {
     address relayer;
     address oracle;
-    address verifier;
 }
 
 interface IUserConfig {
-    function getAppConfig(uint32 chainId, address ua) external view returns (Config memory);
-    function setAppConfig(
-        uint32 chainId,
-        address relayer,
-        address oracle,
-        address verifier
-    ) external;
+    function getAppConfig(address ua) external view returns (Config memory);
+    function setAppConfig(address relayer, address oracle) external;
 }

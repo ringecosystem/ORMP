@@ -17,10 +17,32 @@
 
 pragma solidity 0.8.17;
 
-interface IVerifier {
+import "./imt/IncrementalMerkleTree.sol";
+import "./interfaces/IVerifier.sol";
+
+abstract contract Verifier is IVerifier {
+    struct Proof {
+        uint256 messageIndex;
+        bytes32[32] messageProof;
+    }
+
+    function merkle_root(uint32 chainId) public virtual view returns (bytes32);
+
     function verify_message_proof(
         uint32 fromChainId,
         bytes32 msg_hash,
         bytes calldata proof
-    ) external view returns (bool);
+    ) external view returns (bool) {
+        bytes32 imt_root_oracle = merkle_root(fromChainId);
+
+        Proof memory p = abi.decode(proof, (Proof));
+        // calculate the expected root based on the proof
+        bytes32 imt_root_proof = IncrementalMerkleTree.branchRoot(
+            msg_hash,
+            p.messageProof,
+            p.messageIndex
+        );
+
+        return imt_root_oracle == imt_root_proof;
+    }
 }

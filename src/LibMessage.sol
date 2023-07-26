@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 struct Message {
-    uint32 index;
+    uint256 index;
     uint32 fromChainId;
     address from;
     uint32 toChainId;
@@ -26,8 +26,6 @@ struct Message {
     bytes encoded;
 }
 
-contract LibMessage {
-    function hash(Message memory message) internal pure returns (bytes32) {
-        return keccak256(abi.encode(message));
-    }
+function hash(Message memory message) pure returns (bytes32) {
+    return keccak256(abi.encode(message));
 }

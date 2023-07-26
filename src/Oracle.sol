@@ -18,9 +18,10 @@
 pragma solidity 0.8.17;
 
 import "./interfaces/IFeedOracle.sol";
+import "./Verifier.sol";
 
-contract Oracle {
-    event Assigned(uint32 indexed index);
+contract Oracle is Verifier {
+    event Assigned(uint indexed index);
     event SetFee(uint32 indexed chainId, uint fee);
 
     address public immutable ENDPOINT;
@@ -60,7 +61,7 @@ contract Oracle {
         return feeOf[toChainId];
     }
 
-    function assign(uint32 index, uint32 toChainId, address ua) external payable returns (uint) {
+    function assign(uint index, uint32 toChainId, address ua) external payable returns (uint) {
         require(msg.sender == ENDPOINT, "!enpoint");
         uint totalFee = feeOf[toChainId];
         require(msg.value == totalFee, "!fee");
@@ -68,9 +69,9 @@ contract Oracle {
         return totalFee;
     }
 
-    function merkle_root(uint32 chainId) external view returns (bytes32) {
+    function merkle_root(uint32 chainId) public override view returns (bytes32) {
         address dapi = dapiOf[chainId];
-        (, bytes32 state_root) = IFeedOracle(dapi).latestAnswer();
-        return state_root;
+        (, bytes32 msg_root) = IFeedOracle(dapi).latestAnswer();
+        return msg_root;
     }
 }

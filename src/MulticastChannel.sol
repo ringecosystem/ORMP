@@ -20,7 +20,6 @@ pragma solidity 0.8.17;
 import "./LibMessage.sol";
 import "./imt/IncrementalMerkleTree.sol";
 import "./interfaces/IUserConfig.sol";
-import "./interfaces/IHashOracle.sol";
 import "./interfaces/IVerifier.sol";
 
 interface IEndpoint {
@@ -31,7 +30,7 @@ interface IEndpoint {
 /// @notice Accepts messages to be dispatched to remote chains,
 /// constructs a Merkle tree of the messages.
 /// @dev TODO: doc
-contract MulticastChannel is LibMessage {
+contract MulticastChannel {
     using IncrementalMerkleTree for IncrementalMerkleTree.Tree;
     /// @dev slot 0, messages root
     bytes32 private root;
@@ -44,7 +43,7 @@ contract MulticastChannel is LibMessage {
     address public immutable CONFIG;
     uint32  public immutable LOCAL_CHAINID;
 
-    event MessageAccepted(uint32 indexed index, bytes32 indexed msg_hash, bytes32 root, Message message);
+    event MessageAccepted(uint indexed index, bytes32 indexed msg_hash, bytes32 root, Message message);
     event MessageDispatched(bytes32 indexed msg_hash, bool dispatch_result);
 
     modifier onlyEndpoint {
@@ -60,14 +59,14 @@ contract MulticastChannel is LibMessage {
         CONFIG = config;
     }
 
-    /// @dev Send message over lane.
+    /// @dev Send message
     function send_message(
         address from,
         uint32 toChainId,
         address to,
         bytes calldata encoded
-    ) external onlyEndpoint returns (uint32) {
-        uint32 index = message_size();
+    ) external onlyEndpoint returns (uint) {
+        uint index = message_size();
         Message memory message = Message({
             index: index,
             fromChainId: LOCAL_CHAINID,
@@ -95,14 +94,12 @@ contract MulticastChannel is LibMessage {
         Message calldata message,
         bytes calldata proof
     ) external {
-        Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.fromChainId, message.to);
+        Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.to);
         require(uaConfig.relayer == msg.sender);
 
-        bytes32 merkle_root = IHashOracle(uaConfig.oracle).merkle_root(message.fromChainId);
-        // check message is from the correct source chain position
-        IVerifier(uaConfig.verifier).verify_message_proof(
+        // verify message is from the correct source chain
+        IVerifier(uaConfig.oracle).verify_message_proof(
             message.fromChainId,
-            merkle_root,
             hash(message),
             proof
         );
@@ -122,8 +119,8 @@ contract MulticastChannel is LibMessage {
         return root;
     }
 
-    function message_size() public view returns (uint32) {
-        return uint32(imt.count);
+    function message_size() public view returns (uint) {
+        return imt.count;
     }
 
     function imt_branch() public view returns (bytes32[32] memory) {

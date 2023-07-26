@@ -20,17 +20,17 @@ pragma solidity 0.8.17;
 import "./interfaces/IUserConfig.sol";
 
 contract UserConfig {
-    event SetDefaultConfigForChainId(uint32 indexed chainId, address relayer, address oracle, address verifier);
-    event AppConfigUpdated(address indexed ua, uint32 indexed chainId, address relayer, address oracle, address verifier);
+    event SetDefaultConfig(address relayer, address oracle);
+    event AppConfigUpdated(address indexed ua, address relayer, address oracle);
 
-    // app address => chainId => config
-    mapping(address => mapping(uint32 => Config)) public appConfig;
+    // ua => config
+    mapping(address => Config) public appConfig;
     // default UA settings if no version specified
-    mapping(uint32 => Config) public defaultAppConfig;
+    Config public defaultAppConfig;
     address public setter;
 
     modifier onlySetter {
-        require(msg.sender == setter, "forbidden");
+        require(msg.sender == setter, "!auth");
         _;
     }
 
@@ -42,20 +42,15 @@ contract UserConfig {
         setter = msg.sender;
     }
 
-    function setDefaultConfigForChainId(
-        uint32 chainId,
-        address relayer,
-        address oracle,
-        address verifier
-    ) external onlySetter {
-        defaultAppConfig[chainId] = Config(relayer, oracle, verifier);
-        emit SetDefaultConfigForChainId(chainId, relayer, oracle, verifier);
+    function setDefaultConfig(address relayer, address oracle) external onlySetter {
+        defaultAppConfig = Config(relayer, oracle);
+        emit SetDefaultConfig(relayer, oracle);
     }
 
     // default to DEFAULT setting if ZERO value
-    function getAppConfig(uint32 chainId, address ua) external view returns (Config memory) {
-        Config memory c = appConfig[ua][chainId];
-        Config memory defaultConfig = defaultAppConfig[chainId];
+    function getAppConfig(address ua) external view returns (Config memory) {
+        Config memory c = appConfig[ua];
+        Config memory defaultConfig = defaultAppConfig;
 
         if (c.relayer == address(0x0)) {
             c.relayer = defaultConfig.relayer;
@@ -65,20 +60,11 @@ contract UserConfig {
             c.oracle = defaultConfig.oracle;
         }
 
-        if (c.verifier == address(0x0)) {
-            c.verifier = defaultConfig.verifier;
-        }
-
         return c;
     }
 
-    function setAppConfig(
-        uint32 chainId,
-        address relayer,
-        address oracle,
-        address verifier
-    ) external {
-        appConfig[msg.sender][chainId] = Config(relayer, oracle, verifier);
-        emit AppConfigUpdated(msg.sender, chainId, relayer, oracle, verifier);
+    function setAppConfig(address relayer, address oracle) external {
+        appConfig[msg.sender] = Config(relayer, oracle);
+        emit AppConfigUpdated(msg.sender, relayer, oracle);
     }
 }
