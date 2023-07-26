@@ -60,13 +60,13 @@ contract MulticastChannel {
     }
 
     /// @dev Send message
-    function send_message(
+    function sendMessage(
         address from,
         uint32 toChainId,
         address to,
         bytes calldata encoded
     ) external onlyEndpoint returns (uint) {
-        uint index = message_size();
+        uint index = messageSize();
         Message memory message = Message({
             index: index,
             fromChainId: LOCAL_CHAINID,
@@ -90,7 +90,7 @@ contract MulticastChannel {
     }
 
     /// Receive messages proof from bridged chain.
-    function recv_message(
+    function recvMessage(
         Message calldata message,
         bytes calldata proof
     ) external {
@@ -98,7 +98,7 @@ contract MulticastChannel {
         require(uaConfig.relayer == msg.sender);
 
         // verify message is from the correct source chain
-        IVerifier(uaConfig.oracle).verify_message_proof(
+        IVerifier(uaConfig.oracle).verifyMessageProof(
             message.fromChainId,
             hash(message),
             proof
@@ -119,11 +119,11 @@ contract MulticastChannel {
         return root;
     }
 
-    function message_size() public view returns (uint) {
+    function messageSize() public view returns (uint) {
         return imt.count;
     }
 
-    function imt_branch() public view returns (bytes32[32] memory) {
+    function imtBranch() public view returns (bytes32[32] memory) {
         return imt.branch;
     }
 }

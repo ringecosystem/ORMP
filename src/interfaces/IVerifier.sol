@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 interface IVerifier {
-    function verify_message_proof(
+    function verifyMessageProof(
         uint32 fromChainId,
         bytes32 msg_hash,
         bytes calldata proof

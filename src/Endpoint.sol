@@ -45,7 +45,7 @@ contract Endpoint {
     function send(uint32 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable {
         address ua = msg.sender;
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
-        uint index = IChannel(CHANNEL).send_message(
+        uint index = IChannel(CHANNEL).sendMessage(
             ua,
             toChainId,
             to,
@@ -99,7 +99,7 @@ contract Endpoint {
         }
     }
 
-    function clear_failed_message(Message calldata message) external {
+    function clearFailedMessage(Message calldata message) external {
         bytes32 msg_hash = hash(message);
         require(fails[msg_hash] == true, "!failed");
         require(message.to == msg.sender, "!auth");
@@ -108,7 +108,7 @@ contract Endpoint {
     }
 
     /// Retry failed message
-    function retry_failed_message(Message calldata message) external returns (bool dispatch_result) {
+    function retryFailedMessage(Message calldata message) external returns (bool dispatch_result) {
         bytes32 msg_hash = hash(message);
         require(fails[msg_hash] == true, "!failed");
         dispatch_result = _dispatch(message);

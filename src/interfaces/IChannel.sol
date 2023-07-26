@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 interface IChannel {
-    function send_message(
+    function sendMessage(
         address from,
         uint32 toChainId,
         address to,
