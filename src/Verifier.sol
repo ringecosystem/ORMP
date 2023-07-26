@@ -30,19 +30,19 @@ abstract contract Verifier is IVerifier {
 
     function verifyMessageProof(
         uint32 fromChainId,
-        bytes32 msg_hash,
+        bytes32 msgHash,
         bytes calldata proof
     ) external view returns (bool) {
-        bytes32 imt_root_oracle = merkleRoot(fromChainId);
+        bytes32 imtRootOracle = merkleRoot(fromChainId);
 
         Proof memory p = abi.decode(proof, (Proof));
         // calculate the expected root based on the proof
-        bytes32 imt_root_proof = IncrementalMerkleTree.branchRoot(
-            msg_hash,
+        bytes32 imtRootProof = IncrementalMerkleTree.branchRoot(
+            msgHash,
             p.messageProof,
             p.messageIndex
         );
 
-        return imt_root_oracle == imt_root_proof;
+        return imtRootOracle == imtRootProof;
     }
 }

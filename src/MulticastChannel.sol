@@ -43,8 +43,8 @@ contract MulticastChannel {
     address public immutable CONFIG;
     uint32  public immutable LOCAL_CHAINID;
 
-    event MessageAccepted(uint indexed index, bytes32 indexed msg_hash, bytes32 root, Message message);
-    event MessageDispatched(bytes32 indexed msg_hash, bool dispatch_result);
+    event MessageAccepted(uint indexed index, bytes32 indexed msgHash, bytes32 root, Message message);
+    event MessageDispatched(bytes32 indexed msgHash, bool dispatch_result);
 
     modifier onlyEndpoint {
         require(msg.sender == ENDPOINT, "!endpoint");
@@ -75,13 +75,13 @@ contract MulticastChannel {
             to: to,
             encoded: encoded
         });
-        bytes32 msg_hash = hash(message);
-        imt.insert(msg_hash);
+        bytes32 msgHash = hash(message);
+        imt.insert(msgHash);
         root = imt.root();
 
         emit MessageAccepted(
             index,
-            msg_hash,
+            msgHash,
             root,
             message
         );
@@ -105,13 +105,13 @@ contract MulticastChannel {
         );
 
         require(LOCAL_CHAINID == message.toChainId, "InvalidTargetLaneId");
-        bytes32 msg_hash = hash(message);
-        require(dones[msg_hash] == false, "done");
-        dones[msg_hash] = true;
+        bytes32 msgHash = hash(message);
+        require(dones[msgHash] == false, "done");
+        dones[msgHash] = true;
 
         // then, dispatch message
-        bool dispatch_result = IEndpoint(ENDPOINT).recv(message);
-        emit MessageDispatched(msg_hash, dispatch_result);
+        bool dispatchResult = IEndpoint(ENDPOINT).recv(message);
+        emit MessageDispatched(msgHash, dispatchResult);
     }
 
     /// Return the commitment of lane data.

@@ -27,13 +27,13 @@ import "./interfaces/IOracle.sol";
 contract Endpoint {
     using ExcessivelySafeCall for address;
 
-    event ClearFailedMessage(bytes32 indexed msg_hash);
-    event RetryFailedMessage(bytes32 indexed msg_hash, bool dispatch_result);
+    event ClearFailedMessage(bytes32 indexed msgHash);
+    event RetryFailedMessage(bytes32 indexed msgHash, bool dispatchResult);
 
     address public immutable CONFIG;
     address public immutable CHANNEL;
 
-    /// msg_hash => failed
+    /// msgHash => failed
     mapping(bytes32 => bool) public fails;
 
     constructor(address config, address channel) {
@@ -90,38 +90,38 @@ contract Endpoint {
         );
     }
 
-    function recv(Message calldata message) external returns (bool dispatch_result) {
+    function recv(Message calldata message) external returns (bool dispatchResult) {
         require(msg.sender == CHANNEL, "!auth");
-        dispatch_result = _dispatch(message);
-        if (!dispatch_result) {
-            bytes32 msg_hash = hash(message);
-            fails[msg_hash] = true;
+        dispatchResult = _dispatch(message);
+        if (!dispatchResult) {
+            bytes32 msgHash = hash(message);
+            fails[msgHash] = true;
         }
     }
 
     function clearFailedMessage(Message calldata message) external {
-        bytes32 msg_hash = hash(message);
-        require(fails[msg_hash] == true, "!failed");
+        bytes32 msgHash = hash(message);
+        require(fails[msgHash] == true, "!failed");
         require(message.to == msg.sender, "!auth");
-        delete fails[msg_hash];
-        emit ClearFailedMessage(msg_hash);
+        delete fails[msgHash];
+        emit ClearFailedMessage(msgHash);
     }
 
     /// Retry failed message
-    function retryFailedMessage(Message calldata message) external returns (bool dispatch_result) {
-        bytes32 msg_hash = hash(message);
-        require(fails[msg_hash] == true, "!failed");
-        dispatch_result = _dispatch(message);
-        if (dispatch_result) {
-            delete fails[msg_hash];
+    function retryFailedMessage(Message calldata message) external returns (bool dispatchResult) {
+        bytes32 msgHash = hash(message);
+        require(fails[msgHash] == true, "!failed");
+        dispatchResult = _dispatch(message);
+        if (dispatchResult) {
+            delete fails[msgHash];
         }
-        emit RetryFailedMessage(msg_hash, dispatch_result);
+        emit RetryFailedMessage(msgHash, dispatchResult);
     }
 
     /// @dev dispatch the cross chain message
-    function _dispatch(Message memory message) private returns (bool dispatch_result) {
+    function _dispatch(Message memory message) private returns (bool dispatchResult) {
         // Deliver the message to the target
-        (dispatch_result,) = message.to.excessivelySafeCall(
+        (dispatchResult,) = message.to.excessivelySafeCall(
             gasleft(),
             0,
             abi.encodePacked(message.encoded, hash(message), uint256(message.fromChainId), message.from)

@@ -20,7 +20,7 @@ pragma solidity 0.8.17;
 import "./Common.sol";
 
 interface IChannel {
-    function recv_message(
+    function recvMessage(
         Message calldata message,
         bytes calldata proof
     ) external;
@@ -102,6 +102,6 @@ contract Relayer {
     }
 
     function relay(Message calldata message, bytes calldata proof) external onlyApproved {
-        IChannel(CHANNEL).recv_message(message, proof);
+        IChannel(CHANNEL).recvMessage(message, proof);
     }
 }
