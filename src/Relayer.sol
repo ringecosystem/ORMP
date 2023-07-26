@@ -17,7 +17,7 @@
 
 pragma solidity 0.8.17;
 
-import "./LibMessage.sol";
+import "./Common.sol";
 
 interface IChannel {
     function recv_message(

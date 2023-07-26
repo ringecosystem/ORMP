@@ -17,7 +17,7 @@
 
 pragma solidity 0.8.17;
 
-import "./LibMessage.sol";
+import "./Common.sol";
 import "./call/ExcessivelySafeCall.sol";
 import "./interfaces/IUserConfig.sol";
 import "./interfaces/IChannel.sol";
