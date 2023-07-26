@@ -45,49 +45,45 @@ contract Endpoint {
     function send(uint32 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable {
         address ua = msg.sender;
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
-        uint index = IChannel(CHANNEL).sendMessage(
-            ua,
-            toChainId,
-            to,
-            encoded
-        );
+        uint256 index = IChannel(CHANNEL).sendMessage(ua, toChainId, to, encoded);
 
-        uint relayerFee = _handleRelayer(uaConfig.relayer, index, toChainId, ua, encoded.length, params);
-        uint oracleFee = _handleOracle(uaConfig.oracle, index, toChainId, ua);
+        uint256 relayerFee = _handleRelayer(uaConfig.relayer, index, toChainId, ua, encoded.length, params);
+        uint256 oracleFee = _handleOracle(uaConfig.oracle, index, toChainId, ua);
 
         //refound
         if (msg.value > relayerFee + oracleFee) {
-            uint refound = msg.value - (relayerFee + oracleFee);
+            uint256 refound = msg.value - (relayerFee + oracleFee);
             payable(ua).transfer(refound);
         }
     }
 
-    function fee(uint32 toChainId, address to, bytes calldata encoded, bytes calldata params) external view returns (uint) {
+    function fee(uint32 toChainId, address /*to*/, bytes calldata encoded, bytes calldata params)
+        external
+        view
+        returns (uint256)
+    {
         address ua = msg.sender;
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
-        uint relayerFee = IRelayer(uaConfig.relayer).fee(toChainId, ua, encoded.length, params);
-        uint oracleFee = IOracle(uaConfig.oracle).fee(toChainId, ua);
+        uint256 relayerFee = IRelayer(uaConfig.relayer).fee(toChainId, ua, encoded.length, params);
+        uint256 oracleFee = IOracle(uaConfig.oracle).fee(toChainId, ua);
         return relayerFee + oracleFee;
     }
 
-    function _handleRelayer(address relayer, uint index, uint32 toChainId, address ua, uint size, bytes calldata params) internal returns (uint) {
-        uint fee = IRelayer(relayer).fee(toChainId, ua, size, params);
-        return IRelayer(relayer).assign{value: fee}(
-            index,
-            toChainId,
-            ua,
-            size,
-            params
-        );
+    function _handleRelayer(
+        address relayer,
+        uint256 index,
+        uint32 toChainId,
+        address ua,
+        uint256 size,
+        bytes calldata params
+    ) internal returns (uint256) {
+        uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, size, params);
+        return IRelayer(relayer).assign{value: relayerFee}(index, toChainId, ua, size, params);
     }
 
-    function _handleOracle(address oracle, uint index, uint32 toChainId, address ua) internal returns (uint) {
-        uint fee = IOracle(oracle).fee(toChainId, ua);
-        return IOracle(oracle).assign{value: fee}(
-            index,
-            toChainId,
-            ua
-        );
+    function _handleOracle(address oracle, uint256 index, uint32 toChainId, address ua) internal returns (uint256) {
+        uint256 oracleFee = IOracle(oracle).fee(toChainId, ua);
+        return IOracle(oracle).assign{value: oracleFee}(index, toChainId, ua);
     }
 
     function recv(Message calldata message) external returns (bool dispatchResult) {
@@ -122,9 +118,7 @@ contract Endpoint {
     function _dispatch(Message memory message) private returns (bool dispatchResult) {
         // Deliver the message to the target
         (dispatchResult,) = message.to.excessivelySafeCall(
-            gasleft(),
-            0,
-            abi.encodePacked(message.encoded, hash(message), uint256(message.fromChainId), message.from)
+            gasleft(), 0, abi.encodePacked(message.encoded, hash(message), uint256(message.fromChainId), message.from)
         );
     }
 }

@@ -20,14 +20,11 @@ pragma solidity 0.8.17;
 import "./Common.sol";
 
 interface IChannel {
-    function recvMessage(
-        Message calldata message,
-        bytes calldata proof
-    ) external;
+    function recvMessage(Message calldata message, bytes calldata proof) external;
 }
 
 contract Relayer {
-    event Assigned(uint indexed index, uint fee);
+    event Assigned(uint256 indexed index, uint256 fee);
     event SetPrice(uint32 indexed chainId, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address relayer, bool approve);
 
@@ -44,12 +41,12 @@ contract Relayer {
     mapping(uint32 => Price) public priceOf;
     mapping(address => bool) public approvedOf;
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner, "!owner");
         _;
     }
 
-    modifier onlyApproved {
+    modifier onlyApproved() {
         require(isApproved(msg.sender), "!approve");
         _;
     }
@@ -81,21 +78,25 @@ contract Relayer {
         emit SetPrice(chainId, baseGas, gasPerByte);
     }
 
-    function withdraw(address to, uint amount) external onlyApproved {
+    function withdraw(address to, uint256 amount) external onlyApproved {
         payable(to).transfer(amount);
     }
 
     // params = [extraGas]
-    function fee(uint32 toChainId, address ua, uint size, bytes calldata params) public view returns (uint) {
-        uint extraGas = abi.decode(params, (uint));
+    function fee(uint32 toChainId, address /*ua*/, uint256 size, bytes calldata params) public view returns (uint256) {
+        uint256 extraGas = abi.decode(params, (uint256));
         Price memory p = priceOf[toChainId];
-        uint gas = p.baseGas + extraGas * p.baseGas / 200000;
+        uint256 gas = p.baseGas + extraGas * p.baseGas / 200000;
         return gas + p.gasPerByte * size;
     }
 
-    function assign(uint index, uint32 toChainId, address ua, uint size, bytes calldata params) external payable returns (uint) {
+    function assign(uint256 index, uint32 toChainId, address ua, uint256 size, bytes calldata params)
+        external
+        payable
+        returns (uint256)
+    {
         require(msg.sender == ENDPOINT, "!enpoint");
-        uint totalFee = fee(toChainId, ua, size, params);
+        uint256 totalFee = fee(toChainId, ua, size, params);
         require(msg.value == totalFee, "!fee");
         emit Assigned(index, totalFee);
         return totalFee;

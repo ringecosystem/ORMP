@@ -29,7 +29,7 @@ contract UserConfig {
     Config public defaultAppConfig;
     address public setter;
 
-    modifier onlySetter {
+    modifier onlySetter() {
         require(msg.sender == setter, "!auth");
         _;
     }

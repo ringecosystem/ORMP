@@ -21,18 +21,18 @@ import "./interfaces/IFeedOracle.sol";
 import "./Verifier.sol";
 
 contract Oracle is Verifier {
-    event Assigned(uint indexed index);
-    event SetFee(uint32 indexed chainId, uint fee);
+    event Assigned(uint256 indexed index);
+    event SetFee(uint32 indexed chainId, uint256 fee);
 
     address public immutable ENDPOINT;
     address public owner;
 
     // chainId => price
-    mapping(uint32 => uint) public feeOf;
+    mapping(uint32 => uint256) public feeOf;
     // chainId => dapi
     mapping(uint32 => address) public dapiOf;
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner, "!owner");
         _;
     }
@@ -48,28 +48,28 @@ contract Oracle is Verifier {
         owner = owner_;
     }
 
-    function withdraw(uint amount) external onlyOwner {
+    function withdraw(uint256 amount) external onlyOwner {
         payable(owner).transfer(amount);
     }
 
-    function setFee(uint32 chainId, uint fee_) external onlyOwner {
+    function setFee(uint32 chainId, uint256 fee_) external onlyOwner {
         feeOf[chainId] = fee_;
         emit SetFee(chainId, fee_);
     }
 
-    function fee(uint32 toChainId, address ua) public view returns (uint) {
+    function fee(uint32 toChainId, address /*ua*/) public view returns (uint256) {
         return feeOf[toChainId];
     }
 
-    function assign(uint index, uint32 toChainId, address ua) external payable returns (uint) {
+    function assign(uint256 index, uint32 toChainId, address /*ua*/) external payable returns (uint256) {
         require(msg.sender == ENDPOINT, "!enpoint");
-        uint totalFee = feeOf[toChainId];
+        uint256 totalFee = feeOf[toChainId];
         require(msg.value == totalFee, "!fee");
         emit Assigned(index);
         return totalFee;
     }
 
-    function merkleRoot(uint32 chainId) public override view returns (bytes32) {
+    function merkleRoot(uint32 chainId) public view override returns (bytes32) {
         address dapi = dapiOf[chainId];
         (, bytes32 msgRoot) = IFeedOracle(dapi).latestAnswer();
         return msgRoot;

@@ -33,6 +33,7 @@ interface IEndpoint {
 contract MulticastChannel {
     using IncrementalMerkleTree for IncrementalMerkleTree.Tree;
     /// @dev slot 0, messages root
+
     bytes32 private root;
     /// @dev incremental merkle tree
     IncrementalMerkleTree.Tree private imt;
@@ -41,12 +42,12 @@ contract MulticastChannel {
 
     address public immutable ENDPOINT;
     address public immutable CONFIG;
-    uint32  public immutable LOCAL_CHAINID;
+    uint32 public immutable LOCAL_CHAINID;
 
-    event MessageAccepted(uint indexed index, bytes32 indexed msgHash, bytes32 root, Message message);
+    event MessageAccepted(uint256 indexed index, bytes32 indexed msgHash, bytes32 root, Message message);
     event MessageDispatched(bytes32 indexed msgHash, bool dispatch_result);
 
-    modifier onlyEndpoint {
+    modifier onlyEndpoint() {
         require(msg.sender == ENDPOINT, "!endpoint");
         _;
     }
@@ -60,13 +61,12 @@ contract MulticastChannel {
     }
 
     /// @dev Send message
-    function sendMessage(
-        address from,
-        uint32 toChainId,
-        address to,
-        bytes calldata encoded
-    ) external onlyEndpoint returns (uint) {
-        uint index = messageSize();
+    function sendMessage(address from, uint32 toChainId, address to, bytes calldata encoded)
+        external
+        onlyEndpoint
+        returns (uint256)
+    {
+        uint256 index = messageSize();
         Message memory message = Message({
             index: index,
             fromChainId: LOCAL_CHAINID,
@@ -79,30 +79,18 @@ contract MulticastChannel {
         imt.insert(msgHash);
         root = imt.root();
 
-        emit MessageAccepted(
-            index,
-            msgHash,
-            root,
-            message
-        );
+        emit MessageAccepted(index, msgHash, root, message);
 
         return index;
     }
 
     /// Receive messages proof from bridged chain.
-    function recvMessage(
-        Message calldata message,
-        bytes calldata proof
-    ) external {
+    function recvMessage(Message calldata message, bytes calldata proof) external {
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.to);
         require(uaConfig.relayer == msg.sender);
 
         // verify message is from the correct source chain
-        IVerifier(uaConfig.oracle).verifyMessageProof(
-            message.fromChainId,
-            hash(message),
-            proof
-        );
+        IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, hash(message), proof);
 
         require(LOCAL_CHAINID == message.toChainId, "InvalidTargetLaneId");
         bytes32 msgHash = hash(message);
@@ -119,7 +107,7 @@ contract MulticastChannel {
         return root;
     }
 
-    function messageSize() public view returns (uint) {
+    function messageSize() public view returns (uint256) {
         return imt.count;
     }
 

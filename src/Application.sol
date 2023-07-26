@@ -25,28 +25,28 @@ abstract contract Application {
         TRUSTED_ENDPOINT = endpoint;
     }
 
-    function isTrustedEndpoint(address endpoint) public view returns(bool) {
+    function isTrustedEndpoint(address endpoint) public view returns (bool) {
         return TRUSTED_ENDPOINT == endpoint;
     }
 
     function _messageId() internal pure returns (bytes32 _msgDataMessageId) {
-      require(msg.data.length >= 84, "!message_id");
-      assembly {
-        _msgDataMessageId := calldataload(sub(calldatasize(), 84))
-      }
+        require(msg.data.length >= 84, "!message_id");
+        assembly {
+            _msgDataMessageId := calldataload(sub(calldatasize(), 84))
+        }
     }
 
     function _fromChainId() internal pure returns (uint256 _msgDataFromChainId) {
-      require(msg.data.length >= 52, "!from_chain_id");
-      assembly {
-        _msgDataFromChainId := calldataload(sub(calldatasize(), 52))
-      }
+        require(msg.data.length >= 52, "!from_chain_id");
+        assembly {
+            _msgDataFromChainId := calldataload(sub(calldatasize(), 52))
+        }
     }
 
     function _xmsgSender() internal view returns (address payable _from) {
-      require(msg.data.length >= 20 && isTrustedEndpoint(msg.sender));
-      assembly {
-        _from := shr(96, calldataload(sub(calldatasize(), 20)))
-      }
+        require(msg.data.length >= 20 && isTrustedEndpoint(msg.sender));
+        assembly {
+            _from := shr(96, calldataload(sub(calldatasize(), 20)))
+        }
     }
 }
