@@ -26,11 +26,11 @@ interface IEndpoint {
     function recv(Message calldata message) external returns (bool dispatch_result);
 }
 
-/// @title MulticastChannel
+/// @title Channel
 /// @notice Accepts messages to be dispatched to remote chains,
 /// constructs a Merkle tree of the messages.
 /// @dev TODO: doc
-contract MulticastChannel {
+contract Channel {
     using IncrementalMerkleTree for IncrementalMerkleTree.Tree;
     /// @dev slot 0, messages root
 
