@@ -50,7 +50,7 @@ contract Endpoint {
         uint256 relayerFee = _handleRelayer(uaConfig.relayer, index, toChainId, ua, encoded.length, params);
         uint256 oracleFee = _handleOracle(uaConfig.oracle, index, toChainId, ua);
 
-        //refound
+        //refund
         if (msg.value > relayerFee + oracleFee) {
             uint256 refound = msg.value - (relayerFee + oracleFee);
             payable(ua).transfer(refound);
