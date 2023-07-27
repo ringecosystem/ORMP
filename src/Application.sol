@@ -30,14 +30,14 @@ abstract contract Application {
     }
 
     function _messageId() internal pure returns (bytes32 _msgDataMessageId) {
-        require(msg.data.length >= 84, "!message_id");
+        require(msg.data.length >= 84, "!messageId");
         assembly {
             _msgDataMessageId := calldataload(sub(calldatasize(), 84))
         }
     }
 
     function _fromChainId() internal pure returns (uint256 _msgDataFromChainId) {
-        require(msg.data.length >= 52, "!from_chain_id");
+        require(msg.data.length >= 52, "!fromChainId");
         assembly {
             _msgDataFromChainId := calldataload(sub(calldatasize(), 52))
         }

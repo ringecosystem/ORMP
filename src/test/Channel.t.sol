@@ -31,6 +31,5 @@ contract ChannelTest is DSTest {
 
     function testSendMessage() public {
         channel.sendMessage(self, 2, self, "");
-        // channel.sendMessage(self, 2, self, "");
     }
 }

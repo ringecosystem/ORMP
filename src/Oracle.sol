@@ -23,6 +23,7 @@ import "./Verifier.sol";
 contract Oracle is Verifier {
     event Assigned(uint256 indexed index);
     event SetFee(uint256 indexed chainId, uint256 fee);
+    event SetDapi(uint256 indexed chainId, address dapi);
 
     address public immutable ENDPOINT;
     address public owner;
@@ -55,6 +56,11 @@ contract Oracle is Verifier {
     function setFee(uint256 chainId, uint256 fee_) external onlyOwner {
         feeOf[chainId] = fee_;
         emit SetFee(chainId, fee_);
+    }
+
+    function setDapi(uint256 chainId, address dapi) external onlyOwner {
+        dapiOf[chainId] = dapi;
+        emit SetDapi(chainId, dapi);
     }
 
     function fee(uint256 toChainId, address /*ua*/ ) public view returns (uint256) {

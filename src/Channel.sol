@@ -91,12 +91,12 @@ contract Channel {
     /// Receive messages proof from bridged chain.
     function recvMessage(Message calldata message, bytes calldata proof) external {
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.to);
-        require(uaConfig.relayer == msg.sender);
+        require(uaConfig.relayer == msg.sender, "!auth");
 
         // verify message is from the correct source chain
         IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, hash(message), proof);
 
-        require(LOCAL_CHAINID() == message.toChainId, "InvalidTargetLaneId");
+        require(LOCAL_CHAINID() == message.toChainId, "!toChainId");
         bytes32 msgHash = hash(message);
         require(dones[msgHash] == false, "done");
         dones[msgHash] = true;
