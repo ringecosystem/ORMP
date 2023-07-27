@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 interface IVerifier {
-    function verifyMessageProof(uint32 fromChainId, bytes32 msgHash, bytes calldata proof)
+    function verifyMessageProof(uint256 fromChainId, bytes32 msgHash, bytes calldata proof)
         external
         view
         returns (bool);

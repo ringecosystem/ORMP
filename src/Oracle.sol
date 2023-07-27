@@ -22,15 +22,15 @@ import "./Verifier.sol";
 
 contract Oracle is Verifier {
     event Assigned(uint256 indexed index);
-    event SetFee(uint32 indexed chainId, uint256 fee);
+    event SetFee(uint256 indexed chainId, uint256 fee);
 
     address public immutable ENDPOINT;
     address public owner;
 
     // chainId => price
-    mapping(uint32 => uint256) public feeOf;
+    mapping(uint256 => uint256) public feeOf;
     // chainId => dapi
-    mapping(uint32 => address) public dapiOf;
+    mapping(uint256 => address) public dapiOf;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "!owner");
@@ -52,16 +52,16 @@ contract Oracle is Verifier {
         payable(owner).transfer(amount);
     }
 
-    function setFee(uint32 chainId, uint256 fee_) external onlyOwner {
+    function setFee(uint256 chainId, uint256 fee_) external onlyOwner {
         feeOf[chainId] = fee_;
         emit SetFee(chainId, fee_);
     }
 
-    function fee(uint32 toChainId, address /*ua*/) public view returns (uint256) {
+    function fee(uint256 toChainId, address /*ua*/ ) public view returns (uint256) {
         return feeOf[toChainId];
     }
 
-    function assign(uint256 index, uint32 toChainId, address /*ua*/) external payable returns (uint256) {
+    function assign(uint256 index, uint256 toChainId, address /*ua*/ ) external payable returns (uint256) {
         require(msg.sender == ENDPOINT, "!enpoint");
         uint256 totalFee = feeOf[toChainId];
         require(msg.value == totalFee, "!fee");
@@ -69,7 +69,7 @@ contract Oracle is Verifier {
         return totalFee;
     }
 
-    function merkleRoot(uint32 chainId) public view override returns (bytes32) {
+    function merkleRoot(uint256 chainId) public view override returns (bytes32) {
         address dapi = dapiOf[chainId];
         (, bytes32 msgRoot) = IFeedOracle(dapi).latestAnswer();
         return msgRoot;

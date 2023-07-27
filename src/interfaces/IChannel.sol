@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 interface IChannel {
-    function sendMessage(address from, uint32 toChainId, address to, bytes calldata encoded)
+    function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
         external
-        returns (uint32);
+        returns (uint256);
 }

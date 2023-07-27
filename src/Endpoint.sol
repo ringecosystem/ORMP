@@ -42,7 +42,7 @@ contract Endpoint {
     }
 
     // https://eips.ethereum.org/EIPS/eip-5750
-    function send(uint32 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable {
+    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable {
         address ua = msg.sender;
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
         uint256 index = IChannel(CHANNEL).sendMessage(ua, toChainId, to, encoded);
@@ -57,7 +57,7 @@ contract Endpoint {
         }
     }
 
-    function fee(uint32 toChainId, address /*to*/, bytes calldata encoded, bytes calldata params)
+    function fee(uint256 toChainId, address, /*to*/ bytes calldata encoded, bytes calldata params)
         external
         view
         returns (uint256)
@@ -72,7 +72,7 @@ contract Endpoint {
     function _handleRelayer(
         address relayer,
         uint256 index,
-        uint32 toChainId,
+        uint256 toChainId,
         address ua,
         uint256 size,
         bytes calldata params
@@ -81,7 +81,7 @@ contract Endpoint {
         return IRelayer(relayer).assign{value: relayerFee}(index, toChainId, ua, size, params);
     }
 
-    function _handleOracle(address oracle, uint256 index, uint32 toChainId, address ua) internal returns (uint256) {
+    function _handleOracle(address oracle, uint256 index, uint256 toChainId, address ua) internal returns (uint256) {
         uint256 oracleFee = IOracle(oracle).fee(toChainId, ua);
         return IOracle(oracle).assign{value: oracleFee}(index, toChainId, ua);
     }

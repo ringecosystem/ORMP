@@ -18,11 +18,19 @@
 pragma solidity 0.8.17;
 
 import "ds-test/test.sol";
+import "../Channel.sol";
 
 contract ChannelTest is DSTest {
+    Channel channel;
+    address self;
+
     function setUp() public {
+        self = address(this);
+        channel = new Channel(self, self);
     }
 
     function testSendMessage() public {
+        channel.sendMessage(self, 2, self, "");
+        // channel.sendMessage(self, 2, self, "");
     }
 }

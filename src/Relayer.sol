@@ -83,7 +83,7 @@ contract Relayer {
     }
 
     // params = [extraGas]
-    function fee(uint32 toChainId, address /*ua*/, uint256 size, bytes calldata params) public view returns (uint256) {
+    function fee(uint32 toChainId, address, /*ua*/ uint256 size, bytes calldata params) public view returns (uint256) {
         uint256 extraGas = abi.decode(params, (uint256));
         Price memory p = priceOf[toChainId];
         uint256 gas = p.baseGas + extraGas * p.baseGas / 200000;

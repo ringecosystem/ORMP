@@ -42,7 +42,6 @@ contract Channel {
 
     address public immutable ENDPOINT;
     address public immutable CONFIG;
-    uint32 public immutable LOCAL_CHAINID;
 
     event MessageAccepted(uint256 indexed index, bytes32 indexed msgHash, bytes32 root, Message message);
     event MessageDispatched(bytes32 indexed msgHash, bool dispatch_result);
@@ -52,16 +51,21 @@ contract Channel {
         _;
     }
 
-    constructor(uint32 localChainId, address endpoint, address config) {
+    constructor(address endpoint, address config) {
         // init with empty tree
         root = 0x27ae5ba08d7291c96c8cbddcc148bf48a6d68c7974b94356f53754ef6171d757;
-        LOCAL_CHAINID = localChainId;
         ENDPOINT = endpoint;
         CONFIG = config;
     }
 
+    function LOCAL_CHAINID() public view returns (uint256 chainId) {
+        assembly {
+            chainId := chainid()
+        }
+    }
+
     /// @dev Send message
-    function sendMessage(address from, uint32 toChainId, address to, bytes calldata encoded)
+    function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
         external
         onlyEndpoint
         returns (uint256)
@@ -69,7 +73,7 @@ contract Channel {
         uint256 index = messageSize();
         Message memory message = Message({
             index: index,
-            fromChainId: LOCAL_CHAINID,
+            fromChainId: LOCAL_CHAINID(),
             from: from,
             toChainId: toChainId,
             to: to,
@@ -92,7 +96,7 @@ contract Channel {
         // verify message is from the correct source chain
         IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, hash(message), proof);
 
-        require(LOCAL_CHAINID == message.toChainId, "InvalidTargetLaneId");
+        require(LOCAL_CHAINID() == message.toChainId, "InvalidTargetLaneId");
         bytes32 msgHash = hash(message);
         require(dones[msgHash] == false, "done");
         dones[msgHash] = true;

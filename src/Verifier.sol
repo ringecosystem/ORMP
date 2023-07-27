@@ -26,9 +26,9 @@ abstract contract Verifier is IVerifier {
         bytes32[32] messageProof;
     }
 
-    function merkleRoot(uint32 chainId) public view virtual returns (bytes32);
+    function merkleRoot(uint256 chainId) public view virtual returns (bytes32);
 
-    function verifyMessageProof(uint32 fromChainId, bytes32 msgHash, bytes calldata proof)
+    function verifyMessageProof(uint256 fromChainId, bytes32 msgHash, bytes calldata proof)
         external
         view
         returns (bool)
