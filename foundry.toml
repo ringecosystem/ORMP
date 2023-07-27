@@ -4,8 +4,7 @@ test = "test"
 script = "script"
 out = "out"
 libs = ["lib"]
-remappings = [
-]
+remappings = ["ds-test/=lib/ds-test/src/"]
 auto_detect_remappings = true
 libraries = []
 cache = true
