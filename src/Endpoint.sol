@@ -43,7 +43,11 @@ contract Endpoint is ReentrancyGuard {
     }
 
     // https://eips.ethereum.org/EIPS/eip-5750
-    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable sendNonReentrant {
+    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params)
+        external
+        payable
+        sendNonReentrant
+    {
         address ua = msg.sender;
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
         uint256 index = IChannel(CHANNEL).sendMessage(ua, toChainId, to, encoded);
