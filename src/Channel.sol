@@ -23,34 +23,51 @@ import "./interfaces/IUserConfig.sol";
 import "./interfaces/IVerifier.sol";
 
 interface IEndpoint {
-    function recv(Message calldata message) external returns (bool dispatch_result);
+    function recv(Message calldata message) external returns (bool dispatchResult);
 }
 
 /// @title Channel
 /// @notice Accepts messages to be dispatched to remote chains,
 /// constructs a Merkle tree of the messages.
-/// @dev TODO: doc
+/// Dispatches verified messages from source chains.
+/// A multicast channel is core message lib, which messages are
+/// generated from source chains and dispatched in remote chains.
+/// @dev Messages live in an incremental merkle tree (imt)
+/// > A Merkle tree is a binary and complete tree decorated with
+/// > the Merkle (hash) attribute.
 contract Channel {
     using IncrementalMerkleTree for IncrementalMerkleTree.Tree;
-    /// @dev slot 0, messages root
 
-    bytes32 private root;
-    /// @dev incremental merkle tree
+    /// @dev Incremental merkle tree root which all message hashes live in leafs.
+    bytes32 public root;
+    /// @dev Incremental merkle tree.
     IncrementalMerkleTree.Tree private imt;
-
+    /// @dev msgHash => isDispathed.
     mapping(bytes32 => bool) public dones;
 
+    /// @dev Endpoint immutable address.
     address public immutable ENDPOINT;
+    /// @dev User config immutable address.
     address public immutable CONFIG;
 
-    event MessageAccepted(uint256 indexed index, bytes32 indexed msgHash, bytes32 root, Message message);
-    event MessageDispatched(bytes32 indexed msgHash, bool dispatch_result);
+    /// @dev Notifies an observer that the message has been accepted.
+    /// @param msgHash Hash of the message.
+    /// @param root New incremental merkle tree root after a new message inserted.
+    /// @param message Accepted message info.
+    event MessageAccepted(bytes32 indexed msgHash, bytes32 root, Message message);
+    /// @dev Notifies an observer that the message has been dispatched.
+    /// @dev msgHash Hash of the message.
+    /// @dev dispatchResult The message dispatch result.
+    event MessageDispatched(bytes32 indexed msgHash, bool dispatchResult);
 
     modifier onlyEndpoint() {
         require(msg.sender == ENDPOINT, "!endpoint");
         _;
     }
 
+    /// @dev Init code.
+    /// @param endpoint Endpoint immutable address.
+    /// @param config User config immutable address.
     constructor(address endpoint, address config) {
         // init with empty tree
         root = 0x27ae5ba08d7291c96c8cbddcc148bf48a6d68c7974b94356f53754ef6171d757;
@@ -58,19 +75,28 @@ contract Channel {
         CONFIG = config;
     }
 
+    /// @dev Fetch local chain id.
+    /// @return chainId Local chain id.
     function LOCAL_CHAINID() public view returns (uint256 chainId) {
         assembly {
             chainId := chainid()
         }
     }
 
-    /// @dev Send message
+    /// @dev Send message.
+    /// @notice Only endpoint could call this function.
+    /// @param from User application contract address which send the message.
+    /// @param toChainId The Message destination chain id.
+    /// @param to User application contract address which receive the message.
+    /// @param encoded The calldata which encoded by ABI Encoding.
     function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
         external
         onlyEndpoint
-        returns (uint256)
+        returns (bytes32)
     {
+        // get this message leaf index.
         uint256 index = messageSize();
+        // constuct message object.
         Message memory message = Message({
             index: index,
             fromChainId: LOCAL_CHAINID(),
@@ -79,42 +105,54 @@ contract Channel {
             to: to,
             encoded: encoded
         });
+        // hash the message.
         bytes32 msgHash = hash(message);
+        // insert msg hash to imt.
         imt.insert(msgHash);
+        // update new imt.root to root storage.
         root = imt.root();
 
-        emit MessageAccepted(index, msgHash, root, message);
+        // emit accepted message event.
+        emit MessageAccepted(msgHash, root, message);
 
-        return index;
+        // return this message hash.
+        return msgHash;
     }
 
-    /// Receive messages proof from bridged chain.
+    /// @dev Receive messages.
+    /// @notice Only message.to's config relayer could relayer this message.
+    /// @param message Received message info.
+    /// @param proof Message proof of this message.
     function recvMessage(Message calldata message, bytes calldata proof) external {
+        // get message.to user config.
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.to);
+        // only the config relayer could relay this message.
         require(uaConfig.relayer == msg.sender, "!auth");
 
-        // verify message is from the correct source chain
+        // verify message by the config oracle.
         IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, hash(message), proof);
 
+        // check destination chain id is correct.
         require(LOCAL_CHAINID() == message.toChainId, "!toChainId");
+        // hash the message.
         bytes32 msgHash = hash(message);
+        // check the message is not dispatched.
         require(dones[msgHash] == false, "done");
+        // set the message is dispatched.
         dones[msgHash] = true;
 
-        // then, dispatch message
+        // then, dispatch message to endpoint.
         bool dispatchResult = IEndpoint(ENDPOINT).recv(message);
+        // emit dispatched message event.
         emit MessageDispatched(msgHash, dispatchResult);
     }
 
-    /// Return the commitment of lane data.
-    function commitment() external view returns (bytes32) {
-        return root;
-    }
-
+    /// @dev Fetch the messages size of incremental merkle tree.
     function messageSize() public view returns (uint256) {
         return imt.count;
     }
 
+    /// @dev Fetch the branch of incremental merkle tree.
     function imtBranch() public view returns (bytes32[32] memory) {
         return imt.branch;
     }

@@ -24,7 +24,7 @@ interface IChannel {
 }
 
 contract Relayer {
-    event Assigned(uint256 indexed index, uint256 fee);
+    event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetPrice(uint32 indexed chainId, uint64 benchGas, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address relayer, bool approve);
 
@@ -91,7 +91,7 @@ contract Relayer {
         return gas + p.gasPerByte * size;
     }
 
-    function assign(uint256 index, uint32 toChainId, address ua, uint256 size, bytes calldata params)
+    function assign(bytes32 msgHash, uint32 toChainId, address ua, uint256 size, bytes calldata params)
         external
         payable
         returns (uint256)
@@ -99,7 +99,7 @@ contract Relayer {
         require(msg.sender == ENDPOINT, "!enpoint");
         uint256 totalFee = fee(toChainId, ua, size, params);
         require(msg.value == totalFee, "!fee");
-        emit Assigned(index, totalFee);
+        emit Assigned(msgHash, totalFee);
         return totalFee;
     }
 

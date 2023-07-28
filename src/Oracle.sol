@@ -21,7 +21,7 @@ import "./interfaces/IFeedOracle.sol";
 import "./Verifier.sol";
 
 contract Oracle is Verifier {
-    event Assigned(uint256 indexed index);
+    event Assigned(bytes32 indexed msgHash);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetDapi(uint256 indexed chainId, address dapi);
 
@@ -67,11 +67,11 @@ contract Oracle is Verifier {
         return feeOf[toChainId];
     }
 
-    function assign(uint256 index, uint256 toChainId, address /*ua*/ ) external payable returns (uint256) {
+    function assign(bytes32 msgHash, uint256 toChainId, address /*ua*/ ) external payable returns (uint256) {
         require(msg.sender == ENDPOINT, "!enpoint");
         uint256 totalFee = feeOf[toChainId];
         require(msg.value == totalFee, "!fee");
-        emit Assigned(index);
+        emit Assigned(msgHash);
         return totalFee;
     }
 

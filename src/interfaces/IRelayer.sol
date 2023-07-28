@@ -19,7 +19,7 @@ pragma solidity 0.8.17;
 
 interface IRelayer {
     function fee(uint256 toChainId, address ua, uint256 size, bytes calldata params) external view returns (uint256);
-    function assign(uint256 index, uint256 toChainId, address ua, uint256 size, bytes calldata params)
+    function assign(bytes32 msgHash, uint256 toChainId, address ua, uint256 size, bytes calldata params)
         external
         payable
         returns (uint256);

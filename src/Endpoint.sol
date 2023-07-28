@@ -50,10 +50,10 @@ contract Endpoint is ReentrancyGuard {
     {
         address ua = msg.sender;
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
-        uint256 index = IChannel(CHANNEL).sendMessage(ua, toChainId, to, encoded);
+        bytes32 msgHash = IChannel(CHANNEL).sendMessage(ua, toChainId, to, encoded);
 
-        uint256 relayerFee = _handleRelayer(uaConfig.relayer, index, toChainId, ua, encoded.length, params);
-        uint256 oracleFee = _handleOracle(uaConfig.oracle, index, toChainId, ua);
+        uint256 relayerFee = _handleRelayer(uaConfig.relayer, msgHash, toChainId, ua, encoded.length, params);
+        uint256 oracleFee = _handleOracle(uaConfig.oracle, msgHash, toChainId, ua);
 
         //refund
         if (msg.value > relayerFee + oracleFee) {
@@ -76,19 +76,19 @@ contract Endpoint is ReentrancyGuard {
 
     function _handleRelayer(
         address relayer,
-        uint256 index,
+        bytes32 msgHash,
         uint256 toChainId,
         address ua,
         uint256 size,
         bytes calldata params
     ) internal returns (uint256) {
         uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, size, params);
-        return IRelayer(relayer).assign{value: relayerFee}(index, toChainId, ua, size, params);
+        return IRelayer(relayer).assign{value: relayerFee}(msgHash, toChainId, ua, size, params);
     }
 
-    function _handleOracle(address oracle, uint256 index, uint256 toChainId, address ua) internal returns (uint256) {
+    function _handleOracle(address oracle, bytes32 msgHash, uint256 toChainId, address ua) internal returns (uint256) {
         uint256 oracleFee = IOracle(oracle).fee(toChainId, ua);
-        return IOracle(oracle).assign{value: oracleFee}(index, toChainId, ua);
+        return IOracle(oracle).assign{value: oracleFee}(msgHash, toChainId, ua);
     }
 
     function recv(Message calldata message) external recvNonReentrant returns (bool dispatchResult) {

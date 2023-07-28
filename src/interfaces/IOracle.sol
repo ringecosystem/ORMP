@@ -19,5 +19,5 @@ pragma solidity 0.8.17;
 
 interface IOracle {
     function fee(uint256 toChainId, address ua) external view returns (uint256);
-    function assign(uint256 index, uint256 toChainId, address ua) external payable returns (uint256);
+    function assign(bytes32 msgHash, uint256 toChainId, address ua) external payable returns (uint256);
 }
