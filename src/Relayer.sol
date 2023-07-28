@@ -25,12 +25,13 @@ interface IChannel {
 
 contract Relayer {
     event Assigned(uint256 indexed index, uint256 fee);
-    event SetPrice(uint32 indexed chainId, uint64 baseGas, uint64 gasPerByte);
+    event SetPrice(uint32 indexed chainId, uint64 benchGas, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address relayer, bool approve);
 
     struct Price {
-        uint64 baseGas; // gas in source chain = 200000 gas in target chain
-        uint64 gasPerByte;
+        uint64 benchGas; // merkle proof bench gas in targe chain
+        uint64 baseGas; // gas in source chain related to bench gas in target chain
+        uint64 gasPerByte; // gas per byte in source chain
     }
 
     address public immutable ENDPOINT;
@@ -73,9 +74,9 @@ contract Relayer {
         emit SetApproved(relayer, approve);
     }
 
-    function setPrice(uint32 chainId, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
-        priceOf[chainId] = Price(baseGas, gasPerByte);
-        emit SetPrice(chainId, baseGas, gasPerByte);
+    function setPrice(uint32 chainId, uint64 benchGas, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
+        priceOf[chainId] = Price(benchGas, baseGas, gasPerByte);
+        emit SetPrice(chainId, benchGas, baseGas, gasPerByte);
     }
 
     function withdraw(address to, uint256 amount) external onlyApproved {
@@ -86,7 +87,7 @@ contract Relayer {
     function fee(uint32 toChainId, address, /*ua*/ uint256 size, bytes calldata params) public view returns (uint256) {
         uint256 extraGas = abi.decode(params, (uint256));
         Price memory p = priceOf[toChainId];
-        uint256 gas = p.baseGas + extraGas * p.baseGas / 200000;
+        uint256 gas = p.baseGas + extraGas * p.baseGas / p.benchGas;
         return gas + p.gasPerByte * size;
     }
 
