@@ -23,8 +23,9 @@ import "./interfaces/IUserConfig.sol";
 import "./interfaces/IChannel.sol";
 import "./interfaces/IRelayer.sol";
 import "./interfaces/IOracle.sol";
+import "./security/ReentrancyGuard.sol";
 
-contract Endpoint {
+contract Endpoint is ReentrancyGuard {
     using ExcessivelySafeCall for address;
 
     event ClearFailedMessage(bytes32 indexed msgHash);
@@ -42,7 +43,7 @@ contract Endpoint {
     }
 
     // https://eips.ethereum.org/EIPS/eip-5750
-    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable {
+    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable sendNonReentrant {
         address ua = msg.sender;
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
         uint256 index = IChannel(CHANNEL).sendMessage(ua, toChainId, to, encoded);
@@ -52,8 +53,8 @@ contract Endpoint {
 
         //refund
         if (msg.value > relayerFee + oracleFee) {
-            uint256 refound = msg.value - (relayerFee + oracleFee);
-            payable(ua).transfer(refound);
+            uint256 refund = msg.value - (relayerFee + oracleFee);
+            payable(ua).transfer(refund);
         }
     }
 
@@ -86,7 +87,7 @@ contract Endpoint {
         return IOracle(oracle).assign{value: oracleFee}(index, toChainId, ua);
     }
 
-    function recv(Message calldata message) external returns (bool dispatchResult) {
+    function recv(Message calldata message) external recvNonReentrant returns (bool dispatchResult) {
         require(msg.sender == CHANNEL, "!auth");
         dispatchResult = _dispatch(message);
         if (!dispatchResult) {
@@ -95,16 +96,8 @@ contract Endpoint {
         }
     }
 
-    function clearFailedMessage(Message calldata message) external {
-        bytes32 msgHash = hash(message);
-        require(fails[msgHash] == true, "!failed");
-        require(message.to == msg.sender, "!auth");
-        delete fails[msgHash];
-        emit ClearFailedMessage(msgHash);
-    }
-
     /// Retry failed message
-    function retryFailedMessage(Message calldata message) external returns (bool dispatchResult) {
+    function retryFailedMessage(Message calldata message) external recvNonReentrant returns (bool dispatchResult) {
         bytes32 msgHash = hash(message);
         require(fails[msgHash] == true, "!failed");
         dispatchResult = _dispatch(message);
@@ -112,6 +105,14 @@ contract Endpoint {
             delete fails[msgHash];
         }
         emit RetryFailedMessage(msgHash, dispatchResult);
+    }
+
+    function clearFailedMessage(Message calldata message) external {
+        bytes32 msgHash = hash(message);
+        require(fails[msgHash] == true, "!failed");
+        require(message.to == msg.sender, "!auth");
+        delete fails[msgHash];
+        emit ClearFailedMessage(msgHash);
     }
 
     /// @dev dispatch the cross chain message
