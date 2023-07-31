@@ -19,14 +19,26 @@ pragma solidity 0.8.17;
 
 import "./interfaces/IUserConfig.sol";
 
+/// @title UserConfig
+/// @notice User config could select their own relayer and oracle.
+/// The default configuration is used by default.
+/// @dev Only setter could set default config.
 contract UserConfig {
+    /// @dev Notifies an observer that the default config has set.
+    /// @param relayer Default relayer.
+    /// @param oracle Default oracle.
     event SetDefaultConfig(address relayer, address oracle);
+    /// @dev Notifies an observer that the user application config has updated.
+    /// @param ua User application contract address.
+    /// @param relayer Relayer which user application choose.
+    /// @param oracle Oracle which user application.
     event AppConfigUpdated(address indexed ua, address relayer, address oracle);
 
-    // ua => config
+    /// @dev ua => config.
     mapping(address => Config) public appConfig;
-    // default UA settings if no version specified
-    Config public defaultAppConfig;
+    /// @dev Default config.
+    Config public defaultConfig;
+    /// @dev Setter address.
     address public setter;
 
     modifier onlySetter() {
@@ -34,23 +46,32 @@ contract UserConfig {
         _;
     }
 
-    function changeSetter(address _setter) external onlySetter {
-        setter = _setter;
+    /// @dev Change setter.
+    /// @notice Only current setter could call.
+    /// @param setter_ New setter.
+    function changeSetter(address setter_) external onlySetter {
+        setter = setter_;
     }
 
     constructor() {
         setter = msg.sender;
     }
 
+    /// @dev Set default config for all application.
+    /// @notice Only setter could call.
+    /// @param relayer Default relayer.
+    /// @param oracle Default oracle.
     function setDefaultConfig(address relayer, address oracle) external onlySetter {
-        defaultAppConfig = Config(relayer, oracle);
+        defaultConfig = Config(relayer, oracle);
         emit SetDefaultConfig(relayer, oracle);
     }
 
-    // default to DEFAULT setting if ZERO value
+    /// @dev Fetch user application config.
+    /// @notice If user application has not configured, then the default config is used.
+    /// @param ua User application contract address.
+    /// @return user application config.
     function getAppConfig(address ua) external view returns (Config memory) {
         Config memory c = appConfig[ua];
-        Config memory defaultConfig = defaultAppConfig;
 
         if (c.relayer == address(0x0)) {
             c.relayer = defaultConfig.relayer;
@@ -63,6 +84,9 @@ contract UserConfig {
         return c;
     }
 
+    /// @notice Set user application config.
+    /// @param relayer Relayer which user application choose.
+    /// @param oracle Oracle which user application.
     function setAppConfig(address relayer, address oracle) external {
         appConfig[msg.sender] = Config(relayer, oracle);
         emit AppConfigUpdated(msg.sender, relayer, oracle);

@@ -17,7 +17,7 @@
 
 pragma solidity 0.8.17;
 
-import "./Common.sol";
+import "../Common.sol";
 
 interface IChannel {
     function recvMessage(Message calldata message, bytes calldata proof) external;

@@ -27,11 +27,11 @@ interface IEndpoint {
 }
 
 /// @title Channel
-/// @notice Accepts messages to be dispatched to remote chains,
-/// constructs a Merkle tree of the messages.
-/// Dispatches verified messages from source chains.
-/// A multicast channel is core message lib, which messages are
-/// generated from source chains and dispatched in remote chains.
+/// @notice A channel is a logical connection over cross-chain network.
+/// It used for cross-chain message transfer.
+/// - Accepts messages to be dispatched to remote chains,
+///   constructs a Merkle tree of the messages.
+/// - Dispatches verified messages from source chains.
 /// @dev Messages live in an incremental merkle tree (imt)
 /// > A Merkle tree is a binary and complete tree decorated with
 /// > the Merkle (hash) attribute.
@@ -56,8 +56,8 @@ contract Channel {
     /// @param message Accepted message info.
     event MessageAccepted(bytes32 indexed msgHash, bytes32 root, Message message);
     /// @dev Notifies an observer that the message has been dispatched.
-    /// @dev msgHash Hash of the message.
-    /// @dev dispatchResult The message dispatch result.
+    /// @param msgHash Hash of the message.
+    /// @param dispatchResult The message dispatch result.
     event MessageDispatched(bytes32 indexed msgHash, bool dispatchResult);
 
     modifier onlyEndpoint() {
