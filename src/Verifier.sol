@@ -40,12 +40,15 @@ abstract contract Verifier is IVerifier {
         view
         returns (bool)
     {
+        // fetch message root in from chain
         bytes32 imtRootOracle = merkleRoot(fromChainId);
 
+        // decode proof
         Proof memory p = abi.decode(proof, (Proof));
         // calculate the expected root based on the proof
         bytes32 imtRootProof = IncrementalMerkleTree.branchRoot(msgHash, p.messageProof, p.messageIndex);
 
+        // check oracle's merkle root equal relayer's merkle root
         return imtRootOracle == imtRootProof;
     }
 }
