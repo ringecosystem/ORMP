@@ -1,8 +1,8 @@
-.PHONY: add clean test doc
+.PHONY: add clean test deploy doc
 
 dapp ?= dapp
 all    :; $(dapp) build
 clean  :; $(dapp) clean
 test   :; $(dapp) test
 deploy :; $(dapp) create ChannelTest
-doc    :; @./bin/doc.sh
+doc    :; @bash ./bin/doc.sh
