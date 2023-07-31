@@ -18,7 +18,21 @@
 pragma solidity 0.8.17;
 
 interface IRelayer {
+    /// @notice Fetch relayer price to relay message to the destination chain.
+    /// @param toChainId The destination chain id.
+    /// @param ua The user application which send the message.
+    /// @param size The size of message encoded payload.
+    /// @param params General extensibility for relayer to custom functionality.
+    /// @return Relayer price in source native gas.
     function fee(uint256 toChainId, address ua, uint256 size, bytes calldata params) external view returns (uint256);
+
+    /// @notice Assign the relay message task to relayer maintainer.
+    /// @param msgHash Hash of the message.
+    /// @param toChainId The destination chain id.
+    /// @param ua The user application which send the message.
+    /// @param size The size of message encoded payload.
+    /// @param params General extensibility for relayer to custom functionality.
+    /// @return Relayer price in source native gas.
     function assign(bytes32 msgHash, uint256 toChainId, address ua, uint256 size, bytes calldata params)
         external
         payable

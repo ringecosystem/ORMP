@@ -17,6 +17,9 @@
 
 pragma solidity 0.8.17;
 
+import "../interfaces/IEndpoint.sol";
+import "../interfaces/IUserconfig.sol";
+
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract Application {
     address public immutable TRUSTED_ENDPOINT;
@@ -24,6 +27,12 @@ abstract contract Application {
     constructor(address endpoint) {
         TRUSTED_ENDPOINT = endpoint;
     }
+
+    function clearFailedMessage(Message calldata message) external virtual;
+
+    function retryFailedMessage(Message calldata message) external virtual returns (bool dispatchResult);
+
+    function setAppConfig(address relayer, address oracle) external virtual;
 
     function isTrustedEndpoint(address endpoint) public view returns (bool) {
         return TRUSTED_ENDPOINT == endpoint;

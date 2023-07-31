@@ -18,6 +18,21 @@
 pragma solidity 0.8.17;
 
 interface IOracle {
+    /// @notice Fetch oracle price to relay message root to the destination chain.
+    /// @param toChainId The destination chain id.
+    /// @param ua The user application which send the message.
+    /// @return Oracle price in source native gas.
     function fee(uint256 toChainId, address ua) external view returns (uint256);
+
+    /// @notice Assign the relay message root task to oracle maintainer.
+    /// @param msgHash Hash of the message.
+    /// @param toChainId The destination chain id.
+    /// @param ua The user application which send the message.
+    /// @return Oracle price in source native gas.
     function assign(bytes32 msgHash, uint256 toChainId, address ua) external payable returns (uint256);
+
+    /// @notice Fetch message root oracle.
+    /// @param chainId The destination chain id.
+    /// @return Message root in destination chain.
+    function merkleRoot(uint256 chainId) external view returns (bytes32);
 }
