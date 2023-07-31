@@ -1,5 +1,5 @@
 # Channel
-[Git Source](https://github.com/darwinia-network/ORMP/blob/dc408522ef84e3f2da7fef5b81bd5e85c1a182a6/src/Channel.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/28f242d61f8f1de9729b61a20924f3f1938d1e53/src/Channel.sol)
 
 A channel is a logical connection over cross-chain network.
 It used for cross-chain message transfer.
