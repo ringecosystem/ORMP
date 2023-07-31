@@ -17,17 +17,24 @@
 
 pragma solidity 0.8.17;
 
-import "./imt/IncrementalMerkleTree.sol";
 import "./interfaces/IVerifier.sol";
+import "./imt/IncrementalMerkleTree.sol";
 
 abstract contract Verifier is IVerifier {
+    /// @notice Message proof.
+    /// @param messageIndex Leaf index of the message hash in incremental merkle tree.
+    /// @param messageProof Merkle proof of the message hash.
     struct Proof {
         uint256 messageIndex;
         bytes32[32] messageProof;
     }
 
+    /// @notice Fetch message root oracle.
+    /// @param chainId The destination chain id.
+    /// @return Message root in destination chain.
     function merkleRoot(uint256 chainId) public view virtual returns (bytes32);
 
+    /// @inheritdoc IVerifier
     function verifyMessageProof(uint256 fromChainId, bytes32 msgHash, bytes calldata proof)
         external
         view

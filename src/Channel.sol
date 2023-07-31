@@ -17,14 +17,10 @@
 
 pragma solidity 0.8.17;
 
-import "./Common.sol";
-import "./imt/IncrementalMerkleTree.sol";
+import "./interfaces/IEndpoint.sol";
 import "./interfaces/IUserConfig.sol";
 import "./interfaces/IVerifier.sol";
-
-interface IEndpoint {
-    function recv(Message calldata message) external returns (bool dispatchResult);
-}
+import "./imt/IncrementalMerkleTree.sol";
 
 /// @title Channel
 /// @notice A channel is a logical connection over cross-chain network.

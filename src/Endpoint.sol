@@ -18,11 +18,11 @@
 pragma solidity 0.8.17;
 
 import "./Common.sol";
-import "./call/ExcessivelySafeCall.sol";
-import "./interfaces/IUserConfig.sol";
+import "./interfaces/IOracle.sol";
 import "./interfaces/IChannel.sol";
 import "./interfaces/IRelayer.sol";
-import "./interfaces/IOracle.sol";
+import "./interfaces/IUserConfig.sol";
+import "./call/ExcessivelySafeCall.sol";
 import "./security/ReentrancyGuard.sol";
 
 /// @title Endpoint

@@ -44,4 +44,6 @@ interface IEndpoint {
     /// @param message Failed message info.
     /// @return dispatchResult Result of the message dispatch.
     function retryFailedMessage(Message calldata message) external returns (bool dispatchResult);
+
+    function recv(Message calldata message) external returns (bool dispatchResult);
 }

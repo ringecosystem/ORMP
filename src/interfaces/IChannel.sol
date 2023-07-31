@@ -17,8 +17,11 @@
 
 pragma solidity 0.8.17;
 
+import "../Common.sol";
+
 interface IChannel {
     function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
         external
         returns (bytes32);
+    function recvMessage(Message calldata message, bytes calldata proof) external;
 }
