@@ -34,6 +34,6 @@ interface IUserConfig {
 
     /// @notice Set user application config.
     /// @param relayer Relayer which user application choose.
-    /// @param oracle Oracle which user application.
+    /// @param oracle Oracle which user application choose.
     function setAppConfig(address relayer, address oracle) external;
 }
