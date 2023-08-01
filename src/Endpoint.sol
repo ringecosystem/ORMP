@@ -126,9 +126,9 @@ contract Endpoint is ReentrancyGuard {
     /// @return dispatchResult Result of the message dispatch.
     function recv(Message calldata message) external recvNonReentrant returns (bool dispatchResult) {
         require(msg.sender == CHANNEL, "!auth");
-        dispatchResult = _dispatch(message);
+        bytes32 msgHash = hash(message);
+        dispatchResult = _dispatch(message, msgHash);
         if (!dispatchResult) {
-            bytes32 msgHash = hash(message);
             fails[msgHash] = true;
         }
     }
@@ -139,7 +139,7 @@ contract Endpoint is ReentrancyGuard {
     function retryFailedMessage(Message calldata message) external recvNonReentrant returns (bool dispatchResult) {
         bytes32 msgHash = hash(message);
         require(fails[msgHash] == true, "!failed");
-        dispatchResult = _dispatch(message);
+        dispatchResult = _dispatch(message, msgHash);
         if (dispatchResult) {
             delete fails[msgHash];
         }
@@ -158,10 +158,10 @@ contract Endpoint is ReentrancyGuard {
     }
 
     /// @dev Dispatch the cross chain message.
-    function _dispatch(Message memory message) private returns (bool dispatchResult) {
+    function _dispatch(Message memory message, bytes32 msgHash) private returns (bool dispatchResult) {
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
-            gasleft(), 0, abi.encodePacked(message.encoded, hash(message), uint256(message.fromChainId), message.from)
+            gasleft(), 0, abi.encodePacked(message.encoded, msgHash, uint256(message.fromChainId), message.from)
         );
     }
 }
