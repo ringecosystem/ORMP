@@ -76,7 +76,7 @@ contract Relayer {
     }
 
     function withdraw(address to, uint256 amount) external onlyApproved {
-        (bool success, ) = to.call{value: amount}("");
+        (bool success,) = to.call{value: amount}("");
         require(success, "!withdraw");
     }
 

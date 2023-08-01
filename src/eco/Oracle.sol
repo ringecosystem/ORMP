@@ -50,7 +50,7 @@ contract Oracle is Verifier {
     }
 
     function withdraw(uint256 amount) external onlyOwner {
-        (bool success, ) = owner.call{value: amount}("");
+        (bool success,) = owner.call{value: amount}("");
         require(success, "!withdraw");
     }
 

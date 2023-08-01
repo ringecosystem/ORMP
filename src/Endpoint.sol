@@ -32,14 +32,6 @@ import "./security/ExcessivelySafeCall.sol";
 contract Endpoint is ReentrancyGuard {
     using ExcessivelySafeCall for address;
 
-    /// @dev Notifies an observer that the failed message has been cleared.
-    /// @param msgHash Hash of the message.
-    event ClearFailedMessage(bytes32 indexed msgHash);
-    /// @dev Notifies an observer that the failed message has been retried.
-    /// @param msgHash Hash of the message.
-    /// @param dispatchResult Result of the message dispatch.
-    event RetryFailedMessage(bytes32 indexed msgHash, bool dispatchResult);
-
     /// msgHash => isFailed
     mapping(bytes32 => bool) public fails;
 
@@ -47,6 +39,14 @@ contract Endpoint is ReentrancyGuard {
     address public immutable CONFIG;
     /// @dev Channel immutable address.
     address public immutable CHANNEL;
+
+    /// @dev Notifies an observer that the failed message has been cleared.
+    /// @param msgHash Hash of the message.
+    event ClearFailedMessage(bytes32 indexed msgHash);
+    /// @dev Notifies an observer that the failed message has been retried.
+    /// @param msgHash Hash of the message.
+    /// @param dispatchResult Result of the message dispatch.
+    event RetryFailedMessage(bytes32 indexed msgHash, bool dispatchResult);
 
     /// @dev Init code.
     /// @param config User config immutable address.
@@ -82,7 +82,7 @@ contract Endpoint is ReentrancyGuard {
         //refund
         if (msg.value > relayerFee + oracleFee) {
             uint256 refund = msg.value - (relayerFee + oracleFee);
-            (bool success, ) = ua.call{value: refund}("");
+            (bool success,) = ua.call{value: refund}("");
             require(success, "!refund");
         }
     }

@@ -24,6 +24,13 @@ import "./interfaces/IUserConfig.sol";
 /// The default configuration is used by default.
 /// @dev Only setter could set default config.
 contract UserConfig {
+    /// @dev Setter address.
+    address public setter;
+    /// @dev ua => config.
+    mapping(address => Config) public appConfig;
+    /// @dev Default config.
+    Config public defaultConfig;
+
     /// @dev Notifies an observer that the default config has set.
     /// @param relayer Default relayer.
     /// @param oracle Default oracle.
@@ -34,16 +41,13 @@ contract UserConfig {
     /// @param oracle Oracle which user application.
     event AppConfigUpdated(address indexed ua, address relayer, address oracle);
 
-    /// @dev ua => config.
-    mapping(address => Config) public appConfig;
-    /// @dev Default config.
-    Config public defaultConfig;
-    /// @dev Setter address.
-    address public setter;
-
     modifier onlySetter() {
         require(msg.sender == setter, "!auth");
         _;
+    }
+
+    constructor() {
+        setter = msg.sender;
     }
 
     /// @dev Change setter.
@@ -51,10 +55,6 @@ contract UserConfig {
     /// @param setter_ New setter.
     function changeSetter(address setter_) external onlySetter {
         setter = setter_;
-    }
-
-    constructor() {
-        setter = msg.sender;
     }
 
     /// @dev Set default config for all application.
