@@ -125,13 +125,13 @@ contract Channel {
         // only the config relayer could relay this message.
         require(uaConfig.relayer == msg.sender, "!auth");
 
+        // hash the message.
+        bytes32 msgHash = hash(message);
         // verify message by the config oracle.
-        IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, hash(message), proof);
+        IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, msgHash, proof);
 
         // check destination chain id is correct.
         require(LOCAL_CHAINID() == message.toChainId, "!toChainId");
-        // hash the message.
-        bytes32 msgHash = hash(message);
         // check the message is not dispatched.
         require(dones[msgHash] == false, "done");
         // set the message is dispatched.

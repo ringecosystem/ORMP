@@ -22,8 +22,8 @@ import "./interfaces/IOracle.sol";
 import "./interfaces/IChannel.sol";
 import "./interfaces/IRelayer.sol";
 import "./interfaces/IUserConfig.sol";
-import "./call/ExcessivelySafeCall.sol";
 import "./security/ReentrancyGuard.sol";
+import "./security/ExcessivelySafeCall.sol";
 
 /// @title Endpoint
 /// @notice A endpoint is a type of network node for cross-chain communication.
@@ -40,13 +40,13 @@ contract Endpoint is ReentrancyGuard {
     /// @param dispatchResult Result of the message dispatch.
     event RetryFailedMessage(bytes32 indexed msgHash, bool dispatchResult);
 
+    /// msgHash => isFailed
+    mapping(bytes32 => bool) public fails;
+
     /// @dev User config immutable address.
     address public immutable CONFIG;
     /// @dev Channel immutable address.
     address public immutable CHANNEL;
-
-    /// msgHash => isFailed
-    mapping(bytes32 => bool) public fails;
 
     /// @dev Init code.
     /// @param config User config immutable address.
@@ -82,7 +82,8 @@ contract Endpoint is ReentrancyGuard {
         //refund
         if (msg.value > relayerFee + oracleFee) {
             uint256 refund = msg.value - (relayerFee + oracleFee);
-            payable(ua).transfer(refund);
+            (bool success, ) = ua.call{value: refund}("");
+            require(success, "!refund");
         }
     }
 

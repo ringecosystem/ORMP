@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 import "ds-test/test.sol";
-import "../Channel.sol";
+import "../src/Channel.sol";
 
 contract ChannelTest is DSTest {
     Channel channel;

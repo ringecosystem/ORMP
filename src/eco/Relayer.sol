@@ -76,7 +76,8 @@ contract Relayer {
     }
 
     function withdraw(address to, uint256 amount) external onlyApproved {
-        payable(to).transfer(amount);
+        (bool success, ) = to.call{value: amount}("");
+        require(success, "!withdraw");
     }
 
     // params = [extraGas]
