@@ -1,5 +1,5 @@
 # UserConfig
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ee39b68e9de8fcd65763e52aec00c1d9ff4831db/src/UserConfig.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/4f7e50a941e561ca86840d800b02ebd892a72255/src/UserConfig.sol)
 
 User config could select their own relayer and oracle.
 The default configuration is used by default.
@@ -8,6 +8,15 @@ The default configuration is used by default.
 
 
 ## State Variables
+### setter
+*Setter address.*
+
+
+```solidity
+address public setter;
+```
+
+
 ### appConfig
 *ua => config.*
 
@@ -26,21 +35,19 @@ Config public defaultConfig;
 ```
 
 
-### setter
-*Setter address.*
-
-
-```solidity
-address public setter;
-```
-
-
 ## Functions
 ### onlySetter
 
 
 ```solidity
 modifier onlySetter();
+```
+
+### constructor
+
+
+```solidity
+constructor();
 ```
 
 ### changeSetter
@@ -59,13 +66,6 @@ function changeSetter(address setter_) external onlySetter;
 |----|----|-----------|
 |`setter_`|`address`|New setter.|
 
-
-### constructor
-
-
-```solidity
-constructor();
-```
 
 ### setDefaultConfig
 

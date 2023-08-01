@@ -1,5 +1,5 @@
 # Endpoint
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ee39b68e9de8fcd65763e52aec00c1d9ff4831db/src/Endpoint.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/4f7e50a941e561ca86840d800b02ebd892a72255/src/Endpoint.sol)
 
 **Inherits:**
 [ReentrancyGuard](/src/security/ReentrancyGuard.sol/abstract.ReentrancyGuard.md)
@@ -11,6 +11,15 @@ It is an interface exposed by a communication channel.
 
 
 ## State Variables
+### fails
+msgHash => isFailed
+
+
+```solidity
+mapping(bytes32 => bool) public fails;
+```
+
+
 ### CONFIG
 *User config immutable address.*
 
@@ -26,15 +35,6 @@ address public immutable CONFIG;
 
 ```solidity
 address public immutable CHANNEL;
-```
-
-
-### fails
-msgHash => isFailed
-
-
-```solidity
-mapping(bytes32 => bool) public fails;
 ```
 
 
@@ -187,7 +187,7 @@ function clearFailedMessage(Message calldata message) external;
 
 
 ```solidity
-function _dispatch(Message memory message) private returns (bool dispatchResult);
+function _dispatch(Message memory message, bytes32 msgHash) private returns (bool dispatchResult);
 ```
 
 ## Events

@@ -1,8 +1,6 @@
 # Summary
 - [Home](README.md)
 # src
-  - [❱ call](src/call/README.md)
-    - [ExcessivelySafeCall](src/call/ExcessivelySafeCall.sol/library.ExcessivelySafeCall.md)
   - [❱ eco](src/eco/README.md)
     - [Oracle](src/eco/Oracle.sol/contract.Oracle.md)
     - [Relayer](src/eco/Relayer.sol/contract.Relayer.md)
@@ -18,9 +16,8 @@
     - [IUserConfig](src/interfaces/IUserconfig.sol/interface.IUserConfig.md)
     - [IVerifier](src/interfaces/IVerifier.sol/interface.IVerifier.md)
   - [❱ security](src/security/README.md)
+    - [ExcessivelySafeCall](src/security/ExcessivelySafeCall.sol/library.ExcessivelySafeCall.md)
     - [ReentrancyGuard](src/security/ReentrancyGuard.sol/abstract.ReentrancyGuard.md)
-  - [❱ test](src/test/README.md)
-    - [ChannelTest](src/test/Channel.t.sol/contract.ChannelTest.md)
   - [❱ user](src/user/README.md)
     - [Application](src/user/Application.sol/abstract.Application.md)
   - [Channel](src/Channel.sol/contract.Channel.md)

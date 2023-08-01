@@ -1,5 +1,5 @@
 # Verifier
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ee39b68e9de8fcd65763e52aec00c1d9ff4831db/src/Verifier.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/4f7e50a941e561ca86840d800b02ebd892a72255/src/Verifier.sol)
 
 **Inherits:**
 [IVerifier](/src/interfaces/IVerifier.sol/interface.IVerifier.md)
@@ -12,13 +12,14 @@ Fetch message root oracle.
 
 
 ```solidity
-function merkleRoot(uint256 chainId) public view virtual returns (bytes32);
+function merkleRoot(uint256 chainId, uint256 blockNumber) public view virtual returns (bytes32);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
 |`chainId`|`uint256`|The destination chain id.|
+|`blockNumber`|`uint256`||
 
 **Returns**
 
@@ -60,6 +61,7 @@ Message proof.
 
 ```solidity
 struct Proof {
+    uint256 blockNumber;
     uint256 messageIndex;
     bytes32[32] messageProof;
 }

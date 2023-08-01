@@ -1,5 +1,5 @@
 # IEndpoint
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ee39b68e9de8fcd65763e52aec00c1d9ff4831db/src/interfaces/IEndpoint.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/4f7e50a941e561ca86840d800b02ebd892a72255/src/interfaces/IEndpoint.sol)
 
 
 ## Functions

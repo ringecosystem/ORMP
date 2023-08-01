@@ -1,12 +1,10 @@
 
 
 # Contents
-- [call](/src/call)
 - [eco](/src/eco)
 - [imt](/src/imt)
 - [interfaces](/src/interfaces)
 - [security](/src/security)
-- [test](/src/test)
 - [user](/src/user)
 - [Channel](Channel.sol/contract.Channel.md)
 - [Message](Common.sol/struct.Message.md)

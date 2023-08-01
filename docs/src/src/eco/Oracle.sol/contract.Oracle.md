@@ -1,5 +1,5 @@
 # Oracle
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ee39b68e9de8fcd65763e52aec00c1d9ff4831db/src/eco/Oracle.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/4f7e50a941e561ca86840d800b02ebd892a72255/src/eco/Oracle.sol)
 
 **Inherits:**
 [Verifier](/src/Verifier.sol/abstract.Verifier.md)
@@ -102,7 +102,7 @@ function assign(bytes32 msgHash, uint256 toChainId, address) external payable re
 
 
 ```solidity
-function merkleRoot(uint256 chainId) public view override returns (bytes32);
+function merkleRoot(uint256 chainId, uint256 blockNumber) public view override returns (bytes32);
 ```
 
 ## Events
