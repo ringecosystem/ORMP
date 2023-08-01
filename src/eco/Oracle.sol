@@ -75,9 +75,8 @@ contract Oracle is Verifier {
         return totalFee;
     }
 
-    function merkleRoot(uint256 chainId) public view override returns (bytes32) {
+    function merkleRoot(uint256 chainId, uint256 blockNumber) public view override returns (bytes32) {
         address dapi = dapiOf[chainId];
-        (, bytes32 msgRoot) = IFeedOracle(dapi).latestAnswer();
-        return msgRoot;
+        return IFeedOracle(dapi).messageRootOf(blockNumber);
     }
 }

@@ -25,6 +25,7 @@ abstract contract Verifier is IVerifier {
     /// @param messageIndex Leaf index of the message hash in incremental merkle tree.
     /// @param messageProof Merkle proof of the message hash.
     struct Proof {
+        uint256 blockNumber;
         uint256 messageIndex;
         bytes32[32] messageProof;
     }
@@ -32,7 +33,7 @@ abstract contract Verifier is IVerifier {
     /// @notice Fetch message root oracle.
     /// @param chainId The destination chain id.
     /// @return Message root in destination chain.
-    function merkleRoot(uint256 chainId) public view virtual returns (bytes32);
+    function merkleRoot(uint256 chainId, uint256 blockNumber) public view virtual returns (bytes32);
 
     /// @inheritdoc IVerifier
     function verifyMessageProof(uint256 fromChainId, bytes32 msgHash, bytes calldata proof)
@@ -40,11 +41,11 @@ abstract contract Verifier is IVerifier {
         view
         returns (bool)
     {
-        // fetch message root in from chain
-        bytes32 imtRootOracle = merkleRoot(fromChainId);
-
         // decode proof
         Proof memory p = abi.decode(proof, (Proof));
+
+        // fetch message root in block number from chain
+        bytes32 imtRootOracle = merkleRoot(fromChainId, p.blockNumber);
         // calculate the expected root based on the proof
         bytes32 imtRootProof = IncrementalMerkleTree.branchRoot(msgHash, p.messageProof, p.messageIndex);
 
