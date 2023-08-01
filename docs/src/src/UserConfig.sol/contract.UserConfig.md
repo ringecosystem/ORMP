@@ -1,5 +1,5 @@
 # UserConfig
-[Git Source](https://github.com/darwinia-network/ORMP/blob/4f7e50a941e561ca86840d800b02ebd892a72255/src/UserConfig.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/UserConfig.sol)
 
 User config could select their own relayer and oracle.
 The default configuration is used by default.

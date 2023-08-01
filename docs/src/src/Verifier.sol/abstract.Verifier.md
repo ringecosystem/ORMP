@@ -1,5 +1,5 @@
 # Verifier
-[Git Source](https://github.com/darwinia-network/ORMP/blob/4f7e50a941e561ca86840d800b02ebd892a72255/src/Verifier.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/Verifier.sol)
 
 **Inherits:**
 [IVerifier](/src/interfaces/IVerifier.sol/interface.IVerifier.md)
@@ -19,7 +19,7 @@ function merkleRoot(uint256 chainId, uint256 blockNumber) public view virtual re
 |Name|Type|Description|
 |----|----|-----------|
 |`chainId`|`uint256`|The destination chain id.|
-|`blockNumber`|`uint256`||
+|`blockNumber`|`uint256`|The block number where the message root is located.|
 
 **Returns**
 

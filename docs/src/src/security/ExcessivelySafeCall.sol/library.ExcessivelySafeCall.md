@@ -1,12 +1,12 @@
 # ExcessivelySafeCall
-[Git Source](https://github.com/darwinia-network/ORMP/blob/4f7e50a941e561ca86840d800b02ebd892a72255/src/security/ExcessivelySafeCall.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/security/ExcessivelySafeCall.sol)
 
 
 ## State Variables
 ### LOW_28_MASK
 
 ```solidity
-uint256 constant LOW_28_MASK = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+uint256 internal constant LOW_28_MASK = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 ```
 
 
