@@ -25,17 +25,13 @@ library IncrementalMerkleTree {
 
         _tree.count += 1;
         uint256 size = _tree.count;
-        for (uint256 i = 0; i < TREE_DEPTH;) {
+        for (uint256 i = 0; i < TREE_DEPTH; i++) {
             if ((size & 1) == 1) {
                 _tree.branch[i] = _node;
                 return;
             }
             _node = keccak256(abi.encodePacked(_tree.branch[i], _node));
             size /= 2;
-
-            unchecked {
-                ++i;
-            }
         }
         // As the loop should always end prematurely with the `return` statement,
         // this code should be unreachable. We assert `false` just to be safe.
@@ -53,17 +49,13 @@ library IncrementalMerkleTree {
     {
         uint256 _index = _tree.count;
 
-        for (uint256 i = 0; i < TREE_DEPTH;) {
+        for (uint256 i = 0; i < TREE_DEPTH; i++) {
             uint256 _ithBit = (_index >> i) & 0x01;
             bytes32 _next = _tree.branch[i];
             if (_ithBit == 1) {
                 _current = keccak256(abi.encodePacked(_next, _current));
             } else {
                 _current = keccak256(abi.encodePacked(_current, _zeroes[i]));
-            }
-
-            unchecked {
-                ++i;
             }
         }
     }
@@ -123,17 +115,13 @@ library IncrementalMerkleTree {
     {
         _current = _item;
 
-        for (uint256 i = 0; i < TREE_DEPTH;) {
+        for (uint256 i = 0; i < TREE_DEPTH; i++) {
             uint256 _ithBit = (_index >> i) & 0x01;
             bytes32 _next = _branch[i];
             if (_ithBit == 1) {
                 _current = keccak256(abi.encodePacked(_next, _current));
             } else {
                 _current = keccak256(abi.encodePacked(_current, _next));
-            }
-
-            unchecked {
-                ++i;
             }
         }
     }
