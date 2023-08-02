@@ -22,9 +22,11 @@ import "../interfaces/IUserconfig.sol";
 
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract Application {
+    address public immutable USER_CONFIG;
     address public immutable TRUSTED_ENDPOINT;
 
-    constructor(address endpoint) {
+    constructor(address config, address endpoint) {
+        USER_CONFIG = config;
         TRUSTED_ENDPOINT = endpoint;
     }
 
