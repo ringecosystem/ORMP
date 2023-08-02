@@ -17,61 +17,70 @@
 
 pragma solidity 0.8.17;
 
-import "ds-test/test.sol";
+import "forge-std/Test.sol";
 import "../src/Channel.sol";
 import "../src/Verifier.sol";
 
-contract ChannelTest is DSTest, Verifier {
+contract ChannelTest is Test, Verifier {
     Channel channel;
-    address self;
+    address immutable self = address(this);
 
     bytes32[32] zeroHashes;
 
     function setUp() public {
-        self = address(this);
+        vm.chainId(1);
         channel = new Channel(self, self);
-        for (uint height = 0; height < 31; height++)
+        for (uint256 height = 0; height < 31; height++) {
             zeroHashes[height + 1] = keccak256(abi.encodePacked(zeroHashes[height], zeroHashes[height]));
+        }
     }
 
-    function testConstructorArgs() public {
-        assertEq(channel.ENDPOINT(), self);
+    function test_constructorArgs() public {
         assertEq(channel.CONFIG(), self);
-        assertEq(channel.LOCAL_CHAINID(), 31337);
+        assertEq(channel.ENDPOINT(), self);
+        assertEq(channel.LOCAL_CHAINID(), 1);
         assertEq(channel.root(), keccak256(abi.encodePacked(zeroHashes[31], zeroHashes[31])));
         assertEq(channel.messageSize(), 0);
         bytes32[32] memory branch = channel.imtBranch();
-        for (uint height = 0; height < 32; height++) {
+        for (uint256 height = 0; height < 32; height++) {
             assertEq(branch[height], bytes32(0));
         }
     }
 
-    function testSendMessage() public {
+    function test_sendMessage() public {
         channel.sendMessage(self, 2, self, "");
     }
 
-    function testRecvMessage() public {
-        bytes32 msgHash = channel.sendMessage(self, channel.LOCAL_CHAINID(), self, "");
+    function testFail_sendMessage_notCrossChain() public {
+        channel.sendMessage(self, 1, self, "");
+    }
+
+    function testFail_sendMessage_notEndpoint() public {
+        vm.prank(address(0xc));
+        channel.sendMessage(self, 2, self, "");
+    }
+
+    function test_recvMessage() public {
+        bytes32 msgHash = channel.sendMessage(self, 2, self, "");
 
         Message memory message = Message({
             channel: address(channel),
             index: 0,
             fromChainId: channel.LOCAL_CHAINID(),
             from: self,
-            toChainId: channel.LOCAL_CHAINID(),
+            toChainId: 2,
             to: self,
             encoded: ""
         });
         assertEq(msgHash, hash(message));
-        Proof memory proof = Proof({
-            blockNumber: block.number,
-            messageIndex: 0,
-            messageProof: zeroHashes
-        });
+        Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: zeroHashes});
+        vm.chainId(2);
         channel.recvMessage(message, abi.encode(proof));
     }
 
-    function recv(Message calldata) external pure returns (bool) { return true; }
+    function recv(Message calldata) external pure returns (bool) {
+        return true;
+    }
 
     function getAppConfig(address) external view returns (Config memory) {
         return Config(self, self);

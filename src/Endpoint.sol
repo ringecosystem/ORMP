@@ -66,6 +66,7 @@ contract Endpoint is ReentrancyGuard {
         external
         payable
         sendNonReentrant
+        returns (bytes32)
     {
         // user application address.
         address ua = msg.sender;
@@ -85,6 +86,8 @@ contract Endpoint is ReentrancyGuard {
             (bool success,) = ua.call{value: refund}("");
             require(success, "!refund");
         }
+
+        return msgHash;
     }
 
     /// @notice Get a quote in source native gas, for the amount that send() requires to pay for message delivery.

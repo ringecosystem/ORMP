@@ -63,13 +63,13 @@ contract Channel {
     }
 
     /// @dev Init code.
-    /// @param endpoint Endpoint immutable address.
     /// @param config User config immutable address.
-    constructor(address endpoint, address config) {
+    /// @param endpoint Endpoint immutable address.
+    constructor(address config, address endpoint) {
         // init with empty tree
         root = 0x27ae5ba08d7291c96c8cbddcc148bf48a6d68c7974b94356f53754ef6171d757;
-        ENDPOINT = endpoint;
         CONFIG = config;
+        ENDPOINT = endpoint;
     }
 
     /// @dev Fetch local chain id.
@@ -91,6 +91,8 @@ contract Channel {
         onlyEndpoint
         returns (bytes32)
     {
+        // only cross-chain message
+        require(toChainId != LOCAL_CHAINID(), "!cross-chain");
         // get this message leaf index.
         uint256 index = messageSize();
         // constuct message object.

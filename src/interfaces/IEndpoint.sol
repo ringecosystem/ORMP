@@ -26,7 +26,11 @@ interface IEndpoint {
     /// @param to User application contract address which receive the message.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param params General extensibility for relayer to custom functionality.
-    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params) external payable;
+    /// @return Return the hash of the message as message id.
+    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params)
+        external
+        payable
+        returns (bytes32);
 
     /// @notice Get a quote in source native gas, for the amount that send() requires to pay for message delivery.
     /// @param toChainId The Message destination chain id.
