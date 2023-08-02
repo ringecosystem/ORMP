@@ -30,7 +30,7 @@ contract UserConfigTest is Test {
 
     function test_constructorArgs() public {
         assertEq(config.setter(), self);
-        (address relayer, address oracle) = config.defaultConfig(); 
+        (address relayer, address oracle) = config.defaultConfig();
         assertEq(relayer, address(0));
         assertEq(oracle, address(0));
     }
@@ -48,7 +48,7 @@ contract UserConfigTest is Test {
 
     function test_setDefaultConfig() public {
         config.setDefaultConfig(address(1), address(2));
-        (address relayer, address oracle) = config.defaultConfig(); 
+        (address relayer, address oracle) = config.defaultConfig();
         assertEq(relayer, address(1));
         assertEq(oracle, address(2));
     }
