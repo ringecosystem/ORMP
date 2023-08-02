@@ -28,6 +28,7 @@ pragma solidity 0.8.17;
 /// @param to User application contract address which receive the message.
 /// @param encoded The calldata which encoded by ABI Encoding.
 struct Message {
+    address channel;
     uint256 index;
     uint256 fromChainId;
     address from;

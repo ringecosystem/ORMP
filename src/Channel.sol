@@ -45,6 +45,7 @@ contract Channel {
     address public immutable ENDPOINT;
     /// @dev User config immutable address.
     address public immutable CONFIG;
+    address private immutable _self = address(this);
 
     /// @dev Notifies an observer that the message has been accepted.
     /// @param msgHash Hash of the message.
@@ -94,6 +95,7 @@ contract Channel {
         uint256 index = messageSize();
         // constuct message object.
         Message memory message = Message({
+            channel: _self,
             index: index,
             fromChainId: LOCAL_CHAINID(),
             from: from,
@@ -128,7 +130,7 @@ contract Channel {
         // hash the message.
         bytes32 msgHash = hash(message);
         // verify message by the config oracle.
-        IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, msgHash, proof);
+        require(IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, msgHash, proof), "!proof");
 
         // check destination chain id is correct.
         require(LOCAL_CHAINID() == message.toChainId, "!toChainId");
