@@ -21,13 +21,18 @@ import "../interfaces/IChannel.sol";
 
 contract Relayer {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
-    event SetPrice(uint32 indexed chainId, uint64 benchGas, uint64 baseGas, uint64 gasPerByte);
+    event SetDstPrice(uint32 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
+    event SetDstConfig(uint32 indexed chainId, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address relayer, bool approve);
 
-    struct Price {
-        uint64 benchGas; // merkle proof bench gas in targe chain
-        uint64 baseGas; // gas in source chain related to bench gas in target chain
-        uint64 gasPerByte; // gas per byte in source chain
+    struct DstPrice {
+        uint128 dstPriceRatio; // 10^10
+        uint128 dstGasPriceInWei;
+    }
+
+    struct DstConfig {
+        uint64 baseGas;
+        uint64 gasPerByte;
     }
 
     address public immutable ENDPOINT;
@@ -35,7 +40,8 @@ contract Relayer {
     address public owner;
 
     // chainId => price
-    mapping(uint32 => Price) public priceOf;
+    mapping(uint32 => DstPrice) public priceOf;
+    mapping(uint32 => DstConfig) public configOf;
     mapping(address => bool) public approvedOf;
 
     modifier onlyOwner() {
@@ -70,9 +76,14 @@ contract Relayer {
         emit SetApproved(relayer, approve);
     }
 
-    function setPrice(uint32 chainId, uint64 benchGas, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
-        priceOf[chainId] = Price(benchGas, baseGas, gasPerByte);
-        emit SetPrice(chainId, benchGas, baseGas, gasPerByte);
+    function setDstPrice(uint32 chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei) external onlyApproved {
+        priceOf[chainId] = DstPrice(dstPriceRatio, dstGasPriceInWei);
+        emit SetDstPrice(chainId, dstPriceRatio, dstGasPriceInWei);
+    }
+
+    function setDstConfig(uint32 chainId, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
+        configOf[chainId] = DstConfig(baseGas, gasPerByte);
+        emit SetDstConfig(chainId, baseGas, gasPerByte);
     }
 
     function withdraw(address to, uint256 amount) external onlyApproved {
@@ -83,9 +94,16 @@ contract Relayer {
     // params = [extraGas]
     function fee(uint32 toChainId, address, /*ua*/ uint256 size, bytes calldata params) public view returns (uint256) {
         uint256 extraGas = abi.decode(params, (uint256));
-        Price memory p = priceOf[toChainId];
-        uint256 gas = p.baseGas + extraGas * p.baseGas / p.benchGas;
-        return gas + p.gasPerByte * size;
+        DstPrice memory p = priceOf[toChainId];
+        DstConfig memory c = configOf[toChainId];
+
+        // remoteToken = dstGasPriceInWei * (baseGas + extraGas)
+        uint256 remoteToken = p.dstGasPriceInWei * (c.baseGas + extraGas) ;
+        // dstPriceRatio = dstPrice / localPrice
+        // sourceToken = RemoteToken * dstPriceRatio
+        uint256 sourceToken = remoteToken * p.dstPriceRatio / (10**10);
+        uint256 payloadToken = c.gasPerByte * size * p.dstGasPriceInWei * p.dstPriceRatio / (10**10);
+        return sourceToken + payloadToken;
     }
 
     function assign(bytes32 msgHash) external payable {
