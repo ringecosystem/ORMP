@@ -86,7 +86,7 @@ contract OracleTest is Test {
         assertEq(r, bytes32(uint256(1)));
     }
 
-    function messageRootOf(uint256) external pure returns (bytes32) {
+    function messageRoot() external pure returns (bytes32) {
         return bytes32(uint256(1));
     }
 }
