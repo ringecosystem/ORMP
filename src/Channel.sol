@@ -94,7 +94,7 @@ contract Channel {
         // only cross-chain message
         require(toChainId != LOCAL_CHAINID(), "!cross-chain");
         // get this message leaf index.
-        uint256 index = messageSize();
+        uint256 index = messageCount();
         // constuct message object.
         Message memory message = Message({
             channel: _self,
@@ -147,8 +147,8 @@ contract Channel {
         emit MessageDispatched(msgHash, dispatchResult);
     }
 
-    /// @dev Fetch the messages size of incremental merkle tree.
-    function messageSize() public view returns (uint256) {
+    /// @dev Fetch the messages count of incremental merkle tree.
+    function messageCount() public view returns (uint256) {
         return imt.count;
     }
 
