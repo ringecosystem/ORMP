@@ -21,8 +21,8 @@ import "../interfaces/IChannel.sol";
 
 contract Relayer {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
-    event SetDstPrice(uint32 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
-    event SetDstConfig(uint32 indexed chainId, uint64 baseGas, uint64 gasPerByte);
+    event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
+    event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address relayer, bool approve);
 
     struct DstPrice {
@@ -40,8 +40,8 @@ contract Relayer {
     address public owner;
 
     // chainId => price
-    mapping(uint32 => DstPrice) public priceOf;
-    mapping(uint32 => DstConfig) public configOf;
+    mapping(uint256 => DstPrice) public priceOf;
+    mapping(uint256 => DstConfig) public configOf;
     mapping(address => bool) public approvedOf;
 
     modifier onlyOwner() {
@@ -76,12 +76,12 @@ contract Relayer {
         emit SetApproved(relayer, approve);
     }
 
-    function setDstPrice(uint32 chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei) external onlyApproved {
+    function setDstPrice(uint256 chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei) external onlyApproved {
         priceOf[chainId] = DstPrice(dstPriceRatio, dstGasPriceInWei);
         emit SetDstPrice(chainId, dstPriceRatio, dstGasPriceInWei);
     }
 
-    function setDstConfig(uint32 chainId, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
+    function setDstConfig(uint256 chainId, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
         configOf[chainId] = DstConfig(baseGas, gasPerByte);
         emit SetDstConfig(chainId, baseGas, gasPerByte);
     }
@@ -92,17 +92,21 @@ contract Relayer {
     }
 
     // params = [extraGas]
-    function fee(uint32 toChainId, address, /*ua*/ uint256 size, bytes calldata params) public view returns (uint256) {
+    function fee(uint256 toChainId, address, /*ua*/ uint256 size, bytes calldata params)
+        public
+        view
+        returns (uint256)
+    {
         uint256 extraGas = abi.decode(params, (uint256));
         DstPrice memory p = priceOf[toChainId];
         DstConfig memory c = configOf[toChainId];
 
         // remoteToken = dstGasPriceInWei * (baseGas + extraGas)
-        uint256 remoteToken = p.dstGasPriceInWei * (c.baseGas + extraGas) ;
+        uint256 remoteToken = p.dstGasPriceInWei * (c.baseGas + extraGas);
         // dstPriceRatio = dstPrice / localPrice
         // sourceToken = RemoteToken * dstPriceRatio
-        uint256 sourceToken = remoteToken * p.dstPriceRatio / (10**10);
-        uint256 payloadToken = c.gasPerByte * size * p.dstGasPriceInWei * p.dstPriceRatio / (10**10);
+        uint256 sourceToken = remoteToken * p.dstPriceRatio / (10 ** 10);
+        uint256 payloadToken = c.gasPerByte * size * p.dstGasPriceInWei * p.dstPriceRatio / (10 ** 10);
         return sourceToken + payloadToken;
     }
 
