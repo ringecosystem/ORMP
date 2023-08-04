@@ -1,5 +1,5 @@
 # Oracle
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/eco/Oracle.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/eco/Oracle.sol)
 
 **Inherits:**
 [Verifier](/src/Verifier.sol/abstract.Verifier.md)
@@ -67,7 +67,7 @@ function changeOwner(address owner_) external onlyOwner;
 
 
 ```solidity
-function withdraw(uint256 amount) external onlyOwner;
+function withdraw(address to, uint256 amount) external onlyOwner;
 ```
 
 ### setFee
@@ -95,7 +95,7 @@ function fee(uint256 toChainId, address) public view returns (uint256);
 
 
 ```solidity
-function assign(bytes32 msgHash, uint256 toChainId, address) external payable returns (uint256);
+function assign(bytes32 msgHash) external payable;
 ```
 
 ### merkleRoot
@@ -109,7 +109,7 @@ function merkleRoot(uint256 chainId, uint256 blockNumber) public view override r
 ### Assigned
 
 ```solidity
-event Assigned(bytes32 indexed msgHash);
+event Assigned(bytes32 indexed msgHash, uint256 fee);
 ```
 
 ### SetFee
