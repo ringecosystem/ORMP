@@ -88,16 +88,9 @@ contract Relayer {
         return gas + p.gasPerByte * size;
     }
 
-    function assign(bytes32 msgHash, uint32 toChainId, address ua, uint256 size, bytes calldata params)
-        external
-        payable
-        returns (uint256)
-    {
+    function assign(bytes32 msgHash) external payable {
         require(msg.sender == ENDPOINT, "!enpoint");
-        uint256 totalFee = fee(toChainId, ua, size, params);
-        require(msg.value == totalFee, "!fee");
-        emit Assigned(msgHash, totalFee);
-        return totalFee;
+        emit Assigned(msgHash, msg.value);
     }
 
     function relay(Message calldata message, bytes calldata proof) external onlyApproved {

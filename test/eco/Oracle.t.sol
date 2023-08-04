@@ -77,7 +77,7 @@ contract OracleTest is Test {
 
     function test_assign() public {
         oracle.setFee(1, 1);
-        oracle.assign{value: 1}(bytes32(0), 1, self);
+        oracle.assign{value: 1}(bytes32(0));
     }
 
     function test_merkleRoot() public {

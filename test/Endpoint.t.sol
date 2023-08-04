@@ -70,15 +70,9 @@ contract EndpointTest is Test {
         return 2;
     }
 
-    function assign(bytes32, uint256, address) external payable returns (uint256) {
-        return 2;
-    }
+    function assign(bytes32) external payable {}
 
     function fee(uint256, address, uint256, bytes calldata) external pure returns (uint256) {
-        return 1;
-    }
-
-    function assign(bytes32, uint256, address, uint256, bytes calldata) external payable returns (uint256) {
         return 1;
     }
 
