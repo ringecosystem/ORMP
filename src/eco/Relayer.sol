@@ -26,7 +26,7 @@ contract Relayer {
     event SetApproved(address relayer, bool approve);
 
     struct DstPrice {
-        uint128 dstPriceRatio; // 10^10
+        uint128 dstPriceRatio; // dstPrice / localPrice * 10^10
         uint128 dstGasPriceInWei;
     }
 
@@ -103,7 +103,7 @@ contract Relayer {
 
         // remoteToken = dstGasPriceInWei * (baseGas + extraGas)
         uint256 remoteToken = p.dstGasPriceInWei * (c.baseGas + extraGas);
-        // dstPriceRatio = dstPrice / localPrice
+        // dstPriceRatio = dstPrice / localPrice * 10^10
         // sourceToken = RemoteToken * dstPriceRatio
         uint256 sourceToken = remoteToken * p.dstPriceRatio / (10 ** 10);
         uint256 payloadToken = c.gasPerByte * size * p.dstGasPriceInWei * p.dstPriceRatio / (10 ** 10);
