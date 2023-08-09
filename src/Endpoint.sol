@@ -26,7 +26,7 @@ import "./security/ReentrancyGuard.sol";
 import "./security/ExcessivelySafeCall.sol";
 
 /// @title Endpoint
-/// @notice A endpoint is a type of network node for cross-chain communication.
+/// @notice An endpoint is a type of network node for cross-chain communication.
 /// It is an interface exposed by a communication channel.
 /// @dev An endpoint is associated with an immutable channel and user configuration.
 contract Endpoint is ReentrancyGuard {
@@ -116,12 +116,14 @@ contract Endpoint is ReentrancyGuard {
         bytes calldata params
     ) internal returns (uint256) {
         uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, size, params);
-        return IRelayer(relayer).assign{value: relayerFee}(msgHash, toChainId, ua, size, params);
+        IRelayer(relayer).assign{value: relayerFee}(msgHash);
+        return relayerFee;
     }
 
     function _handleOracle(address oracle, bytes32 msgHash, uint256 toChainId, address ua) internal returns (uint256) {
         uint256 oracleFee = IOracle(oracle).fee(toChainId, ua);
-        return IOracle(oracle).assign{value: oracleFee}(msgHash, toChainId, ua);
+        IOracle(oracle).assign{value: oracleFee}(msgHash);
+        return oracleFee;
     }
 
     /// @dev Recv verified message from Channel and dispatch to destination user application address.

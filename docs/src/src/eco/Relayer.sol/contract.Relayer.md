@@ -1,5 +1,5 @@
 # Relayer
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/eco/Relayer.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/eco/Relayer.sol)
 
 
 ## State Variables
@@ -27,7 +27,14 @@ address public owner;
 ### priceOf
 
 ```solidity
-mapping(uint32 => Price) public priceOf;
+mapping(uint256 => DstPrice) public priceOf;
+```
+
+
+### configOf
+
+```solidity
+mapping(uint256 => DstConfig) public configOf;
 ```
 
 
@@ -88,11 +95,18 @@ function isApproved(address relayer) public view returns (bool);
 function setApproved(address relayer, bool approve) public onlyOwner;
 ```
 
-### setPrice
+### setDstPrice
 
 
 ```solidity
-function setPrice(uint32 chainId, uint64 benchGas, uint64 baseGas, uint64 gasPerByte) external onlyApproved;
+function setDstPrice(uint256 chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei) external onlyApproved;
+```
+
+### setDstConfig
+
+
+```solidity
+function setDstConfig(uint256 chainId, uint64 baseGas, uint64 gasPerByte) external onlyApproved;
 ```
 
 ### withdraw
@@ -106,17 +120,14 @@ function withdraw(address to, uint256 amount) external onlyApproved;
 
 
 ```solidity
-function fee(uint32 toChainId, address, uint256 size, bytes calldata params) public view returns (uint256);
+function fee(uint256 toChainId, address, uint256 size, bytes calldata params) public view returns (uint256);
 ```
 
 ### assign
 
 
 ```solidity
-function assign(bytes32 msgHash, uint32 toChainId, address ua, uint256 size, bytes calldata params)
-    external
-    payable
-    returns (uint256);
+function assign(bytes32 msgHash) external payable;
 ```
 
 ### relay
@@ -133,10 +144,16 @@ function relay(Message calldata message, bytes calldata proof) external onlyAppr
 event Assigned(bytes32 indexed msgHash, uint256 fee);
 ```
 
-### SetPrice
+### SetDstPrice
 
 ```solidity
-event SetPrice(uint32 indexed chainId, uint64 benchGas, uint64 baseGas, uint64 gasPerByte);
+event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
+```
+
+### SetDstConfig
+
+```solidity
+event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
 ```
 
 ### SetApproved
@@ -146,11 +163,19 @@ event SetApproved(address relayer, bool approve);
 ```
 
 ## Structs
-### Price
+### DstPrice
 
 ```solidity
-struct Price {
-    uint64 benchGas;
+struct DstPrice {
+    uint128 dstPriceRatio;
+    uint128 dstGasPriceInWei;
+}
+```
+
+### DstConfig
+
+```solidity
+struct DstConfig {
     uint64 baseGas;
     uint64 gasPerByte;
 }

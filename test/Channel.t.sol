@@ -40,7 +40,7 @@ contract ChannelTest is Test, Verifier {
         assertEq(channel.ENDPOINT(), self);
         assertEq(channel.LOCAL_CHAINID(), 1);
         assertEq(channel.root(), keccak256(abi.encodePacked(zeroHashes[31], zeroHashes[31])));
-        assertEq(channel.messageSize(), 0);
+        assertEq(channel.messageCount(), 0);
         bytes32[32] memory branch = channel.imtBranch();
         for (uint256 height = 0; height < 32; height++) {
             assertEq(branch[height], bytes32(0));

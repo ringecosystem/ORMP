@@ -26,10 +26,7 @@ interface IOracle {
 
     /// @notice Assign the relay message root task to oracle maintainer.
     /// @param msgHash Hash of the message.
-    /// @param toChainId The destination chain id.
-    /// @param ua The user application which send the message.
-    /// @return Oracle price in source native gas.
-    function assign(bytes32 msgHash, uint256 toChainId, address ua) external payable returns (uint256);
+    function assign(bytes32 msgHash) external payable;
 
     /// @notice Fetch message root oracle.
     /// @param chainId The destination chain id.

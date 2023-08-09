@@ -1,8 +1,15 @@
 # Application
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/user/Application.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/user/Application.sol)
 
 
 ## State Variables
+### USER_CONFIG
+
+```solidity
+address public immutable USER_CONFIG;
+```
+
+
 ### TRUSTED_ENDPOINT
 
 ```solidity
@@ -15,7 +22,7 @@ address public immutable TRUSTED_ENDPOINT;
 
 
 ```solidity
-constructor(address endpoint);
+constructor(address config, address endpoint);
 ```
 
 ### clearFailedMessage

@@ -10,14 +10,14 @@ abstract contract ReentrancyGuard {
     uint8 internal _receive_state = 1;
 
     modifier sendNonReentrant() {
-        require(_send_state == _NOT_ENTERED, "LayerZero: no send reentrancy");
+        require(_send_state == _NOT_ENTERED, "!send-reentrancy");
         _send_state = _ENTERED;
         _;
         _send_state = _NOT_ENTERED;
     }
 
     modifier recvNonReentrant() {
-        require(_receive_state == _NOT_ENTERED, "LayerZero: no receive reentrancy");
+        require(_receive_state == _NOT_ENTERED, "!recv-reentrancy");
         _receive_state = _ENTERED;
         _;
         _receive_state = _NOT_ENTERED;

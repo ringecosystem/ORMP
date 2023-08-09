@@ -1,10 +1,10 @@
 # Endpoint
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/Endpoint.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/Endpoint.sol)
 
 **Inherits:**
 [ReentrancyGuard](/src/security/ReentrancyGuard.sol/abstract.ReentrancyGuard.md)
 
-A endpoint is a type of network node for cross-chain communication.
+An endpoint is a type of network node for cross-chain communication.
 It is an interface exposed by a communication channel.
 
 *An endpoint is associated with an immutable channel and user configuration.*
@@ -66,7 +66,8 @@ follow https://eips.ethereum.org/EIPS/eip-5750
 function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params)
     external
     payable
-    sendNonReentrant;
+    sendNonReentrant
+    returns (bytes32);
 ```
 **Parameters**
 

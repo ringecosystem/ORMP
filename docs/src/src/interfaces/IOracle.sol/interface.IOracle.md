@@ -1,5 +1,5 @@
 # IOracle
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/interfaces/IOracle.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/interfaces/IOracle.sol)
 
 
 ## Functions
@@ -31,21 +31,13 @@ Assign the relay message root task to oracle maintainer.
 
 
 ```solidity
-function assign(bytes32 msgHash, uint256 toChainId, address ua) external payable returns (uint256);
+function assign(bytes32 msgHash) external payable;
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
 |`msgHash`|`bytes32`|Hash of the message.|
-|`toChainId`|`uint256`|The destination chain id.|
-|`ua`|`address`|The user application which send the message.|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|Oracle price in source native gas.|
 
 
 ### merkleRoot

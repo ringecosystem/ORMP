@@ -1,5 +1,5 @@
 # Channel
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/Channel.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/Channel.sol)
 
 A channel is a logical connection over cross-chain network.
 It used for cross-chain message transfer.
@@ -58,6 +58,13 @@ address public immutable CONFIG;
 ```
 
 
+### _self
+
+```solidity
+address private immutable _self = address(this);
+```
+
+
 ## Functions
 ### onlyEndpoint
 
@@ -72,14 +79,14 @@ modifier onlyEndpoint();
 
 
 ```solidity
-constructor(address endpoint, address config);
+constructor(address config, address endpoint);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`endpoint`|`address`|Endpoint immutable address.|
 |`config`|`address`|User config immutable address.|
+|`endpoint`|`address`|Endpoint immutable address.|
 
 
 ### LOCAL_CHAINID
@@ -138,13 +145,13 @@ function recvMessage(Message calldata message, bytes calldata proof) external;
 |`proof`|`bytes`|Message proof of this message.|
 
 
-### messageSize
+### messageCount
 
-*Fetch the messages size of incremental merkle tree.*
+*Fetch the messages count of incremental merkle tree.*
 
 
 ```solidity
-function messageSize() public view returns (uint256);
+function messageCount() public view returns (uint256);
 ```
 
 ### imtBranch

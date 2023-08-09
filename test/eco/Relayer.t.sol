@@ -76,16 +76,18 @@ contract RelayerTest is Test {
     }
 
     function test_setPrice() public {
-        relayer.setPrice(1, 1, 1, 1);
+        relayer.setDstPrice(1, 10 ** 10, 1);
+        relayer.setDstConfig(1, 1, 1);
         uint256 f = relayer.fee(1, self, 1, abi.encode(uint256(1)));
         assertEq(f, 3);
     }
 
     function test_assign() public {
-        relayer.setPrice(1, 1, 1, 1);
+        relayer.setDstPrice(1, 10 ** 10, 1);
+        relayer.setDstConfig(1, 1, 1);
         uint256 v = relayer.fee(1, address(1), 1, abi.encode(uint256(1)));
-        uint256 f = relayer.assign{value: v}(bytes32(uint256(1)), 1, address(1), 1, abi.encode(uint256(1)));
-        assertEq(f, 3);
+        relayer.assign{value: v}(bytes32(0));
+        assertEq(v, 3);
     }
 
     function test_relay() public {

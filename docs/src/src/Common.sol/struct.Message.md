@@ -1,5 +1,5 @@
 # Message
-[Git Source](https://github.com/darwinia-network/ORMP/blob/ea2cb1198288e52b94c992dab142e03eb3d0b767/src/Common.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/Common.sol)
 
 *The block of control information and data for comminicate
 between user applications. Messages are the exchange medium
@@ -9,6 +9,7 @@ A message is sent from a source chain to a destination chain.*
 
 ```solidity
 struct Message {
+    address channel;
     uint256 index;
     uint256 fromChainId;
     address from;
