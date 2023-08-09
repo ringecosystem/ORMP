@@ -28,7 +28,7 @@ deny_warnings = false
 build_info = true
 build_info_path = 'out/build-info'
 sparse_mode = false
-ffi = false
+ffi = true
 sender = "0x0f14341A7f464320319025540E8Fe48Ad0fe5aec"
 tx_origin = "0x0f14341A7f464320319025540E8Fe48Ad0fe5aec"
 initial_balance = "0xffffffffffffffffffffffff"
@@ -53,6 +53,7 @@ cbor_metadata = true
 fs_permissions = [
   { "access"="read-write", "path"="./deployments/" },
   { "access"="read", "path"="./broadcast/" },
+  { "access"="read", "path"="./out/" },
 ]
 
 [profile.default.rpc_storage_caching]
