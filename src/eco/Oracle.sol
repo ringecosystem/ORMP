@@ -24,6 +24,7 @@ contract Oracle is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetDapi(uint256 indexed chainId, address dapi);
+    event SetApproved(address relayer, bool approve);
 
     address public immutable ENDPOINT;
     address public owner;
@@ -32,15 +33,22 @@ contract Oracle is Verifier {
     mapping(uint256 => uint256) public feeOf;
     // chainId => dapi
     mapping(uint256 => address) public dapiOf;
+    mapping(address => bool) public approvedOf;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "!owner");
         _;
     }
 
+    modifier onlyApproved() {
+        require(isApproved(msg.sender), "!approve");
+        _;
+    }
+
     constructor(address endpoint) {
         ENDPOINT = endpoint;
         owner = msg.sender;
+        setApproved(msg.sender, true);
     }
 
     receive() external payable {}
@@ -49,12 +57,21 @@ contract Oracle is Verifier {
         owner = owner_;
     }
 
-    function withdraw(address to, uint256 amount) external onlyOwner {
+    function isApproved(address relayer) public view returns (bool) {
+        return approvedOf[relayer];
+    }
+
+    function setApproved(address relayer, bool approve) public onlyOwner {
+        approvedOf[relayer] = approve;
+        emit SetApproved(relayer, approve);
+    }
+
+    function withdraw(address to, uint256 amount) external onlyApproved {
         (bool success,) = to.call{value: amount}("");
         require(success, "!withdraw");
     }
 
-    function setFee(uint256 chainId, uint256 fee_) external onlyOwner {
+    function setFee(uint256 chainId, uint256 fee_) external onlyApproved {
         feeOf[chainId] = fee_;
         emit SetFee(chainId, fee_);
     }
