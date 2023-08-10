@@ -75,10 +75,10 @@ contract ChannelTest is Test, Verifier {
         assertEq(msgHash, hash(message));
         Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: zeroHashes});
         vm.chainId(2);
-        channel.recvMessage(message, abi.encode(proof));
+        channel.recvMessage(message, abi.encode(proof), gasleft());
     }
 
-    function recv(Message calldata) external pure returns (bool) {
+    function recv(Message calldata, uint256) external pure returns (bool) {
         return true;
     }
 

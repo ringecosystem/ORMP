@@ -129,11 +129,12 @@ contract Endpoint is ReentrancyGuard {
     /// @dev Recv verified message from Channel and dispatch to destination user application address.
     /// @notice Only channel could call this function.
     /// @param message Verified receive message info.
+    /// @param gasLimit The gas limit of message execute.
     /// @return dispatchResult Result of the message dispatch.
-    function recv(Message calldata message) external recvNonReentrant returns (bool dispatchResult) {
+    function recv(Message calldata message, uint256 gasLimit) external recvNonReentrant returns (bool dispatchResult) {
         require(msg.sender == CHANNEL, "!auth");
         bytes32 msgHash = hash(message);
-        dispatchResult = _dispatch(message, msgHash);
+        dispatchResult = _dispatch(message, msgHash, gasLimit);
         if (!dispatchResult) {
             fails[msgHash] = true;
         }
@@ -145,7 +146,7 @@ contract Endpoint is ReentrancyGuard {
     function retryFailedMessage(Message calldata message) external recvNonReentrant returns (bool dispatchResult) {
         bytes32 msgHash = hash(message);
         require(fails[msgHash] == true, "!failed");
-        dispatchResult = _dispatch(message, msgHash);
+        dispatchResult = _dispatch(message, msgHash, gasleft());
         if (dispatchResult) {
             delete fails[msgHash];
         }
@@ -164,10 +165,10 @@ contract Endpoint is ReentrancyGuard {
     }
 
     /// @dev Dispatch the cross chain message.
-    function _dispatch(Message memory message, bytes32 msgHash) private returns (bool dispatchResult) {
+    function _dispatch(Message memory message, bytes32 msgHash, uint256 gasLimit) private returns (bool dispatchResult) {
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
-            gasleft(), 0, abi.encodePacked(message.encoded, msgHash, uint256(message.fromChainId), message.from)
+            gasLimit, 0, abi.encodePacked(message.encoded, msgHash, uint256(message.fromChainId), message.from)
         );
     }
 }

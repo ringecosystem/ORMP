@@ -123,7 +123,8 @@ contract Channel {
     /// @notice Only message.to's config relayer could relayer this message.
     /// @param message Received message info.
     /// @param proof Message proof of this message.
-    function recvMessage(Message calldata message, bytes calldata proof) external {
+    /// @param gasLimit The gas limit of message execute.
+    function recvMessage(Message calldata message, bytes calldata proof, uint256 gasLimit) external {
         // get message.to user config.
         Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.to);
         // only the config relayer could relay this message.
@@ -142,7 +143,7 @@ contract Channel {
         dones[msgHash] = true;
 
         // then, dispatch message to endpoint.
-        bool dispatchResult = IEndpoint(ENDPOINT).recv(message);
+        bool dispatchResult = IEndpoint(ENDPOINT).recv(message, gasLimit);
         // emit dispatched message event.
         emit MessageDispatched(msgHash, dispatchResult);
     }

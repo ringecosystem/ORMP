@@ -93,8 +93,8 @@ contract RelayerTest is Test {
     function test_relay() public {
         Message memory message =
             Message({channel: address(0xc), index: 0, fromChainId: 1, from: self, toChainId: 2, to: self, encoded: ""});
-        relayer.relay(message, "");
+        relayer.relay(message, "", gasleft());
     }
 
-    function recvMessage(Message calldata message, bytes calldata proof) external {}
+    function recvMessage(Message calldata message, bytes calldata proof, uint256) external {}
 }

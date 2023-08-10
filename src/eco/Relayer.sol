@@ -115,7 +115,7 @@ contract Relayer {
         emit Assigned(msgHash, msg.value);
     }
 
-    function relay(Message calldata message, bytes calldata proof) external onlyApproved {
-        IChannel(CHANNEL).recvMessage(message, proof);
+    function relay(Message calldata message, bytes calldata proof, uint256 gasLimit) external onlyApproved {
+        IChannel(CHANNEL).recvMessage(message, proof, gasLimit);
     }
 }
