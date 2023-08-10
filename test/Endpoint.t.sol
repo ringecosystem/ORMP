@@ -43,12 +43,12 @@ contract EndpointTest is Test {
     }
 
     function test_recv() public {
-        bool r = endpoint.recv(message);
+        bool r = endpoint.recv(message, gasleft());
         assertEq(r, false);
     }
 
     function test_retry() public {
-        bool r = endpoint.recv(message);
+        bool r = endpoint.recv(message, gasleft());
         assertEq(r, false);
         r = endpoint.retryFailedMessage(message);
         assertEq(r, false);
@@ -58,7 +58,7 @@ contract EndpointTest is Test {
         bytes32 msgHash = hash(message);
         bool failed = endpoint.fails(msgHash);
         assertEq(failed, false);
-        endpoint.recv(message);
+        endpoint.recv(message, gasleft());
         failed = endpoint.fails(msgHash);
         assertEq(failed, true);
         endpoint.clearFailedMessage(message);
@@ -71,6 +71,7 @@ contract EndpointTest is Test {
     }
 
     function assign(bytes32) external payable {}
+    function assign(bytes32, bytes calldata) external payable {}
 
     function fee(uint256, address, uint256, bytes calldata) external pure returns (uint256) {
         return 1;

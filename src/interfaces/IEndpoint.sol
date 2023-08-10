@@ -49,5 +49,5 @@ interface IEndpoint {
     /// @return dispatchResult Result of the message dispatch.
     function retryFailedMessage(Message calldata message) external returns (bool dispatchResult);
 
-    function recv(Message calldata message) external returns (bool dispatchResult);
+    function recv(Message calldata message, uint256 gasLimit) external returns (bool dispatchResult);
 }
