@@ -11,6 +11,8 @@ import { Deployer } from "./Deployer.sol";
 import { Channel } from "../../src/Channel.sol";
 import { Endpoint } from "../../src/Endpoint.sol";
 import { UserConfig } from "../../src/UserConfig.sol";
+import { Relayer } from "../../src/eco/Relayer.sol";
+import { Oracle } from "../../src/eco/Oracle.sol";
 
 /// @title Deploy
 /// @notice Script used to deploy a ORMP protocol. The entire protocol is deployed within the `run` function.
@@ -44,6 +46,9 @@ contract Deploy is Deployer {
         address posep = deployEndpoint(preuc, precn);
         require(poscn == precn, "!cn");
         require(posep == preep, "!ep");
+
+        deployOralce(preep);
+        deployRelayer(preep, precn);
     }
 
     /// @notice Deploy the UserConfig
@@ -61,7 +66,7 @@ contract Deploy is Deployer {
         require(cn.CONFIG() == uc);
         require(cn.ENDPOINT() == ep);
         save("Channel", address(cn));
-        console.log("Channel deployed at %s", address(cn));
+        console.log("Channel    deployed at %s", address(cn));
         return address(cn);
     }
 
@@ -71,8 +76,29 @@ contract Deploy is Deployer {
         require(ep.CONFIG() == uc);
         require(ep.CHANNEL() == cn);
         save("Enpoint", address(ep));
-        console.log("Endpoint deployed at %s", address(ep));
+        console.log("Endpoint   deployed at %s", address(ep));
         return address(ep);
+    }
+
+    /// @notice Deploy the Oracle
+    function deployOralce(address enpoint) broadcast public returns (address) {
+        Oracle oracle = new Oracle(enpoint);
+        require(oracle.owner() == msg.sender);
+        require(oracle.ENDPOINT() == enpoint);
+        save("Oralce", address(oracle));
+        console.log("Oracle     deployed at %s", address(oracle));
+        return address(oracle);
+    }
+
+    /// @notice Deploy the Relayer
+    function deployRelayer(address enpoint, address channel) broadcast public returns (address) {
+        Relayer relayer = new Relayer(enpoint, channel);
+        require(relayer.owner() == msg.sender);
+        require(relayer.ENDPOINT() == enpoint);
+        require(relayer.CHANNEL() == channel);
+        save("Relayer", address(relayer));
+        console.log("Relayer    deployed at %s", address(relayer));
+        return address(relayer);
     }
 
     /// @notice Modifier that wraps a function in broadcasting.
