@@ -400,6 +400,16 @@ abstract contract Deployer is Script {
         return string(res);
     }
 
+    /// @notice Returns the next deployed contract address of the deployer
+    function getContractAddress(address deployer, uint256 nonce) internal returns (address) {
+        string[] memory cmd = new string[](3);
+        cmd[0] = Executables.bash;
+        cmd[1] = "-c";
+        cmd[2] = string.concat(Executables.dapp, " address ", vm.toString(deployer), " " , vm.toString(nonce));
+        bytes memory res = vm.ffi(cmd);
+        return address(uint160(bytes20(res)));
+    }
+
     /// @notice Adds a deployment to the temp deployments file
     function _writeTemp(string memory _name, address _deployed) internal {
         vm.writeJson({

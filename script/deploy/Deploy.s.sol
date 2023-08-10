@@ -8,6 +8,8 @@ import { stdJson } from "forge-std/StdJson.sol";
 
 import { Deployer } from "./Deployer.sol";
 
+import { Channel } from "../../src/Channel.sol";
+import { Endpoint } from "../../src/Endpoint.sol";
 import { UserConfig } from "../../src/UserConfig.sol";
 
 /// @title Deploy
@@ -31,7 +33,17 @@ contract Deploy is Deployer {
 
     /// @notice Deploy all of the contracts
     function run() public {
-        deployUserConfig();
+        address deployer = msg.sender;
+        uint256 nonce = vm.getNonce(deployer);
+        address preuc = getContractAddress(deployer, nonce);
+        address posuc = deployUserConfig();
+        require(preuc == posuc, "!uc");
+        address precn = getContractAddress(deployer, nonce + 1);
+        address preep = getContractAddress(deployer, nonce + 2);
+        address poscn = deployChannel(preuc, preep);
+        address posep = deployEndpoint(preuc, precn);
+        require(poscn == precn, "!cn");
+        require(posep == preep, "!ep");
     }
 
     /// @notice Deploy the UserConfig
@@ -41,6 +53,26 @@ contract Deploy is Deployer {
         save("UserConfig", address(uc));
         console.log("UserConfig deployed at %s", address(uc));
         return address(uc);
+    }
+
+    /// @notice Deploy the Channel
+    function deployChannel(address uc, address ep) broadcast public returns (address) {
+        Channel cn = new Channel(uc, ep);
+        require(cn.CONFIG() == uc);
+        require(cn.ENDPOINT() == ep);
+        save("Channel", address(cn));
+        console.log("Channel deployed at %s", address(cn));
+        return address(cn);
+    }
+
+    /// @notice Deploy the Endpoint
+    function deployEndpoint(address uc, address cn) broadcast public returns (address) {
+        Endpoint ep = new Endpoint(uc, cn);
+        require(ep.CONFIG() == uc);
+        require(ep.CHANNEL() == cn);
+        save("Enpoint", address(ep));
+        console.log("Endpoint deployed at %s", address(ep));
+        return address(ep);
     }
 
     /// @notice Modifier that wraps a function in broadcasting.
