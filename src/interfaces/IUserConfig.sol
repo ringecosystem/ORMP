@@ -18,11 +18,11 @@
 pragma solidity 0.8.17;
 
 /// @dev User application custom configuration.
-/// @param relayer Relayer contract address.
 /// @param oracle Oracle contract address.
+/// @param relayer Relayer contract address.
 struct Config {
-    address relayer;
     address oracle;
+    address relayer;
 }
 
 interface IUserConfig {
@@ -33,7 +33,10 @@ interface IUserConfig {
     function getAppConfig(address ua) external view returns (Config memory);
 
     /// @notice Set user application config.
-    /// @param relayer Relayer which user application choose.
     /// @param oracle Oracle which user application choose.
-    function setAppConfig(address relayer, address oracle) external;
+    /// @param relayer Relayer which user application choose.
+    function setAppConfig(address oracle, address relayer) external;
+
+    function setDefaultConfig(address oracle, address relayer) external;
+    function defaultConfig() external view returns (Config memory);
 }

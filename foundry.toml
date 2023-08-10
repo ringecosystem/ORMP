@@ -51,9 +51,11 @@ bytecode_hash = "none"
 cbor_metadata = true
 
 fs_permissions = [
-  { "access"="read-write", "path"="./deployments/" },
-  { "access"="read", "path"="./broadcast/" },
-  { "access"="read", "path"="./out/" },
+  { "access" = "read-write", "path" = "./script/deploy/output/"},
+  { "access" = "read-write", "path" = "./deployments/" },
+  { "access" = "read", "path" = "./script/deploy/input/"},
+  { "access" = "read", "path" = "./broadcast/" },
+  { "access" = "read", "path" = "./out/" },
 ]
 
 [profile.default.rpc_storage_caching]

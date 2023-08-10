@@ -165,7 +165,10 @@ contract Endpoint is ReentrancyGuard {
     }
 
     /// @dev Dispatch the cross chain message.
-    function _dispatch(Message memory message, bytes32 msgHash, uint256 gasLimit) private returns (bool dispatchResult) {
+    function _dispatch(Message memory message, bytes32 msgHash, uint256 gasLimit)
+        private
+        returns (bool dispatchResult)
+    {
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
             gasLimit, 0, abi.encodePacked(message.encoded, msgHash, uint256(message.fromChainId), message.from)

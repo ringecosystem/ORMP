@@ -32,14 +32,14 @@ contract UserConfig {
     Config public defaultConfig;
 
     /// @dev Notifies an observer that the default config has set.
-    /// @param relayer Default relayer.
     /// @param oracle Default oracle.
-    event SetDefaultConfig(address relayer, address oracle);
+    /// @param relayer Default relayer.
+    event SetDefaultConfig(address oracle, address relayer);
     /// @dev Notifies an observer that the user application config has updated.
     /// @param ua User application contract address.
-    /// @param relayer Relayer which user application choose.
     /// @param oracle Oracle which user application.
-    event AppConfigUpdated(address indexed ua, address relayer, address oracle);
+    /// @param relayer Relayer which user application choose.
+    event AppConfigUpdated(address indexed ua, address oracle, address relayer);
 
     modifier onlySetter() {
         require(msg.sender == setter, "!auth");
@@ -59,11 +59,11 @@ contract UserConfig {
 
     /// @dev Set default config for all application.
     /// @notice Only setter could call.
-    /// @param relayer Default relayer.
     /// @param oracle Default oracle.
-    function setDefaultConfig(address relayer, address oracle) external onlySetter {
-        defaultConfig = Config(relayer, oracle);
-        emit SetDefaultConfig(relayer, oracle);
+    /// @param relayer Default relayer.
+    function setDefaultConfig(address oracle, address relayer) external onlySetter {
+        defaultConfig = Config(oracle, relayer);
+        emit SetDefaultConfig(oracle, relayer);
     }
 
     /// @dev Fetch user application config.
@@ -85,10 +85,10 @@ contract UserConfig {
     }
 
     /// @notice Set user application config.
-    /// @param relayer Relayer which user application choose.
     /// @param oracle Oracle which user application.
-    function setAppConfig(address relayer, address oracle) external {
-        appConfig[msg.sender] = Config(relayer, oracle);
-        emit AppConfigUpdated(msg.sender, relayer, oracle);
+    /// @param relayer Relayer which user application choose.
+    function setAppConfig(address oracle, address relayer) external {
+        appConfig[msg.sender] = Config(oracle, relayer);
+        emit AppConfigUpdated(msg.sender, oracle, relayer);
     }
 }
