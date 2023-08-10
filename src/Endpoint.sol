@@ -116,7 +116,7 @@ contract Endpoint is ReentrancyGuard {
         bytes calldata params
     ) internal returns (uint256) {
         uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, size, params);
-        IRelayer(relayer).assign{value: relayerFee}(msgHash);
+        IRelayer(relayer).assign{value: relayerFee}(msgHash, params);
         return relayerFee;
     }
 

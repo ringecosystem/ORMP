@@ -20,7 +20,7 @@ pragma solidity 0.8.17;
 import "../interfaces/IChannel.sol";
 
 contract Relayer {
-    event Assigned(bytes32 indexed msgHash, uint256 fee);
+    event Assigned(bytes32 indexed msgHash, uint256 fee, bytes parmas);
     event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
     event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address relayer, bool approve);
@@ -110,9 +110,9 @@ contract Relayer {
         return sourceToken + payloadToken;
     }
 
-    function assign(bytes32 msgHash) external payable {
+    function assign(bytes32 msgHash, bytes calldata params) external payable {
         require(msg.sender == ENDPOINT, "!enpoint");
-        emit Assigned(msgHash, msg.value);
+        emit Assigned(msgHash, msg.value, params);
     }
 
     function relay(Message calldata message, bytes calldata proof, uint256 gasLimit) external onlyApproved {
