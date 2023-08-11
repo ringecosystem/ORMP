@@ -1,0 +1,6 @@
+.env
+/test
+/cache
+/script
+/artifacts
+/broadcast
