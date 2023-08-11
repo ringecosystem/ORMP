@@ -68,6 +68,10 @@ goerli = "https://rpc.ankr.com/eth_goerli"
 pangoro = "https://pangoro-rpc.darwinia.network"
 pangolin = "https://pangolin-rpc.darwinia.network"
 
+[etherscan]
+goerli = { key = "${ETHERSCAN_GOERLI_KEY}" }
+pangolin = { key = "${ETHERSCAN_PANGOLIN_KEY}", url = "https://pangolin.api.subscan.io/api/scan/evm/contract/verifysource" }
+
 [fmt]
 line_length = 120
 tab_width = 4
@@ -84,7 +88,7 @@ contract_new_lines = false
 
 [doc]
 out = "docs"
-title = ""
+title = "ORMP"
 book = "book.toml"
 homepage = "README.md"
 ignore = []
