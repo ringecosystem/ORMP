@@ -48,9 +48,9 @@ contract UserConfigTest is Test {
 
     function test_setDefaultConfig() public {
         config.setDefaultConfig(address(1), address(2));
-        (address relayer, address oracle) = config.defaultConfig();
-        assertEq(relayer, address(1));
-        assertEq(oracle, address(2));
+        (address oracle, address relayer) = config.defaultConfig();
+        assertEq(oracle, address(1));
+        assertEq(relayer, address(2));
     }
 
     function testFail_setDefaultConfig() public {
@@ -60,13 +60,13 @@ contract UserConfigTest is Test {
 
     function test_setAppConfig() public {
         Config memory c = config.getAppConfig(self);
-        assertEq(c.relayer, address(0));
         assertEq(c.oracle, address(0));
+        assertEq(c.relayer, address(0));
 
         config.setAppConfig(address(1), address(2));
         c = config.getAppConfig(self);
-        assertEq(c.relayer, address(1));
-        assertEq(c.oracle, address(2));
+        assertEq(c.oracle, address(1));
+        assertEq(c.relayer, address(2));
     }
 
     function test_getAppConfig() public {
@@ -76,12 +76,12 @@ contract UserConfigTest is Test {
 
         config.setDefaultConfig(address(1), address(2));
         c = config.getAppConfig(self);
-        assertEq(c.relayer, address(1));
-        assertEq(c.oracle, address(2));
+        assertEq(c.oracle, address(1));
+        assertEq(c.relayer, address(2));
 
         config.setAppConfig(address(3), address(4));
         c = config.getAppConfig(self);
-        assertEq(c.relayer, address(3));
-        assertEq(c.oracle, address(4));
+        assertEq(c.oracle, address(3));
+        assertEq(c.relayer, address(4));
     }
 }

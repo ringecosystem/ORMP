@@ -1,2 +1,8 @@
+.env
 /out
 /cache
+/artifacts
+/broadcast
+deployments/*/.deploy
+/script/deploy/output/*/*.json
+!/script/deploy/output/*/*-latest.json

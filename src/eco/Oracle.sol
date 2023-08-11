@@ -24,7 +24,7 @@ contract Oracle is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetDapi(uint256 indexed chainId, address dapi);
-    event SetApproved(address relayer, bool approve);
+    event SetApproved(address operator, bool approve);
 
     address public immutable ENDPOINT;
     address public owner;
@@ -57,13 +57,13 @@ contract Oracle is Verifier {
         owner = owner_;
     }
 
-    function isApproved(address relayer) public view returns (bool) {
-        return approvedOf[relayer];
+    function isApproved(address operator) public view returns (bool) {
+        return approvedOf[operator];
     }
 
-    function setApproved(address relayer, bool approve) public onlyOwner {
-        approvedOf[relayer] = approve;
-        emit SetApproved(relayer, approve);
+    function setApproved(address operator, bool approve) public onlyOwner {
+        approvedOf[operator] = approve;
+        emit SetApproved(operator, approve);
     }
 
     function withdraw(address to, uint256 amount) external onlyApproved {
@@ -90,7 +90,7 @@ contract Oracle is Verifier {
         emit Assigned(msgHash, msg.value);
     }
 
-    function merkleRoot(uint256 chainId, uint256 /*blockNumber*/) public view override returns (bytes32) {
+    function merkleRoot(uint256 chainId, uint256 /*blockNumber*/ ) public view override returns (bytes32) {
         address dapi = dapiOf[chainId];
         return IFeedOracle(dapi).messageRoot();
     }

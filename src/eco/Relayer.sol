@@ -23,7 +23,7 @@ contract Relayer {
     event Assigned(bytes32 indexed msgHash, uint256 fee, bytes parmas);
     event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
     event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
-    event SetApproved(address relayer, bool approve);
+    event SetApproved(address operator, bool approve);
 
     struct DstPrice {
         uint128 dstPriceRatio; // dstPrice / localPrice * 10^10
@@ -67,13 +67,13 @@ contract Relayer {
         owner = owner_;
     }
 
-    function isApproved(address relayer) public view returns (bool) {
-        return approvedOf[relayer];
+    function isApproved(address operator) public view returns (bool) {
+        return approvedOf[operator];
     }
 
-    function setApproved(address relayer, bool approve) public onlyOwner {
-        approvedOf[relayer] = approve;
-        emit SetApproved(relayer, approve);
+    function setApproved(address operator, bool approve) public onlyOwner {
+        approvedOf[operator] = approve;
+        emit SetApproved(operator, approve);
     }
 
     function setDstPrice(uint256 chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei) external onlyApproved {

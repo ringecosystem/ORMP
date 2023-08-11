@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 import "../interfaces/IEndpoint.sol";
-import "../interfaces/IUserconfig.sol";
+import "../interfaces/IUserConfig.sol";
 
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract Application {
