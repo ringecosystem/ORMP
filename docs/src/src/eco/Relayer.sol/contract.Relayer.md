@@ -1,5 +1,5 @@
 # Relayer
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/eco/Relayer.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/eco/Relayer.sol)
 
 
 ## State Variables
@@ -85,14 +85,14 @@ function changeOwner(address owner_) external onlyOwner;
 
 
 ```solidity
-function isApproved(address relayer) public view returns (bool);
+function isApproved(address operator) public view returns (bool);
 ```
 
 ### setApproved
 
 
 ```solidity
-function setApproved(address relayer, bool approve) public onlyOwner;
+function setApproved(address operator, bool approve) public onlyOwner;
 ```
 
 ### setDstPrice
@@ -127,21 +127,21 @@ function fee(uint256 toChainId, address, uint256 size, bytes calldata params) pu
 
 
 ```solidity
-function assign(bytes32 msgHash) external payable;
+function assign(bytes32 msgHash, bytes calldata params) external payable;
 ```
 
 ### relay
 
 
 ```solidity
-function relay(Message calldata message, bytes calldata proof) external onlyApproved;
+function relay(Message calldata message, bytes calldata proof, uint256 gasLimit) external onlyApproved;
 ```
 
 ## Events
 ### Assigned
 
 ```solidity
-event Assigned(bytes32 indexed msgHash, uint256 fee);
+event Assigned(bytes32 indexed msgHash, uint256 fee, bytes parmas);
 ```
 
 ### SetDstPrice
@@ -159,7 +159,7 @@ event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
 ### SetApproved
 
 ```solidity
-event SetApproved(address relayer, bool approve);
+event SetApproved(address operator, bool approve);
 ```
 
 ## Structs

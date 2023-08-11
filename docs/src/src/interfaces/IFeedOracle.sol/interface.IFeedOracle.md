@@ -1,12 +1,12 @@
 # IFeedOracle
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/interfaces/IFeedOracle.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/interfaces/IFeedOracle.sol)
 
 
 ## Functions
-### messageRootOf
+### messageRoot
 
 
 ```solidity
-function messageRootOf(uint256 blockNumber) external view returns (bytes32);
+function messageRoot() external view returns (bytes32);
 ```
 

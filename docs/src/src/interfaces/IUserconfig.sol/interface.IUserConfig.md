@@ -1,5 +1,5 @@
 # IUserConfig
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/interfaces/IUserconfig.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/interfaces/IUserConfig.sol)
 
 
 ## Functions
@@ -32,13 +32,27 @@ Set user application config.
 
 
 ```solidity
-function setAppConfig(address relayer, address oracle) external;
+function setAppConfig(address oracle, address relayer) external;
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`relayer`|`address`|Relayer which user application choose.|
 |`oracle`|`address`|Oracle which user application choose.|
+|`relayer`|`address`|Relayer which user application choose.|
 
+
+### setDefaultConfig
+
+
+```solidity
+function setDefaultConfig(address oracle, address relayer) external;
+```
+
+### defaultConfig
+
+
+```solidity
+function defaultConfig() external view returns (Config memory);
+```
 

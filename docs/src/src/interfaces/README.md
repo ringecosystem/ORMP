@@ -6,6 +6,6 @@
 - [IFeedOracle](IFeedOracle.sol/interface.IFeedOracle.md)
 - [IOracle](IOracle.sol/interface.IOracle.md)
 - [IRelayer](IRelayer.sol/interface.IRelayer.md)
-- [Config](IUserconfig.sol/struct.Config.md)
-- [IUserConfig](IUserconfig.sol/interface.IUserConfig.md)
+- [Config](IUserConfig.sol/struct.Config.md)
+- [IUserConfig](IUserConfig.sol/interface.IUserConfig.md)
 - [IVerifier](IVerifier.sol/interface.IVerifier.md)

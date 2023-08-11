@@ -1,5 +1,5 @@
 # Oracle
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/eco/Oracle.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/eco/Oracle.sol)
 
 **Inherits:**
 [Verifier](/src/Verifier.sol/abstract.Verifier.md)
@@ -34,12 +34,26 @@ mapping(uint256 => address) public dapiOf;
 ```
 
 
+### approvedOf
+
+```solidity
+mapping(address => bool) public approvedOf;
+```
+
+
 ## Functions
 ### onlyOwner
 
 
 ```solidity
 modifier onlyOwner();
+```
+
+### onlyApproved
+
+
+```solidity
+modifier onlyApproved();
 ```
 
 ### constructor
@@ -63,18 +77,32 @@ receive() external payable;
 function changeOwner(address owner_) external onlyOwner;
 ```
 
+### isApproved
+
+
+```solidity
+function isApproved(address operator) public view returns (bool);
+```
+
+### setApproved
+
+
+```solidity
+function setApproved(address operator, bool approve) public onlyOwner;
+```
+
 ### withdraw
 
 
 ```solidity
-function withdraw(address to, uint256 amount) external onlyOwner;
+function withdraw(address to, uint256 amount) external onlyApproved;
 ```
 
 ### setFee
 
 
 ```solidity
-function setFee(uint256 chainId, uint256 fee_) external onlyOwner;
+function setFee(uint256 chainId, uint256 fee_) external onlyApproved;
 ```
 
 ### setDapi
@@ -102,7 +130,7 @@ function assign(bytes32 msgHash) external payable;
 
 
 ```solidity
-function merkleRoot(uint256 chainId, uint256 blockNumber) public view override returns (bytes32);
+function merkleRoot(uint256 chainId, uint256) public view override returns (bytes32);
 ```
 
 ## Events
@@ -122,5 +150,11 @@ event SetFee(uint256 indexed chainId, uint256 fee);
 
 ```solidity
 event SetDapi(uint256 indexed chainId, address dapi);
+```
+
+### SetApproved
+
+```solidity
+event SetApproved(address operator, bool approve);
 ```
 

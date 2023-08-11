@@ -1,6 +1,6 @@
 [book]
 src = "src"
-title = ""
+title = "ORMP"
 
 [output.html]
 no-section-label = true

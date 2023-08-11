@@ -1,5 +1,5 @@
 # IEndpoint
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/interfaces/IEndpoint.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/interfaces/IEndpoint.sol)
 
 
 ## Functions
@@ -92,6 +92,6 @@ function retryFailedMessage(Message calldata message) external returns (bool dis
 
 
 ```solidity
-function recv(Message calldata message) external returns (bool dispatchResult);
+function recv(Message calldata message, uint256 gasLimit) external returns (bool dispatchResult);
 ```
 
