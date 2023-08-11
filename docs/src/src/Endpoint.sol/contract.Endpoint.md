@@ -1,5 +1,5 @@
 # Endpoint
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/Endpoint.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/Endpoint.sol)
 
 **Inherits:**
 [ReentrancyGuard](/src/security/ReentrancyGuard.sol/abstract.ReentrancyGuard.md)
@@ -129,13 +129,14 @@ Only channel could call this function.
 
 
 ```solidity
-function recv(Message calldata message) external recvNonReentrant returns (bool dispatchResult);
+function recv(Message calldata message, uint256 gasLimit) external recvNonReentrant returns (bool dispatchResult);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
 |`message`|`Message`|Verified receive message info.|
+|`gasLimit`|`uint256`|The gas limit of message execute.|
 
 **Returns**
 
@@ -188,7 +189,7 @@ function clearFailedMessage(Message calldata message) external;
 
 
 ```solidity
-function _dispatch(Message memory message, bytes32 msgHash) private returns (bool dispatchResult);
+function _dispatch(Message memory message, bytes32 msgHash, uint256 gasLimit) private returns (bool dispatchResult);
 ```
 
 ## Events

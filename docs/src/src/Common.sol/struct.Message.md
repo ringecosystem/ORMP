@@ -1,5 +1,5 @@
 # Message
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/Common.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/Common.sol)
 
 *The block of control information and data for comminicate
 between user applications. Messages are the exchange medium

@@ -1,5 +1,5 @@
 # UserConfig
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/UserConfig.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/UserConfig.sol)
 
 User config could select their own relayer and oracle.
 The default configuration is used by default.
@@ -75,14 +75,14 @@ Only setter could call.
 
 
 ```solidity
-function setDefaultConfig(address relayer, address oracle) external onlySetter;
+function setDefaultConfig(address oracle, address relayer) external onlySetter;
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`relayer`|`address`|Default relayer.|
 |`oracle`|`address`|Default oracle.|
+|`relayer`|`address`|Default relayer.|
 
 
 ### getAppConfig
@@ -114,14 +114,14 @@ Set user application config.
 
 
 ```solidity
-function setAppConfig(address relayer, address oracle) external;
+function setAppConfig(address oracle, address relayer) external;
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`relayer`|`address`|Relayer which user application choose.|
 |`oracle`|`address`|Oracle which user application.|
+|`relayer`|`address`|Relayer which user application choose.|
 
 
 ## Events
@@ -130,7 +130,7 @@ function setAppConfig(address relayer, address oracle) external;
 
 
 ```solidity
-event SetDefaultConfig(address relayer, address oracle);
+event SetDefaultConfig(address oracle, address relayer);
 ```
 
 ### AppConfigUpdated
@@ -138,6 +138,6 @@ event SetDefaultConfig(address relayer, address oracle);
 
 
 ```solidity
-event AppConfigUpdated(address indexed ua, address relayer, address oracle);
+event AppConfigUpdated(address indexed ua, address oracle, address relayer);
 ```
 

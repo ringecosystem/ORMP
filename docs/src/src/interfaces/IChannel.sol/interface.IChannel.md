@@ -1,5 +1,5 @@
 # IChannel
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/interfaces/IChannel.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/interfaces/IChannel.sol)
 
 
 ## Functions
@@ -14,6 +14,6 @@ function sendMessage(address from, uint256 toChainId, address to, bytes calldata
 
 
 ```solidity
-function recvMessage(Message calldata message, bytes calldata proof) external;
+function recvMessage(Message calldata message, bytes calldata proof, uint256 gasLimit) external;
 ```
 

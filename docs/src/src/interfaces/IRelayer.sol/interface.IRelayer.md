@@ -1,5 +1,5 @@
 # IRelayer
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/interfaces/IRelayer.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/interfaces/IRelayer.sol)
 
 
 ## Functions
@@ -33,12 +33,13 @@ Assign the relay message task to relayer maintainer.
 
 
 ```solidity
-function assign(bytes32 msgHash) external payable;
+function assign(bytes32 msgHash, bytes calldata params) external payable;
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
 |`msgHash`|`bytes32`|Hash of the message.|
+|`params`|`bytes`|General extensibility for relayer to custom functionality.|
 
 

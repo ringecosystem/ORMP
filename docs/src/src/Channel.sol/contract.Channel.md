@@ -1,5 +1,5 @@
 # Channel
-[Git Source](https://github.com/darwinia-network/ORMP/blob/39358390c194e135ecf3afba36ae9546a7f63b41/src/Channel.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/Channel.sol)
 
 A channel is a logical connection over cross-chain network.
 It used for cross-chain message transfer.
@@ -135,7 +135,7 @@ Only message.to's config relayer could relayer this message.
 
 
 ```solidity
-function recvMessage(Message calldata message, bytes calldata proof) external;
+function recvMessage(Message calldata message, bytes calldata proof, uint256 gasLimit) external;
 ```
 **Parameters**
 
@@ -143,6 +143,7 @@ function recvMessage(Message calldata message, bytes calldata proof) external;
 |----|----|-----------|
 |`message`|`Message`|Received message info.|
 |`proof`|`bytes`|Message proof of this message.|
+|`gasLimit`|`uint256`|The gas limit of message execute.|
 
 
 ### messageCount
