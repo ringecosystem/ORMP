@@ -2,7 +2,6 @@
   "name": "@darwinia/ORMP",
   "version": "1.0.0",
   "description": "Oracle and Relayer based Message Protocol",
-  "main": "index.js",
   "repository": "https://github.com/darwinia-network/ORMP",
   "author": "Darwinia dev",
   "license": "MIT",
