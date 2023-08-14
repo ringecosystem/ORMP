@@ -10,6 +10,7 @@ import {Deployer} from "./Deployer.sol";
 import {ScriptTools} from "./ScriptTools.sol";
 
 import "../../src/interfaces/IUserConfig.sol";
+import {Factory} from "../../src/Factory.sol";
 import {Channel} from "../../src/Channel.sol";
 import {Endpoint} from "../../src/Endpoint.sol";
 import {UserConfig} from "../../src/UserConfig.sol";
@@ -34,6 +35,7 @@ contract Deploy is Deployer {
     string instanceId;
     string outputName;
     address deployer;
+    bytes32 salt;
     address oracleOperator;
     address relayerOperator;
 
@@ -52,6 +54,7 @@ contract Deploy is Deployer {
         vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", vm.toString(true));
         config = ScriptTools.readInput(instanceId);
 
+        salt = config.readBytes32(".SALT");
         oracleOperator = config.readAddress(".ORACLE_OPERATOR");
         relayerOperator = config.readAddress(".RELAYER_OPERATOR");
 
@@ -62,79 +65,72 @@ contract Deploy is Deployer {
     /// @notice Deploy all of the contracts
     function run() public {
         deployer = msg.sender;
-        uint256 nonce = vm.getNonce(deployer);
-        address preuc = getContractAddress(deployer, nonce);
-        address posuc = deployUserConfig();
-        require(preuc == posuc, "!uc");
-        address precn = getContractAddress(deployer, nonce + 1);
-        address preep = getContractAddress(deployer, nonce + 2);
-        address poscn = deployChannel(preuc, preep);
-        address posep = deployEndpoint(preuc, precn);
-        require(poscn == precn, "!cn");
-        require(posep == preep, "!ep");
 
-        address oracle = deployOralce(preep);
-        address relayer = deployRelayer(preep, precn);
+        address factory = deployFactory();
 
-        setConfig(preuc, oracle, relayer);
+        (address uc, address channel, address endpoint) = deployProtocol(factory);
+
+        address oracle = deployOralce(endpoint);
+        address relayer = deployRelayer(endpoint, channel);
+
+        setConfig(uc, oracle, relayer);
 
         ScriptTools.exportContract(outputName, "DEPLOYER", deployer);
         ScriptTools.exportContract(outputName, "ORACLE_OPERATOR", oracleOperator);
         ScriptTools.exportContract(outputName, "RELAYER_OPERATOR", relayerOperator);
-        ScriptTools.exportContract(outputName, "USER_CONFIG", preuc);
-        ScriptTools.exportContract(outputName, "CHANNEL", precn);
-        ScriptTools.exportContract(outputName, "ENDPOINT", preep);
+        ScriptTools.exportContract(outputName, "FACTORY", factory);
+        ScriptTools.exportContract(outputName, "USER_CONFIG", uc);
+        ScriptTools.exportContract(outputName, "CHANNEL", channel);
+        ScriptTools.exportContract(outputName, "ENDPOINT", endpoint);
         ScriptTools.exportContract(outputName, "ORACLE", oracle);
         ScriptTools.exportContract(outputName, "RELAYER", relayer);
     }
 
-    /// @notice Deploy the UserConfig
-    function deployUserConfig() public broadcast returns (address) {
-        UserConfig uc = new UserConfig();
-        require(uc.setter() == deployer);
-        save("UserConfig", address(uc));
-        console.log("UserConfig deployed at %s", address(uc));
-        return address(uc);
+    /// @notice Deploy the Factory
+    function deployFactory() public broadcast returns (address) {
+        Factory factory = new Factory();
+        save("Factory", address(factory));
+        console.log("Factory deployed at %s", address(factory));
+        return address(factory);
     }
 
-    /// @notice Deploy the Channel
-    function deployChannel(address uc, address ep) public broadcast returns (address) {
-        Channel cn = new Channel(uc, ep);
-        require(cn.CONFIG() == uc);
-        require(cn.ENDPOINT() == ep);
-        save("Channel", address(cn));
-        console.log("Channel    deployed at %s", address(cn));
-        return address(cn);
-    }
+    /// @notice Deploy protocol contract
+    function deployProtocol(address factory) public broadcast returns (address uc, address channel, address endpoint) {
+        (uc, channel, endpoint) = Factory(factory).deploy(salt);
+        save("UserConfig", uc);
+        console.log("UserConfig     deployed at %s", uc);
 
-    /// @notice Deploy the Endpoint
-    function deployEndpoint(address uc, address cn) public broadcast returns (address) {
-        Endpoint ep = new Endpoint(uc, cn);
-        require(ep.CONFIG() == uc);
-        require(ep.CHANNEL() == cn);
-        save("Enpoint", address(ep));
-        console.log("Endpoint   deployed at %s", address(ep));
-        return address(ep);
+        save("Channel", channel);
+        console.log("Channel     deployed at %s", channel);
+
+        save("Endpoint", endpoint);
+        console.log("Endpoint     deployed at %s", endpoint);
     }
 
     /// @notice Deploy the Oracle
-    function deployOralce(address enpoint) public broadcast returns (address) {
-        Oracle oracle = new Oracle(enpoint);
-        require(oracle.owner() == deployer);
-        require(oracle.ENDPOINT() == enpoint);
-        save("Oralce", address(oracle));
-        console.log("Oracle     deployed at %s", address(oracle));
+    function deployOralce(address endpoint) public broadcast returns (address) {
+        bytes memory bytecode = type(Oracle).creationCode;
+        bytes memory initcode = abi.encodePacked(bytecode, abi.encode(deployer, endpoint));
+        address oracle = create2(salt, initcode);
+
+        require(Oracle(oracle).owner() == deployer);
+        require(Oracle(oracle).ENDPOINT() == endpoint);
+        save("Oralce", oracle);
+        console.log("Oracle     deployed at %s", oracle);
         return address(oracle);
     }
 
     /// @notice Deploy the Relayer
-    function deployRelayer(address enpoint, address channel) public broadcast returns (address) {
-        Relayer relayer = new Relayer(enpoint, channel);
-        require(relayer.owner() == deployer);
-        require(relayer.ENDPOINT() == enpoint);
-        require(relayer.CHANNEL() == channel);
-        save("Relayer", address(relayer));
-        console.log("Relayer    deployed at %s", address(relayer));
+    function deployRelayer(address endpoint, address channel) public broadcast returns (address) {
+        bytes memory bytecode = type(Relayer).creationCode;
+        bytes memory initcode = abi.encodePacked(bytecode, abi.encode(deployer, endpoint, channel));
+        address relayer = create2(salt, initcode);
+
+        require(Relayer(relayer).owner() == deployer);
+        require(Relayer(relayer).ENDPOINT() == endpoint);
+        require(Relayer(relayer).CHANNEL() == channel);
+        save("Relayer", relayer);
+        console.log("Relayer    deployed at %s", relayer);
         return address(relayer);
     }
 
@@ -149,6 +145,13 @@ contract Deploy is Deployer {
         require(IOperator(oracle).isApproved(oracleOperator), "!o-operator");
         IOperator(relayer).setApproved(relayerOperator, true);
         require(IOperator(relayer).isApproved(relayerOperator), "!r-operator");
+    }
+
+    function create2(bytes32 salt, bytes memory bytecode) internal returns (address addr) {
+        assembly {
+            addr := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
+        }
+        require(addr != address(0), "!create2");
     }
 
     /// @notice Modifier that wraps a function in broadcasting.

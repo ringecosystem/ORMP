@@ -54,11 +54,15 @@ contract Relayer {
         _;
     }
 
-    constructor(address endpoint, address channel) {
+    constructor(
+        address dao,
+        address endpoint,
+        address channel
+    ) {
         ENDPOINT = endpoint;
         CHANNEL = channel;
-        owner = msg.sender;
-        setApproved(msg.sender, true);
+        owner = dao;
+        setApproved(dao, true);
     }
 
     receive() external payable {}
