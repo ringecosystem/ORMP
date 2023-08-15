@@ -48,7 +48,6 @@ contract Oracle is Verifier {
     constructor(address dao, address endpoint) {
         ENDPOINT = endpoint;
         owner = dao;
-        setApproved(dao, true);
     }
 
     receive() external payable {}

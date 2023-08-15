@@ -22,13 +22,16 @@ import "../src/Factory.sol";
 
 contract FactoryTest is Test {
     Factory factory;
+
+    bytes32 public immutable SALT = bytes32(0);
     address immutable self = address(this);
 
     function setUp() public {
-        factory = new Factory();
+        factory = new Factory{salt: SALT}(self, SALT);
     }
 
     function test_deploy() public {
-        factory.deploy(bytes32(0));
+        factory.deploy();
+        factory.deployEco();
     }
 }

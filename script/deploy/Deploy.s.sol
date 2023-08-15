@@ -73,7 +73,7 @@ contract Deploy is Deployer {
         address oracle = deployOralce(endpoint);
         address relayer = deployRelayer(endpoint, channel);
 
-        setConfig(uc, oracle, relayer);
+        // setConfig(uc, oracle, relayer);
 
         ScriptTools.exportContract(outputName, "DEPLOYER", deployer);
         ScriptTools.exportContract(outputName, "ORACLE_OPERATOR", oracleOperator);
@@ -88,49 +88,46 @@ contract Deploy is Deployer {
 
     /// @notice Deploy the Factory
     function deployFactory() public broadcast returns (address) {
-        Factory factory = new Factory();
+        Factory factory = new Factory{salt: salt}(deployer, salt);
+        require(factory.DEPLOYER() == deployer, "!deployer");
         save("Factory", address(factory));
-        console.log("Factory deployed at %s", address(factory));
+        console.log("Factory    deployed at %s", address(factory));
         return address(factory);
     }
 
     /// @notice Deploy protocol contract
     function deployProtocol(address factory) public broadcast returns (address uc, address channel, address endpoint) {
-        (uc, channel, endpoint) = Factory(factory).deploy(salt);
+        (uc, channel, endpoint) = Factory(factory).deploy();
         save("UserConfig", uc);
-        console.log("UserConfig     deployed at %s", uc);
+        console.log("UserConfig deployed at %s", uc);
 
         save("Channel", channel);
-        console.log("Channel     deployed at %s", channel);
+        console.log("Channel    deployed at %s", channel);
 
         save("Endpoint", endpoint);
-        console.log("Endpoint     deployed at %s", endpoint);
+        console.log("Endpoint   deployed at %s", endpoint);
     }
 
     /// @notice Deploy the Oracle
     function deployOralce(address endpoint) public broadcast returns (address) {
-        bytes memory bytecode = type(Oracle).creationCode;
-        bytes memory initcode = abi.encodePacked(bytecode, abi.encode(deployer, endpoint));
-        address oracle = create2(salt, initcode);
+        Oracle oracle = new Oracle{salt: salt}(deployer, endpoint);
 
-        require(Oracle(oracle).owner() == deployer);
-        require(Oracle(oracle).ENDPOINT() == endpoint);
-        save("Oralce", oracle);
-        console.log("Oracle     deployed at %s", oracle);
+        require(oracle.owner() == deployer);
+        require(oracle.ENDPOINT() == endpoint);
+        save("Oralce", address(oracle));
+        console.log("Oracle     deployed at %s", address(oracle));
         return address(oracle);
     }
 
     /// @notice Deploy the Relayer
-    function deployRelayer(address endpoint, address channel) public broadcast returns (address) {
-        bytes memory bytecode = type(Relayer).creationCode;
-        bytes memory initcode = abi.encodePacked(bytecode, abi.encode(deployer, endpoint, channel));
-        address relayer = create2(salt, initcode);
+    function deployRelayer(address endpoint, address channel) broadcast public returns (address) {
+        Relayer relayer = new Relayer{salt: salt}(deployer, endpoint, channel);
 
-        require(Relayer(relayer).owner() == deployer);
-        require(Relayer(relayer).ENDPOINT() == endpoint);
-        require(Relayer(relayer).CHANNEL() == channel);
-        save("Relayer", relayer);
-        console.log("Relayer    deployed at %s", relayer);
+        require(relayer.owner() == deployer);
+        require(relayer.ENDPOINT() == endpoint);
+        require(relayer.CHANNEL() == channel);
+        save("Relayer", address(relayer));
+        console.log("Relayer    deployed at %s", address(relayer));
         return address(relayer);
     }
 
@@ -145,13 +142,6 @@ contract Deploy is Deployer {
         require(IOperator(oracle).isApproved(oracleOperator), "!o-operator");
         IOperator(relayer).setApproved(relayerOperator, true);
         require(IOperator(relayer).isApproved(relayerOperator), "!r-operator");
-    }
-
-    function create2(bytes32 salt, bytes memory bytecode) internal returns (address addr) {
-        assembly {
-            addr := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
-        }
-        require(addr != address(0), "!create2");
     }
 
     /// @notice Modifier that wraps a function in broadcasting.

@@ -21,31 +21,55 @@ import "./UserConfig.sol";
 import "./Endpoint.sol";
 import "./Channel.sol";
 
+import "./eco/Oracle.sol";
+import "./eco/Relayer.sol";
+
 contract Factory {
-    event Deployed(bytes32 salt, address config, address channel, address endpoint);
+    event Deployed(address config, address channel, address endpoint);
+    event EcoDeployed(address oracle, address relayer);
 
-    function deploy(bytes32 salt) external returns (address, address, address) {
-        address config = create2(salt, type(UserConfig).creationCode);
-        UserConfig(config).changeSetter(msg.sender);
+    bytes32 public immutable SALT;
 
-        address channel = create2(salt, type(Channel).creationCode);
-        address endpoint = create2(salt, type(Endpoint).creationCode);
-        Channel(channel).init(config, endpoint);
-        Endpoint(endpoint).init(config, channel);
+    address public immutable DEPLOYER;
 
-        require(Channel(channel).CONFIG() == config);
-        require(Channel(channel).ENDPOINT() == endpoint);
-        require(Endpoint(endpoint).CONFIG() == config);
-        require(Endpoint(endpoint).CHANNEL() == channel);
+    UserConfig public config;
+    Channel public channel;
+    Endpoint public endpoint;
 
-        emit Deployed(salt, config, channel, endpoint);
-        return (config, channel, endpoint);
+    Oracle public oracle;
+    Relayer public relayer;
+
+    constructor(address deployer, bytes32 salt) {
+        SALT = salt;
+        DEPLOYER = deployer;
     }
 
-    function create2(bytes32 salt, bytes memory bytecode) internal returns (address addr) {
-        assembly {
-            addr := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
-        }
-        require(addr != address(0), "!create2");
+    function deploy() external returns (address, address, address) {
+        require(msg.sender == DEPLOYER, "!deployer");
+
+        config = new UserConfig{salt: SALT}();
+        config.changeSetter(DEPLOYER);
+
+        channel = new Channel{salt: SALT}();
+        endpoint = new Endpoint{salt: SALT}();
+        channel.init(address(config), address(endpoint));
+        endpoint.init(address(config), address(channel));
+
+        require(channel.CONFIG() == address(config));
+        require(channel.ENDPOINT() == address(endpoint));
+        require(endpoint.CONFIG() == address(config));
+        require(endpoint.CHANNEL() == address(channel));
+
+        emit Deployed(address(config), address(channel), address(endpoint));
+        return (address(config), address(channel), address(endpoint));
+    }
+
+    function deployEco() external returns (address, address) {
+        require(msg.sender == DEPLOYER, "!deployer");
+        oracle = new Oracle{salt: SALT}(DEPLOYER, address(endpoint));
+        relayer = new Relayer{salt: SALT}(DEPLOYER, address(endpoint), address(channel));
+
+        emit EcoDeployed(address(oracle), address(relayer));
+        return (address(oracle), address(relayer));
     }
 }

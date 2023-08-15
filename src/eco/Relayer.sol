@@ -62,7 +62,6 @@ contract Relayer {
         ENDPOINT = endpoint;
         CHANNEL = channel;
         owner = dao;
-        setApproved(dao, true);
     }
 
     receive() external payable {}

@@ -27,7 +27,8 @@ contract OracleTest is Test {
     receive() external payable {}
 
     function setUp() public {
-        oracle = new Oracle(self);
+        oracle = new Oracle(self, self);
+        oracle.setApproved(self, true);
     }
 
     function test_constructorArgs() public {
