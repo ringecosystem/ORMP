@@ -31,13 +31,24 @@ contract Deploy is Deployer {
     using stdJson for string;
     using ScriptTools for string;
 
-    address immutable SAFE_CREATE2 = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
+    address immutable SAFE_CREATE2_ADDR = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
+    bytes32 immutable FACTORY_SALT = 0x512e2cdf0dd7b2ea1dbcf0128403198109d8b0e29dbb99664f0f9aee5725988e;
+    address immutable FACTORY_ADDR = 0x0000008b08479Fc4D0F2635E53E75539375A9640;
+    bytes32 immutable CONFIG_SALT = 0x6b49a38b80eeb2a49f9a84c06d16c2533e3734d1a7e1581bfcac4869e0ed3c0a;
+    address immutable CONFIG_ADDR = 0x0000005B195D46cA63f103372E2B857d55930732;
+    bytes32 immutable CHANNEL_SALT = 0xb0b60ae57d28d9ba898436f10494d620680d21d7db9ecd3e5d2ce5453b4001a4;
+    address immutable CHANNEL_ADDR = 0x00000022eCd1AB2e62b6687e78De82412a90eF38;
+    bytes32 immutable ENDPOINT_SALT = 0xce2ef6c9cdfd599ee842528d63fe572e6cf704b95a8244283dd0d1c161a0cdba;
+    address immutable ENDPOINT_ADDR = 0x00000008F1f78B182F9F14F6923A62ea55AA3215;
+    bytes32 immutable ORACLE_SALT = 0x5ccdfdc815f09210c8e1f6bdfb33a09feae093fced0b9406a6f76b8245d1a722;
+    address immutable ORACLE_ADDR = 0x0000006144281D235e8767681F422aF50B03ea6d;
+    bytes32 immutable RELAYER_SALT = 0x938bae70de45a466391f47dfcddb39cfa4e443dc2c940e96d7ff2fc9abe00c8d;
+    address immutable RELAYER_ADDR = 0x000000AE4cAfEd8fc43977374b39B157A9F383b8;
 
     string config;
     string instanceId;
     string outputName;
     address deployer;
-    bytes32 salt;
     address oracleOperator;
     address relayerOperator;
 
@@ -56,7 +67,6 @@ contract Deploy is Deployer {
         vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", vm.toString(true));
         config = ScriptTools.readInput(instanceId);
 
-        salt = config.readBytes32(".SALT");
         oracleOperator = config.readAddress(".ORACLE_OPERATOR");
         relayerOperator = config.readAddress(".RELAYER_OPERATOR");
 
@@ -88,17 +98,18 @@ contract Deploy is Deployer {
         ScriptTools.exportContract(outputName, "RELAYER", relayer);
     }
 
-    function _deploy(bytes memory initCode) public returns (address payable) {
+    function _deploy(bytes32 salt, bytes memory initCode) public returns (address payable) {
         bytes memory data = bytes.concat(salt, initCode);
-        (, bytes memory addr) = SAFE_CREATE2.call(data);
+        (, bytes memory addr) = SAFE_CREATE2_ADDR.call(data);
         return payable(address(uint160(bytes20(addr))));
     }
 
     /// @notice Deploy the Factory
     function deployFactory() public broadcast returns (address) {
         bytes memory byteCode = type(Factory).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, salt));
-        address factory = _deploy(initCode);
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer));
+        address factory = _deploy(FACTORY_SALT, initCode);
+        require(factory == FACTORY_ADDR, "!factory");
         require(Factory(factory).DEPLOYER() == deployer, "!deployer");
         save("Factory", factory);
         console.log("Factory    deployed at %s", factory);
@@ -107,7 +118,11 @@ contract Deploy is Deployer {
 
     /// @notice Deploy protocol contract
     function deployProtocol(address factory) public broadcast returns (address uc, address channel, address endpoint) {
-        (uc, channel, endpoint) = Factory(factory).deploy();
+        (uc, channel, endpoint) = Factory(factory).deploy(CONFIG_SALT, CHANNEL_SALT, ENDPOINT_SALT);
+        require(uc == CONFIG_ADDR, "!config");
+        require(channel == CHANNEL_ADDR, "!chanel");
+        require(endpoint == ENDPOINT_ADDR, "!endpoint");
+
         save("UserConfig", uc);
         console.log("UserConfig deployed at %s", uc);
 
@@ -122,7 +137,8 @@ contract Deploy is Deployer {
     function deployOralce(address endpoint) public broadcast returns (address) {
         bytes memory byteCode = type(Oracle).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint));
-        address payable oracle = _deploy(initCode);
+        address payable oracle = _deploy(ORACLE_SALT, initCode);
+        require(oracle == ORACLE_ADDR, "!oracle");
 
         require(Oracle(oracle).owner() == deployer);
         require(Oracle(oracle).ENDPOINT() == endpoint);
@@ -135,7 +151,8 @@ contract Deploy is Deployer {
     function deployRelayer(address endpoint, address channel) broadcast public returns (address) {
         bytes memory byteCode = type(Relayer).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint, channel));
-        address payable relayer = _deploy(initCode);
+        address payable relayer = _deploy(RELAYER_SALT, initCode);
+        require(relayer == RELAYER_ADDR, "!relayer");
 
         require(Relayer(relayer).owner() == deployer);
         require(Relayer(relayer).ENDPOINT() == endpoint);

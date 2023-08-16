@@ -27,10 +27,10 @@ contract FactoryTest is Test {
     address immutable self = address(this);
 
     function setUp() public {
-        factory = new Factory{salt: SALT}(self, SALT);
+        factory = new Factory{salt: SALT}(self);
     }
 
     function test_deploy() public {
-        factory.deploy();
+        factory.deploy(bytes32(0), bytes32(0), bytes32(0));
     }
 }
