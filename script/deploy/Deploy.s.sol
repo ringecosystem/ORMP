@@ -31,6 +31,8 @@ contract Deploy is Deployer {
     using stdJson for string;
     using ScriptTools for string;
 
+    address immutable SAFE_CREATE2 = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
+
     string config;
     string instanceId;
     string outputName;
@@ -86,13 +88,21 @@ contract Deploy is Deployer {
         ScriptTools.exportContract(outputName, "RELAYER", relayer);
     }
 
+    function _deploy(bytes memory initCode) public returns (address payable) {
+        bytes memory data = bytes.concat(salt, initCode);
+        (, bytes memory addr) = SAFE_CREATE2.call(data);
+        return payable(address(uint160(bytes20(addr))));
+    }
+
     /// @notice Deploy the Factory
     function deployFactory() public broadcast returns (address) {
-        Factory factory = new Factory{salt: salt}(deployer, salt);
-        require(factory.DEPLOYER() == deployer, "!deployer");
-        save("Factory", address(factory));
-        console.log("Factory    deployed at %s", address(factory));
-        return address(factory);
+        bytes memory byteCode = type(Factory).creationCode;
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, salt));
+        address factory = _deploy(initCode);
+        require(Factory(factory).DEPLOYER() == deployer, "!deployer");
+        save("Factory", factory);
+        console.log("Factory    deployed at %s", factory);
+        return factory;
     }
 
     /// @notice Deploy protocol contract
@@ -110,25 +120,29 @@ contract Deploy is Deployer {
 
     /// @notice Deploy the Oracle
     function deployOralce(address endpoint) public broadcast returns (address) {
-        Oracle oracle = new Oracle{salt: salt}(deployer, endpoint);
+        bytes memory byteCode = type(Oracle).creationCode;
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint));
+        address payable oracle = _deploy(initCode);
 
-        require(oracle.owner() == deployer);
-        require(oracle.ENDPOINT() == endpoint);
-        save("Oralce", address(oracle));
-        console.log("Oracle     deployed at %s", address(oracle));
-        return address(oracle);
+        require(Oracle(oracle).owner() == deployer);
+        require(Oracle(oracle).ENDPOINT() == endpoint);
+        save("Oralce", oracle);
+        console.log("Oracle     deployed at %s", oracle);
+        return oracle;
     }
 
     /// @notice Deploy the Relayer
     function deployRelayer(address endpoint, address channel) broadcast public returns (address) {
-        Relayer relayer = new Relayer{salt: salt}(deployer, endpoint, channel);
+        bytes memory byteCode = type(Relayer).creationCode;
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint, channel));
+        address payable relayer = _deploy(initCode);
 
-        require(relayer.owner() == deployer);
-        require(relayer.ENDPOINT() == endpoint);
-        require(relayer.CHANNEL() == channel);
-        save("Relayer", address(relayer));
-        console.log("Relayer    deployed at %s", address(relayer));
-        return address(relayer);
+        require(Relayer(relayer).owner() == deployer);
+        require(Relayer(relayer).ENDPOINT() == endpoint);
+        require(Relayer(relayer).CHANNEL() == channel);
+        save("Relayer", relayer);
+        console.log("Relayer    deployed at %s", relayer);
+        return relayer;
     }
 
     /// @notice Set the protocol config

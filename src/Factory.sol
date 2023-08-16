@@ -26,18 +26,12 @@ import "./eco/Relayer.sol";
 
 contract Factory {
     event Deployed(address config, address channel, address endpoint);
-    event EcoDeployed(address oracle, address relayer);
-
     bytes32 public immutable SALT;
-
     address public immutable DEPLOYER;
 
     UserConfig public config;
     Channel public channel;
     Endpoint public endpoint;
-
-    Oracle public oracle;
-    Relayer public relayer;
 
     constructor(address deployer, bytes32 salt) {
         SALT = salt;
@@ -62,14 +56,5 @@ contract Factory {
 
         emit Deployed(address(config), address(channel), address(endpoint));
         return (address(config), address(channel), address(endpoint));
-    }
-
-    function deployEco() external returns (address, address) {
-        require(msg.sender == DEPLOYER, "!deployer");
-        oracle = new Oracle{salt: SALT}(DEPLOYER, address(endpoint));
-        relayer = new Relayer{salt: SALT}(DEPLOYER, address(endpoint), address(channel));
-
-        emit EcoDeployed(address(oracle), address(relayer));
-        return (address(oracle), address(relayer));
     }
 }

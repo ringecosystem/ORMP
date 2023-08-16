@@ -32,6 +32,5 @@ contract FactoryTest is Test {
 
     function test_deploy() public {
         factory.deploy();
-        factory.deployEco();
     }
 }
