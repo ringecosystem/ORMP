@@ -27,7 +27,8 @@ contract RelayerTest is Test {
     receive() external payable {}
 
     function setUp() public {
-        relayer = new Relayer(self, self);
+        relayer = new Relayer(self, self, self);
+        relayer.setApproved(self, true);
     }
 
     function test_constructorArgs() public {

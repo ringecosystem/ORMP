@@ -41,10 +41,13 @@ contract Channel {
     /// @dev msgHash => isDispathed.
     mapping(bytes32 => bool) public dones;
 
-    /// @dev Endpoint immutable address.
-    address public immutable ENDPOINT;
-    /// @dev User config immutable address.
-    address public immutable CONFIG;
+    /// @dev User config address.
+    address public CONFIG;
+    /// @dev Endpoint address.
+    address public ENDPOINT;
+
+    /// @dev Factory immutable address.
+    address public immutable FACTORY;
     address private immutable _self = address(this);
 
     /// @dev Notifies an observer that the message has been accepted.
@@ -63,11 +66,17 @@ contract Channel {
     }
 
     /// @dev Init code.
-    /// @param config User config immutable address.
-    /// @param endpoint Endpoint immutable address.
-    constructor(address config, address endpoint) {
+    constructor() {
         // init with empty tree
         root = 0x27ae5ba08d7291c96c8cbddcc148bf48a6d68c7974b94356f53754ef6171d757;
+        FACTORY = msg.sender;
+    }
+
+    /// @dev Called once by the factory at time of deployment
+    /// @param config User config immutable address.
+    /// @param endpoint Endpoint immutable address.
+    function init(address config, address endpoint) external {
+        require(FACTORY == msg.sender, "!factory");
         CONFIG = config;
         ENDPOINT = endpoint;
     }

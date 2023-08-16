@@ -29,7 +29,8 @@ contract ChannelTest is Test, Verifier {
 
     function setUp() public {
         vm.chainId(1);
-        channel = new Channel(self, self);
+        channel = new Channel();
+        channel.init(self, self);
         for (uint256 height = 0; height < 31; height++) {
             zeroHashes[height + 1] = keccak256(abi.encodePacked(zeroHashes[height], zeroHashes[height]));
         }

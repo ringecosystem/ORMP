@@ -35,10 +35,13 @@ contract Endpoint is ReentrancyGuard {
     /// msgHash => isFailed
     mapping(bytes32 => bool) public fails;
 
-    /// @dev User config immutable address.
-    address public immutable CONFIG;
-    /// @dev Channel immutable address.
-    address public immutable CHANNEL;
+    /// @dev User config address.
+    address public CONFIG;
+    /// @dev Channel address.
+    address public CHANNEL;
+
+    /// @dev Factory immutable address.
+    address public immutable FACTORY;
 
     /// @dev Notifies an observer that the failed message has been cleared.
     /// @param msgHash Hash of the message.
@@ -49,9 +52,15 @@ contract Endpoint is ReentrancyGuard {
     event RetryFailedMessage(bytes32 indexed msgHash, bool dispatchResult);
 
     /// @dev Init code.
+    constructor() {
+        FACTORY = msg.sender;
+    }
+
+    /// @dev Called once by the factory at time of deployment
     /// @param config User config immutable address.
     /// @param channel Channel immutable address.
-    constructor(address config, address channel) {
+    function init(address config, address channel) external {
+        require(FACTORY == msg.sender, "!factory");
         CONFIG = config;
         CHANNEL = channel;
     }

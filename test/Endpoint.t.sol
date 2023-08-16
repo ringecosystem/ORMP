@@ -27,7 +27,8 @@ contract EndpointTest is Test {
 
     function setUp() public {
         vm.chainId(1);
-        endpoint = new Endpoint(self, self);
+        endpoint = new Endpoint();
+        endpoint.init(self, self);
         message =
             Message({channel: address(0xc), index: 0, fromChainId: 1, from: self, toChainId: 2, to: self, encoded: ""});
     }
