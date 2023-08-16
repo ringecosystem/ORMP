@@ -67,6 +67,7 @@ contract Deploy is Deployer {
         vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", vm.toString(true));
         config = ScriptTools.readInput(instanceId);
 
+        deployer = config.readAddress(".DEPLOYER");
         oracleOperator = config.readAddress(".ORACLE_OPERATOR");
         relayerOperator = config.readAddress(".RELAYER_OPERATOR");
 
@@ -76,7 +77,7 @@ contract Deploy is Deployer {
 
     /// @notice Deploy all of the contracts
     function run() public {
-        deployer = msg.sender;
+        require(deployer == msg.sender, "!deployer");
 
         address factory = deployFactory();
 
