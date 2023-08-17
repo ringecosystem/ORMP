@@ -6,7 +6,7 @@ import {Test} from "forge-std/Test.sol";
 import {console2 as console} from "forge-std/console2.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 
-import {Deployer} from "./Deployer.sol";
+import {Chains} from "./Chains.sol";
 import {ScriptTools} from "./ScriptTools.sol";
 
 import "../../src/interfaces/IUserConfig.sol";
@@ -25,11 +25,11 @@ interface IOperator {
 /// @title Deploy
 /// @notice Script used to deploy a ORMP protocol. The entire protocol is deployed within the `run` function.
 ///         To add a new contract to the protocol, add a public function that deploys that individual contract.
-///         Then add a call to that function inside of `run`. Be sure to call the `save` function after each
-///         deployment so that `hardhat-deploy` style artifacts can be generated using a call to `sync()`.
-contract Deploy is Deployer {
+///         Then add a call to that function inside of `run`.
+contract Deploy is Script {
     using stdJson for string;
     using ScriptTools for string;
+    using Chains for uint256;
 
     address immutable SAFE_CREATE2_ADDR = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
     bytes32 immutable FACTORY_SALT = 0x512e2cdf0dd7b2ea1dbcf0128403198109d8b0e29dbb99664f0f9aee5725988e;
@@ -54,12 +54,14 @@ contract Deploy is Deployer {
 
     /// @notice The name of the script, used to ensure the right deploy artifacts
     ///         are used.
-    function name() public pure override returns (string memory) {
+    function name() public pure returns (string memory) {
         return "Deploy";
     }
 
-    function setUp() public override {
-        super.setUp();
+    function setUp() public {
+        uint256 chainId = vm.envOr("CHAIN_ID", block.chainid);
+        createSelectFork(chainId);
+        console.log("Connected to network with chainid %s", chainId);
 
         instanceId = vm.envOr("INSTANCE_ID", string("deploy.c"));
         outputName = "deploy.a";
@@ -71,8 +73,8 @@ contract Deploy is Deployer {
         oracleOperator = config.readAddress(".ORACLE_OPERATOR");
         relayerOperator = config.readAddress(".RELAYER_OPERATOR");
 
-        console.log("Deploying from %s", deployScript);
-        console.log("Deployment context: %s", deploymentContext);
+        console.log("Deploying from %s", name());
+        console.log("Deployment context: %s", getDeploymentContext());
     }
 
     /// @notice Deploy all of the contracts
@@ -112,7 +114,6 @@ contract Deploy is Deployer {
         address factory = _deploy(FACTORY_SALT, initCode);
         require(factory == FACTORY_ADDR, "!factory");
         require(Factory(factory).DEPLOYER() == deployer, "!deployer");
-        save("Factory", factory);
         console.log("Factory    deployed at %s", factory);
         return factory;
     }
@@ -124,13 +125,8 @@ contract Deploy is Deployer {
         require(channel == CHANNEL_ADDR, "!chanel");
         require(endpoint == ENDPOINT_ADDR, "!endpoint");
 
-        save("UserConfig", uc);
         console.log("UserConfig deployed at %s", uc);
-
-        save("Channel", channel);
         console.log("Channel    deployed at %s", channel);
-
-        save("Endpoint", endpoint);
         console.log("Endpoint   deployed at %s", endpoint);
     }
 
@@ -143,13 +139,12 @@ contract Deploy is Deployer {
 
         require(Oracle(oracle).owner() == deployer);
         require(Oracle(oracle).ENDPOINT() == endpoint);
-        save("Oralce", oracle);
         console.log("Oracle     deployed at %s", oracle);
         return oracle;
     }
 
     /// @notice Deploy the Relayer
-    function deployRelayer(address endpoint, address channel) broadcast public returns (address) {
+    function deployRelayer(address endpoint, address channel) public broadcast returns (address) {
         bytes memory byteCode = type(Relayer).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint, channel));
         address payable relayer = _deploy(RELAYER_SALT, initCode);
@@ -158,7 +153,6 @@ contract Deploy is Deployer {
         require(Relayer(relayer).owner() == deployer);
         require(Relayer(relayer).ENDPOINT() == endpoint);
         require(Relayer(relayer).CHANNEL() == channel);
-        save("Relayer", relayer);
         console.log("Relayer    deployed at %s", relayer);
         return relayer;
     }
@@ -181,5 +175,21 @@ contract Deploy is Deployer {
         vm.startBroadcast();
         _;
         vm.stopBroadcast();
+    }
+
+    /// @notice The context of the deployment is used to namespace the artifacts.
+    ///         An unknown context will use the chainid as the context name.
+    function getDeploymentContext() internal returns (string memory) {
+        string memory context = vm.envOr("DEPLOYMENT_CONTEXT", string(""));
+        if (bytes(context).length > 0) {
+            return context;
+        }
+
+        uint256 chainid = vm.envOr("CHAIN_ID", block.chainid);
+        return chainid.toChainName();
+    }
+
+    function createSelectFork(uint256 chainid) public {
+        vm.createSelectFork(chainid.toChainName());
     }
 }

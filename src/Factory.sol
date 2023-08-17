@@ -26,6 +26,7 @@ import "./eco/Relayer.sol";
 
 contract Factory {
     event Deployed(address config, address channel, address endpoint);
+
     address public immutable DEPLOYER;
 
     UserConfig public config;
@@ -36,7 +37,10 @@ contract Factory {
         DEPLOYER = deployer;
     }
 
-    function deploy(bytes32 configSalt, bytes32 channelSalt, bytes32 endpointSalt) external returns (address, address, address) {
+    function deploy(bytes32 configSalt, bytes32 channelSalt, bytes32 endpointSalt)
+        external
+        returns (address, address, address)
+    {
         require(msg.sender == DEPLOYER, "!deployer");
 
         config = new UserConfig{salt: configSalt}();

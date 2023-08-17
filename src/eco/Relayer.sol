@@ -54,11 +54,7 @@ contract Relayer {
         _;
     }
 
-    constructor(
-        address dao,
-        address endpoint,
-        address channel
-    ) {
+    constructor(address dao, address endpoint, address channel) {
         ENDPOINT = endpoint;
         CHANNEL = channel;
         owner = dao;
