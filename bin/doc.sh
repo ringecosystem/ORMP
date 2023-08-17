@@ -1,7 +1,6 @@
-#!/use/bin/env bash
+#!/usr/bin/env bash
 
 set -eo pipefail
-set -x
 
 forge doc -b
 git_url=https://github.com/darwinia-network/ORMP.git
