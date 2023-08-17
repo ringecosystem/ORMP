@@ -74,9 +74,30 @@ contract ChannelTest is Test, Verifier {
             encoded: ""
         });
         assertEq(msgHash, hash(message));
-        Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: zeroHashes});
+        Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: channel.prove()});
         vm.chainId(2);
         channel.recvMessage(message, abi.encode(proof), gasleft());
+    }
+
+    function test_recvMessage_fuzz() public {
+        for (uint256 i = 0; i < 100; i++) {
+            vm.chainId(1);
+            uint256 index = channel.messageCount();
+            bytes32 msgHash = channel.sendMessage(self, 2, self, "");
+            Message memory message = Message({
+                channel: address(channel),
+                index: index,
+                fromChainId: 1,
+                from: self,
+                toChainId: 2,
+                to: self,
+                encoded: ""
+            });
+            assertEq(msgHash, hash(message));
+            Proof memory proof = Proof({blockNumber: block.number, messageIndex: index, messageProof: channel.prove()});
+            vm.chainId(2);
+            channel.recvMessage(message, abi.encode(proof), gasleft());
+        }
     }
 
     function recv(Message calldata, uint256) external pure returns (bool) {

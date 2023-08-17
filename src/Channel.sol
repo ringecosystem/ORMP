@@ -166,4 +166,9 @@ contract Channel {
     function imtBranch() public view returns (bytes32[32] memory) {
         return imt.branch;
     }
+
+    /// @dev Fetch the latest message proof
+    function prove() public view returns (bytes32[32] memory) {
+        return imt.prove(messageCount() - 1);
+    }
 }

@@ -126,6 +126,19 @@ library IncrementalMerkleTree {
         }
     }
 
+    function prove(Tree storage _tree, uint256 _index) internal view returns (bytes32[TREE_DEPTH] memory proof) {
+        bytes32[TREE_DEPTH] memory left = _tree.branch;
+        bytes32[TREE_DEPTH] memory right = zeroHashes();
+        for (uint256 i = 0; i < TREE_DEPTH; i++) {
+            uint256 _ith_bit = (_index >> i) & 0x01;
+            if (_ith_bit == 1) {
+                proof[i] = left[i];
+            } else {
+                proof[i] = right[i];
+            }
+        }
+    }
+
     // keccak256 zero hashes
     bytes32 internal constant Z_0 = hex"0000000000000000000000000000000000000000000000000000000000000000";
     bytes32 internal constant Z_1 = hex"ad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5";

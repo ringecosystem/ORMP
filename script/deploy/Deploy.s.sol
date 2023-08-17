@@ -88,7 +88,7 @@ contract Deploy is Script {
         address oracle = deployOralce(endpoint);
         address relayer = deployRelayer(endpoint, channel);
 
-        // setConfig(uc, oracle, relayer);
+        setConfig(uc, oracle, relayer);
 
         ScriptTools.exportContract(outputName, "DEPLOYER", deployer);
         ScriptTools.exportContract(outputName, "ORACLE_OPERATOR", oracleOperator);
