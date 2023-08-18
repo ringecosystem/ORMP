@@ -9,15 +9,18 @@ import {stdJson} from "forge-std/StdJson.sol";
 import {Chains} from "./Chains.sol";
 import {ScriptTools} from "./ScriptTools.sol";
 
-import "../../src/interfaces/IUserConfig.sol";
-import {Endpoint} from "../../src/Endpoint.sol";
-import {UserConfig} from "../../src/UserConfig.sol";
+import "../../src/Endpoint.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
 import {Oracle} from "../../src/eco/Oracle.sol";
 
-interface IOperator {
+interface III {
+    function ENDPOINT() external view returns (address);
     function isApproved(address operator) external view returns (bool);
     function setApproved(address operator, bool approve) external;
+    function owner() external view returns (address);
+    function changeOwner(address owner_) external;
+    function setter() external view returns (address);
+    function changeSetter(address setter_) external;
 }
 
 /// @title Deploy
@@ -82,16 +85,13 @@ contract Deploy is Script {
 
         setConfig(endpoint, oracle, relayer);
 
-        ScriptTools.exportContract(outputName, "DEPLOYER", deployer);
         ScriptTools.exportContract(outputName, "DAO", dao);
-        ScriptTools.exportContract(outputName, "ORACLE_OPERATOR", oracleOperator);
-        ScriptTools.exportContract(outputName, "RELAYER_OPERATOR", relayerOperator);
         ScriptTools.exportContract(outputName, "ENDPOINT", endpoint);
         ScriptTools.exportContract(outputName, "ORACLE", oracle);
         ScriptTools.exportContract(outputName, "RELAYER", relayer);
     }
 
-    function _deploy(bytes32 salt, bytes memory initCode) public returns (address payable) {
+    function _deploy(bytes32 salt, bytes memory initCode) public returns (address) {
         bytes memory data = bytes.concat(salt, initCode);
         (, bytes memory addr) = SAFE_CREATE2_ADDR.call(data);
         return payable(address(uint160(bytes20(addr))));
@@ -99,10 +99,11 @@ contract Deploy is Script {
 
     /// @notice Deploy the Endpoint
     function deployEndpoint() public broadcast returns (address) {
-        bytes memory initCode = type(Endpoint).creationCode;
+        bytes memory byteCode = type(Endpoint).creationCode;
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer));
         address endpoint = _deploy(ENDPOINT_SALT, initCode);
         require(endpoint == ENDPOINT_ADDR, "!endpoint");
-        require(Endpoint(endpoint).setter() == dao, "!dao");
+        require(III(endpoint).setter() == deployer, "!deployer");
         console.log("Endpoint   deployed at %s", endpoint);
         return endpoint;
     }
@@ -111,11 +112,11 @@ contract Deploy is Script {
     function deployOralce(address endpoint) public broadcast returns (address) {
         bytes memory byteCode = type(Oracle).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint));
-        address payable oracle = _deploy(ORACLE_SALT, initCode);
+        address oracle = _deploy(ORACLE_SALT, initCode);
         require(oracle == ORACLE_ADDR, "!oracle");
 
-        require(Oracle(oracle).owner() == deployer);
-        require(Oracle(oracle).ENDPOINT() == endpoint);
+        require(III(oracle).owner() == deployer);
+        require(III(oracle).ENDPOINT() == endpoint);
         console.log("Oracle     deployed at %s", oracle);
         return oracle;
     }
@@ -124,26 +125,35 @@ contract Deploy is Script {
     function deployRelayer(address endpoint) public broadcast returns (address) {
         bytes memory byteCode = type(Relayer).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint));
-        address payable relayer = _deploy(RELAYER_SALT, initCode);
+        address relayer = _deploy(RELAYER_SALT, initCode);
         require(relayer == RELAYER_ADDR, "!relayer");
 
-        require(Relayer(relayer).owner() == deployer);
-        require(Relayer(relayer).ENDPOINT() == endpoint);
+        require(III(relayer).owner() == deployer);
+        require(III(relayer).ENDPOINT() == endpoint);
         console.log("Relayer    deployed at %s", relayer);
         return relayer;
     }
 
     /// @notice Set the protocol config
-    function setConfig(address uc, address oracle, address relayer) public broadcast {
-        IUserConfig(uc).setDefaultConfig(oracle, relayer);
-        Config memory cfg = IUserConfig(uc).defaultConfig();
+    function setConfig(address endpoint, address oracle, address relayer) public broadcast {
+        Endpoint(endpoint).setDefaultConfig(oracle, relayer);
+        Config memory cfg = Endpoint(endpoint).getDefaultConfig();
         require(cfg.oracle == oracle, "!oracle");
         require(cfg.relayer == relayer, "!relayer");
 
-        IOperator(oracle).setApproved(oracleOperator, true);
-        require(IOperator(oracle).isApproved(oracleOperator), "!o-operator");
-        IOperator(relayer).setApproved(relayerOperator, true);
-        require(IOperator(relayer).isApproved(relayerOperator), "!r-operator");
+        III(oracle).setApproved(oracleOperator, true);
+        require(III(oracle).isApproved(oracleOperator), "!o-operator");
+        III(relayer).setApproved(relayerOperator, true);
+        require(III(relayer).isApproved(relayerOperator), "!r-operator");
+
+        III(endpoint).changeSetter(dao);
+        require(III(endpoint).setter() == dao, "!dao");
+
+        III(oracle).changeOwner(dao);
+        require(III(oracle).owner() == dao, "!dao");
+
+        III(relayer).changeOwner(dao);
+        require(III(relayer).owner() == dao, "!dao");
     }
 
     /// @notice Modifier that wraps a function in broadcasting.

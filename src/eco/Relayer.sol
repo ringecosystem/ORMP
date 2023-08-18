@@ -17,7 +17,7 @@
 
 pragma solidity 0.8.17;
 
-import "../interfaces/IChannel.sol";
+import "../interfaces/IEndpoint.sol";
 
 contract Relayer {
     event Assigned(bytes32 indexed msgHash, uint256 fee, bytes parmas, bytes32[32] proof);
@@ -109,10 +109,10 @@ contract Relayer {
 
     function assign(bytes32 msgHash, bytes calldata params) external payable {
         require(msg.sender == ENDPOINT, "!enpoint");
-        emit Assigned(msgHash, msg.value, params, IChannel(ENDPOINT).prove());
+        emit Assigned(msgHash, msg.value, params, IEndpoint(ENDPOINT).prove());
     }
 
     function relay(Message calldata message, bytes calldata proof, uint256 gasLimit) external onlyApproved {
-        IChannel(ENDPOINT).recvMessage(message, proof, gasLimit);
+        IEndpoint(ENDPOINT).recv(message, proof, gasLimit);
     }
 }

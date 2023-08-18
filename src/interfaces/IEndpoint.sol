@@ -49,5 +49,29 @@ interface IEndpoint {
     /// @return dispatchResult Result of the message dispatch.
     function retryFailedMessage(Message calldata message) external returns (bool dispatchResult);
 
-    function recv(Message calldata message, uint256 gasLimit) external returns (bool dispatchResult);
+    /// @dev Recv verified message and dispatch to destination user application address.
+    /// @param message Verified receive message info.
+    /// @param proof Message proof of this message.
+    /// @param gasLimit The gas limit of message execute.
+    /// @return dispatchResult Result of the message dispatch.
+    function recv(Message calldata message, bytes calldata proof, uint256 gasLimit)
+        external
+        returns (bool dispatchResult);
+
+    function prove() external view returns (bytes32[32] memory);
+
+    /// @dev Fetch user application config.
+    /// @notice If user application has not configured, then the default config is used.
+    /// @param ua User application contract address.
+    /// @return user application config.
+    function getAppConfig(address ua) external view returns (Config memory);
+
+    /// @notice Set user application config.
+    /// @param oracle Oracle which user application choose.
+    /// @param relayer Relayer which user application choose.
+    function setAppConfig(address oracle, address relayer) external;
+
+    function setDefaultConfig(address oracle, address relayer) external;
+    function defaultConfig() external view returns (Config memory);
+    function changeSetter(address setter_) external;
 }

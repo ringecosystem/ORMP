@@ -17,7 +17,7 @@
 
 pragma solidity 0.8.17;
 
-import "./interfaces/IUserConfig.sol";
+import "./Common.sol";
 
 /// @title UserConfig
 /// @notice User config could select their own relayer and oracle.
@@ -64,6 +64,10 @@ contract UserConfig {
     function setDefaultConfig(address oracle, address relayer) external onlySetter {
         defaultConfig = Config(oracle, relayer);
         emit SetDefaultConfig(oracle, relayer);
+    }
+
+    function getDefaultConfig() external view returns (Config memory) {
+        return defaultConfig;
     }
 
     /// @dev Fetch user application config.

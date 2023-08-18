@@ -28,7 +28,7 @@ contract ApplicationTest is Test {
     address immutable self = address(this);
 
     function setUp() public {
-        ua = new UserApplication(self, self);
+        ua = new UserApplication(self);
     }
 
     function test_recv() public {
@@ -47,7 +47,7 @@ contract ApplicationTest is Test {
 }
 
 contract UserApplication is Application {
-    constructor(address config, address endpoint) Application(config, endpoint) {}
+    constructor(address endpoint) Application(endpoint) {}
 
     function clearFailedMessage(Message calldata message) external override {}
 
@@ -61,7 +61,6 @@ contract UserApplication is Application {
         address xmsgSender = _xmsgSender();
         require(msgHash == bytes32(uint256(1)));
         require(fromChainid == 1);
-        require(xmsgSender == USER_CONFIG);
         require(xmsgSender == TRUSTED_ENDPOINT);
     }
 }

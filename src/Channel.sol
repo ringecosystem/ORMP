@@ -17,7 +17,6 @@
 
 pragma solidity 0.8.17;
 
-import "./Common.sol";
 import "./UserConfig.sol";
 import "./interfaces/IVerifier.sol";
 import "./imt/IncrementalMerkleTree.sol";
