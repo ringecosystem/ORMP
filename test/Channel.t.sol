@@ -29,7 +29,7 @@ contract ChannelTest is Test, Verifier {
 
     function setUp() public {
         vm.chainId(1);
-        channel = new ChannelWrapper();
+        channel = new ChannelWrapper(self);
         channel.setDefaultConfig(self, self);
         for (uint256 height = 0; height < 31; height++) {
             zeroHashes[height + 1] = keccak256(abi.encodePacked(zeroHashes[height], zeroHashes[height]));
@@ -99,6 +99,8 @@ contract ChannelTest is Test, Verifier {
 }
 
 contract ChannelWrapper is Channel {
+    constructor(address dao) Channel(dao) {}
+
     function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
         public
         returns (bytes32)

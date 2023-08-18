@@ -41,6 +41,8 @@ contract Endpoint is ReentrancyGuard, Channel {
     /// @param dispatchResult Result of the message dispatch.
     event RetryFailedMessage(bytes32 indexed msgHash, bool dispatchResult);
 
+    constructor(address dao) Channel(dao) {}
+
     /// @dev Send a cross-chain message over the endpoint.
     /// @notice follow https://eips.ethereum.org/EIPS/eip-5750
     /// @param toChainId The Message destination chain id.

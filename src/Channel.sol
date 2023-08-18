@@ -54,7 +54,7 @@ contract Channel is UserConfig {
     event MessageDispatched(bytes32 indexed msgHash, bool dispatchResult);
 
     /// @dev Init code.
-    constructor() {
+    constructor(address dao) UserConfig(dao) {
         // init with empty tree
         root = 0x27ae5ba08d7291c96c8cbddcc148bf48a6d68c7974b94356f53754ef6171d757;
     }

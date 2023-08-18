@@ -25,7 +25,7 @@ contract UserConfigTest is Test {
     address immutable self = address(this);
 
     function setUp() public {
-        config = new UserConfig();
+        config = new UserConfig(self);
     }
 
     function test_constructorArgs() public {

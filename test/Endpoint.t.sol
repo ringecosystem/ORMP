@@ -29,7 +29,7 @@ contract EndpointTest is Test, Verifier {
 
     function setUp() public {
         vm.chainId(1);
-        endpoint = new Endpoint();
+        endpoint = new Endpoint(self);
         endpoint.setDefaultConfig(self, self);
         message = Message({
             channel: address(endpoint),

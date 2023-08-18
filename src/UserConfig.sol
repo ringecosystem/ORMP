@@ -46,8 +46,8 @@ contract UserConfig {
         _;
     }
 
-    constructor() {
-        setter = msg.sender;
+    constructor(address dao) {
+        setter = dao;
     }
 
     /// @dev Change setter.

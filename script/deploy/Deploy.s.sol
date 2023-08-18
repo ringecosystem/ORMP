@@ -30,12 +30,12 @@ contract Deploy is Script {
     using Chains for uint256;
 
     address immutable SAFE_CREATE2_ADDR = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
-    bytes32 immutable ENDPOINT_SALT = 0xce2ef6c9cdfd599ee842528d63fe572e6cf704b95a8244283dd0d1c161a0cdba;
-    address immutable ENDPOINT_ADDR = 0x00000008F1f78B182F9F14F6923A62ea55AA3215;
-    bytes32 immutable ORACLE_SALT = 0x5ccdfdc815f09210c8e1f6bdfb33a09feae093fced0b9406a6f76b8245d1a722;
-    address immutable ORACLE_ADDR = 0x0000006144281D235e8767681F422aF50B03ea6d;
-    bytes32 immutable RELAYER_SALT = 0x938bae70de45a466391f47dfcddb39cfa4e443dc2c940e96d7ff2fc9abe00c8d;
-    address immutable RELAYER_ADDR = 0x000000AE4cAfEd8fc43977374b39B157A9F383b8;
+    bytes32 immutable ENDPOINT_SALT = 0x8d4710aeefe981796a685a8e13aa114a594334b7e58aee4be59393a377a33ad6;
+    address immutable ENDPOINT_ADDR = 0x0000008BA49A1eeaFe5A771f4bEEa98B0a54Be51;
+    bytes32 immutable ORACLE_SALT = 0xf48db30bdf790ed067a2390bfd0f53871ca5a19617f1fc0defdb78614226ddeb;
+    address immutable ORACLE_ADDR = 0x000000F352eDC7fbf3Abdc98CfEB7cdb11b0d47f;
+    bytes32 immutable RELAYER_SALT = 0x99dc755fa10cf0bc8e0ced6a3b8b7997fc762617ff7c3ab45b94091236010d06;
+    address immutable RELAYER_ADDR = 0x00000037990175dCe30a082ba56a3e62651b1793;
 
     string config;
     string instanceId;
@@ -101,7 +101,6 @@ contract Deploy is Script {
     function deployEndpoint() public broadcast returns (address) {
         bytes memory initCode = type(Endpoint).creationCode;
         address endpoint = _deploy(ENDPOINT_SALT, initCode);
-        IUserConfig(endpoint).changeSetter(dao);
         require(endpoint == ENDPOINT_ADDR, "!endpoint");
         require(Endpoint(endpoint).setter() == dao, "!dao");
         console.log("Endpoint   deployed at %s", endpoint);
