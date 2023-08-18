@@ -31,8 +31,15 @@ contract EndpointTest is Test, Verifier {
         vm.chainId(1);
         endpoint = new Endpoint();
         endpoint.setDefaultConfig(self, self);
-        message =
-            Message({channel: address(endpoint), index: 0, fromChainId: 1, from: self, toChainId: 2, to: self, encoded: ""});
+        message = Message({
+            channel: address(endpoint),
+            index: 0,
+            fromChainId: 1,
+            from: self,
+            toChainId: 2,
+            to: self,
+            encoded: ""
+        });
     }
 
     function test_send() public {
@@ -42,7 +49,11 @@ contract EndpointTest is Test, Verifier {
     function perform_send() public {
         uint256 f = endpoint.fee(2, self, "", "");
         endpoint.send{value: f}(2, self, "", "");
-        proof = Proof({blockNumber: block.number, messageIndex: endpoint.messageCount() - 1, messageProof: endpoint.prove()});
+        proof = Proof({
+            blockNumber: block.number,
+            messageIndex: endpoint.messageCount() - 1,
+            messageProof: endpoint.prove()
+        });
         vm.chainId(2);
     }
 
