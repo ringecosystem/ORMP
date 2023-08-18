@@ -1,4 +1,4 @@
-.PHONY: add clean test sync deploy doc
+.PHONY: add clean test sync deploy doc salt
 .PHONY: tools foundry
 
 -include .env
@@ -12,3 +12,4 @@ tools  :; foundry
 foundry:; curl -L https://foundry.paradigm.xyz | bash
 
 doc    :; @bash ./bin/doc.sh
+salt   :; @bash ./bin/salt.sh
