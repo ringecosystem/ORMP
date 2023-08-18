@@ -39,4 +39,5 @@ interface IUserConfig {
 
     function setDefaultConfig(address oracle, address relayer) external;
     function defaultConfig() external view returns (Config memory);
+    function changeSetter(address setter_) external;
 }

@@ -19,37 +19,42 @@ pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
 import "../src/Endpoint.sol";
+import "../src/Verifier.sol";
 
-contract EndpointTest is Test {
+contract EndpointTest is Test, Verifier {
     Endpoint endpoint;
     Message message;
+    Proof proof;
     address immutable self = address(this);
 
     function setUp() public {
         vm.chainId(1);
         endpoint = new Endpoint();
-        endpoint.init(self, self);
+        endpoint.setDefaultConfig(self, self);
         message =
-            Message({channel: address(0xc), index: 0, fromChainId: 1, from: self, toChainId: 2, to: self, encoded: ""});
-    }
-
-    function test_constructorArgs() public {
-        assertEq(endpoint.CONFIG(), self);
-        assertEq(endpoint.CHANNEL(), self);
+            Message({channel: address(endpoint), index: 0, fromChainId: 1, from: self, toChainId: 2, to: self, encoded: ""});
     }
 
     function test_send() public {
+        perform_send();
+    }
+
+    function perform_send() public {
         uint256 f = endpoint.fee(2, self, "", "");
         endpoint.send{value: f}(2, self, "", "");
+        proof = Proof({blockNumber: block.number, messageIndex: endpoint.messageCount() - 1, messageProof: endpoint.prove()});
+        vm.chainId(2);
     }
 
     function test_recv() public {
-        bool r = endpoint.recv(message, gasleft());
+        perform_send();
+        bool r = endpoint.recv(message, abi.encode(proof), gasleft());
         assertEq(r, false);
     }
 
     function test_retry() public {
-        bool r = endpoint.recv(message, gasleft());
+        perform_send();
+        bool r = endpoint.recv(message, abi.encode(proof), gasleft());
         assertEq(r, false);
         r = endpoint.retryFailedMessage(message);
         assertEq(r, false);
@@ -59,7 +64,8 @@ contract EndpointTest is Test {
         bytes32 msgHash = hash(message);
         bool failed = endpoint.fails(msgHash);
         assertEq(failed, false);
-        endpoint.recv(message, gasleft());
+        perform_send();
+        endpoint.recv(message, abi.encode(proof), gasleft());
         failed = endpoint.fails(msgHash);
         assertEq(failed, true);
         endpoint.clearFailedMessage(message);
@@ -78,11 +84,7 @@ contract EndpointTest is Test {
         return 1;
     }
 
-    function getAppConfig(address) external view returns (Config memory) {
-        return Config(self, self);
-    }
-
-    function sendMessage(address, uint256, address, bytes calldata) external pure returns (bytes32) {
-        return bytes32(uint256(1));
+    function merkleRoot(uint256, uint256) public view override returns (bytes32) {
+        return endpoint.root();
     }
 }

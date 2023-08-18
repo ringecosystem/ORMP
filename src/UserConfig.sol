@@ -70,7 +70,7 @@ contract UserConfig {
     /// @notice If user application has not configured, then the default config is used.
     /// @param ua User application contract address.
     /// @return user application config.
-    function getAppConfig(address ua) external view returns (Config memory) {
+    function getAppConfig(address ua) public view returns (Config memory) {
         Config memory c = appConfig[ua];
 
         if (c.relayer == address(0x0)) {

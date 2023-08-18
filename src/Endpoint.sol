@@ -17,11 +17,9 @@
 
 pragma solidity 0.8.17;
 
-import "./Common.sol";
+import "./Channel.sol";
 import "./interfaces/IOracle.sol";
-import "./interfaces/IChannel.sol";
 import "./interfaces/IRelayer.sol";
-import "./interfaces/IUserConfig.sol";
 import "./security/ReentrancyGuard.sol";
 import "./security/ExcessivelySafeCall.sol";
 
@@ -29,19 +27,11 @@ import "./security/ExcessivelySafeCall.sol";
 /// @notice An endpoint is a type of network node for cross-chain communication.
 /// It is an interface exposed by a communication channel.
 /// @dev An endpoint is associated with an immutable channel and user configuration.
-contract Endpoint is ReentrancyGuard {
+contract Endpoint is ReentrancyGuard, Channel {
     using ExcessivelySafeCall for address;
 
     /// msgHash => isFailed
     mapping(bytes32 => bool) public fails;
-
-    /// @dev User config address.
-    address public CONFIG;
-    /// @dev Channel address.
-    address public CHANNEL;
-
-    /// @dev Factory immutable address.
-    address public immutable FACTORY;
 
     /// @dev Notifies an observer that the failed message has been cleared.
     /// @param msgHash Hash of the message.
@@ -50,20 +40,6 @@ contract Endpoint is ReentrancyGuard {
     /// @param msgHash Hash of the message.
     /// @param dispatchResult Result of the message dispatch.
     event RetryFailedMessage(bytes32 indexed msgHash, bool dispatchResult);
-
-    /// @dev Init code.
-    constructor() {
-        FACTORY = msg.sender;
-    }
-
-    /// @dev Called once by the factory at time of deployment
-    /// @param config User config immutable address.
-    /// @param channel Channel immutable address.
-    function init(address config, address channel) external {
-        require(FACTORY == msg.sender, "!factory");
-        CONFIG = config;
-        CHANNEL = channel;
-    }
 
     /// @dev Send a cross-chain message over the endpoint.
     /// @notice follow https://eips.ethereum.org/EIPS/eip-5750
@@ -80,9 +56,9 @@ contract Endpoint is ReentrancyGuard {
         // user application address.
         address ua = msg.sender;
         // fetch user application's config.
-        Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
+        Config memory uaConfig = getAppConfig(ua);
         // send message by channel, return the hash of the message as id.
-        bytes32 msgHash = IChannel(CHANNEL).sendMessage(ua, toChainId, to, encoded);
+        bytes32 msgHash = _send(ua, toChainId, to, encoded);
 
         // handle relayer fee
         uint256 relayerFee = _handleRelayer(uaConfig.relayer, msgHash, toChainId, ua, encoded.length, params);
@@ -110,7 +86,7 @@ contract Endpoint is ReentrancyGuard {
         returns (uint256)
     {
         address ua = msg.sender;
-        Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(ua);
+        Config memory uaConfig = getAppConfig(ua);
         uint256 relayerFee = IRelayer(uaConfig.relayer).fee(toChainId, ua, encoded.length, params);
         uint256 oracleFee = IOracle(uaConfig.oracle).fee(toChainId, ua);
         return relayerFee + oracleFee;
@@ -138,15 +114,22 @@ contract Endpoint is ReentrancyGuard {
     /// @dev Recv verified message from Channel and dispatch to destination user application address.
     /// @notice Only channel could call this function.
     /// @param message Verified receive message info.
+    /// @param proof Message proof of this message.
     /// @param gasLimit The gas limit of message execute.
     /// @return dispatchResult Result of the message dispatch.
-    function recv(Message calldata message, uint256 gasLimit) external recvNonReentrant returns (bool dispatchResult) {
-        require(msg.sender == CHANNEL, "!auth");
+    function recv(Message calldata message, bytes calldata proof, uint256 gasLimit)
+        external
+        recvNonReentrant
+        returns (bool dispatchResult)
+    {
+        _recv(message, proof);
         bytes32 msgHash = hash(message);
         dispatchResult = _dispatch(message, msgHash, gasLimit);
         if (!dispatchResult) {
             fails[msgHash] = true;
         }
+        // emit dispatched message event.
+        emit MessageDispatched(msgHash, dispatchResult);
     }
 
     /// @dev Retry failed message.

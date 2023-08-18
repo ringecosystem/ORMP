@@ -24,4 +24,5 @@ interface IChannel {
         external
         returns (bytes32);
     function recvMessage(Message calldata message, bytes calldata proof, uint256 gasLimit) external;
+    function prove() external view returns (bytes32[32] memory);
 }

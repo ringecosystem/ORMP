@@ -27,13 +27,12 @@ contract RelayerTest is Test {
     receive() external payable {}
 
     function setUp() public {
-        relayer = new Relayer(self, self, self);
+        relayer = new Relayer(self, self);
         relayer.setApproved(self, true);
     }
 
     function test_constructorArgs() public {
         assertEq(relayer.ENDPOINT(), self);
-        assertEq(relayer.CHANNEL(), self);
         assertEq(relayer.owner(), self);
     }
 
@@ -98,4 +97,5 @@ contract RelayerTest is Test {
     }
 
     function recvMessage(Message calldata message, bytes calldata proof, uint256) external {}
+    function prove() external returns (bytes32[32] memory) {}
 }

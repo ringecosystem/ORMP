@@ -10,8 +10,6 @@ import {Chains} from "./Chains.sol";
 import {ScriptTools} from "./ScriptTools.sol";
 
 import "../../src/interfaces/IUserConfig.sol";
-import {Factory} from "../../src/Factory.sol";
-import {Channel} from "../../src/Channel.sol";
 import {Endpoint} from "../../src/Endpoint.sol";
 import {UserConfig} from "../../src/UserConfig.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
@@ -32,12 +30,6 @@ contract Deploy is Script {
     using Chains for uint256;
 
     address immutable SAFE_CREATE2_ADDR = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
-    bytes32 immutable FACTORY_SALT = 0x512e2cdf0dd7b2ea1dbcf0128403198109d8b0e29dbb99664f0f9aee5725988e;
-    address immutable FACTORY_ADDR = 0x0000008b08479Fc4D0F2635E53E75539375A9640;
-    bytes32 immutable CONFIG_SALT = 0x6b49a38b80eeb2a49f9a84c06d16c2533e3734d1a7e1581bfcac4869e0ed3c0a;
-    address immutable CONFIG_ADDR = 0x0000005B195D46cA63f103372E2B857d55930732;
-    bytes32 immutable CHANNEL_SALT = 0xb0b60ae57d28d9ba898436f10494d620680d21d7db9ecd3e5d2ce5453b4001a4;
-    address immutable CHANNEL_ADDR = 0x00000022eCd1AB2e62b6687e78De82412a90eF38;
     bytes32 immutable ENDPOINT_SALT = 0xce2ef6c9cdfd599ee842528d63fe572e6cf704b95a8244283dd0d1c161a0cdba;
     address immutable ENDPOINT_ADDR = 0x00000008F1f78B182F9F14F6923A62ea55AA3215;
     bytes32 immutable ORACLE_SALT = 0x5ccdfdc815f09210c8e1f6bdfb33a09feae093fced0b9406a6f76b8245d1a722;
@@ -49,6 +41,7 @@ contract Deploy is Script {
     string instanceId;
     string outputName;
     address deployer;
+    address dao;
     address oracleOperator;
     address relayerOperator;
 
@@ -70,6 +63,7 @@ contract Deploy is Script {
         config = ScriptTools.readInput(instanceId);
 
         deployer = config.readAddress(".DEPLOYER");
+        dao = config.readAddress(".DAO");
         oracleOperator = config.readAddress(".ORACLE_OPERATOR");
         relayerOperator = config.readAddress(".RELAYER_OPERATOR");
 
@@ -81,21 +75,17 @@ contract Deploy is Script {
     function run() public {
         require(deployer == msg.sender, "!deployer");
 
-        address factory = deployFactory();
-
-        (address uc, address channel, address endpoint) = deployProtocol(factory);
+        address endpoint = deployEndpoint();
 
         address oracle = deployOralce(endpoint);
-        address relayer = deployRelayer(endpoint, channel);
+        address relayer = deployRelayer(endpoint);
 
-        setConfig(uc, oracle, relayer);
+        setConfig(endpoint, oracle, relayer);
 
         ScriptTools.exportContract(outputName, "DEPLOYER", deployer);
+        ScriptTools.exportContract(outputName, "DAO", dao);
         ScriptTools.exportContract(outputName, "ORACLE_OPERATOR", oracleOperator);
         ScriptTools.exportContract(outputName, "RELAYER_OPERATOR", relayerOperator);
-        ScriptTools.exportContract(outputName, "FACTORY", factory);
-        ScriptTools.exportContract(outputName, "USER_CONFIG", uc);
-        ScriptTools.exportContract(outputName, "CHANNEL", channel);
         ScriptTools.exportContract(outputName, "ENDPOINT", endpoint);
         ScriptTools.exportContract(outputName, "ORACLE", oracle);
         ScriptTools.exportContract(outputName, "RELAYER", relayer);
@@ -107,27 +97,15 @@ contract Deploy is Script {
         return payable(address(uint160(bytes20(addr))));
     }
 
-    /// @notice Deploy the Factory
-    function deployFactory() public broadcast returns (address) {
-        bytes memory byteCode = type(Factory).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer));
-        address factory = _deploy(FACTORY_SALT, initCode);
-        require(factory == FACTORY_ADDR, "!factory");
-        require(Factory(factory).DEPLOYER() == deployer, "!deployer");
-        console.log("Factory    deployed at %s", factory);
-        return factory;
-    }
-
-    /// @notice Deploy protocol contract
-    function deployProtocol(address factory) public broadcast returns (address uc, address channel, address endpoint) {
-        (uc, channel, endpoint) = Factory(factory).deploy(CONFIG_SALT, CHANNEL_SALT, ENDPOINT_SALT);
-        require(uc == CONFIG_ADDR, "!config");
-        require(channel == CHANNEL_ADDR, "!chanel");
+    /// @notice Deploy the Endpoint
+    function deployEndpoint() public broadcast returns (address) {
+        bytes memory initCode = type(Endpoint).creationCode;
+        address endpoint = _deploy(ENDPOINT_SALT, initCode);
+        IUserConfig(endpoint).changeSetter(dao);
         require(endpoint == ENDPOINT_ADDR, "!endpoint");
-
-        console.log("UserConfig deployed at %s", uc);
-        console.log("Channel    deployed at %s", channel);
+        require(Endpoint(endpoint).setter() == dao, "!dao");
         console.log("Endpoint   deployed at %s", endpoint);
+        return endpoint;
     }
 
     /// @notice Deploy the Oracle
@@ -144,15 +122,14 @@ contract Deploy is Script {
     }
 
     /// @notice Deploy the Relayer
-    function deployRelayer(address endpoint, address channel) public broadcast returns (address) {
+    function deployRelayer(address endpoint) public broadcast returns (address) {
         bytes memory byteCode = type(Relayer).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint, channel));
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint));
         address payable relayer = _deploy(RELAYER_SALT, initCode);
         require(relayer == RELAYER_ADDR, "!relayer");
 
         require(Relayer(relayer).owner() == deployer);
         require(Relayer(relayer).ENDPOINT() == endpoint);
-        require(Relayer(relayer).CHANNEL() == channel);
         console.log("Relayer    deployed at %s", relayer);
         return relayer;
     }
