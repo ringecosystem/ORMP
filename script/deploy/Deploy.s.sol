@@ -33,12 +33,12 @@ contract Deploy is Script {
     using Chains for uint256;
 
     address immutable SAFE_CREATE2_ADDR = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
-    address immutable ENDPOINT_ADDR = 0x000000Bd6CEc4f04F1a000505E668267bCE8230A;
-    bytes32 immutable ENDPOINT_SALT = 0x3676367206ccf709683fd2c07439db85777ebae1c1aa21cae5777dc0d030e9b6;
-    address immutable ORACLE_ADDR = 0x000000E5C036C55D437Ae6732eFdEBe42e86a9A4;
-    bytes32 immutable ORACLE_SALT = 0x7ec94177bbbfc40b8b2b6ac02fcba09bd469bef21e3cbd9ff8fa71fe26de88be;
-    address immutable RELAYER_ADDR = 0x000000e3A8e1004c3edDB4BF9069a7C1a076E003;
-    bytes32 immutable RELAYER_SALT = 0x773425664c7f34046af5473b331b71e38410c4725b3b0ef019c0db70318bb5a2;
+    address immutable ENDPOINT_ADDR = 0x00000000fec9f746a2138D9C6f42794236f3aca8;
+    bytes32 immutable ENDPOINT_SALT = 0x7380f497506e3882cfa3c434e0248d56c459927f453ad4fca7c4d3ae7f79992f;
+    address immutable ORACLE_ADDR = 0x00000012f877F68a8D2410b683FDC8214f4b5194;
+    bytes32 immutable ORACLE_SALT = 0x28a8dc03b07b43b2b00a5ce326d8b1a2f763383799fdccab482196a6a67c206a;
+    address immutable RELAYER_ADDR = 0x000000fbfBc6954C8CBba3130b5Aee7f3Ea5108e;
+    bytes32 immutable RELAYER_SALT = 0xca2e642f6df8329eb191014b3e8bcea3ac247a1d17a2007aee1c019f58a07178;
 
     string config;
     string instanceId;
