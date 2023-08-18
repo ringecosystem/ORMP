@@ -22,23 +22,21 @@ import "../src/Channel.sol";
 import "../src/Verifier.sol";
 
 contract ChannelTest is Test, Verifier {
-    Channel channel;
+    ChannelWrapper channel;
     address immutable self = address(this);
 
     bytes32[32] zeroHashes;
 
     function setUp() public {
         vm.chainId(1);
-        channel = new Channel();
-        channel.init(self, self);
+        channel = new ChannelWrapper(self);
+        channel.setDefaultConfig(self, self);
         for (uint256 height = 0; height < 31; height++) {
             zeroHashes[height + 1] = keccak256(abi.encodePacked(zeroHashes[height], zeroHashes[height]));
         }
     }
 
     function test_constructorArgs() public {
-        assertEq(channel.CONFIG(), self);
-        assertEq(channel.ENDPOINT(), self);
         assertEq(channel.LOCAL_CHAINID(), 1);
         assertEq(channel.root(), keccak256(abi.encodePacked(zeroHashes[31], zeroHashes[31])));
         assertEq(channel.messageCount(), 0);
@@ -56,11 +54,6 @@ contract ChannelTest is Test, Verifier {
         channel.sendMessage(self, 1, self, "");
     }
 
-    function testFail_sendMessage_notEndpoint() public {
-        vm.prank(address(0xc));
-        channel.sendMessage(self, 2, self, "");
-    }
-
     function test_recvMessage() public {
         bytes32 msgHash = channel.sendMessage(self, 2, self, "");
 
@@ -76,7 +69,7 @@ contract ChannelTest is Test, Verifier {
         assertEq(msgHash, hash(message));
         Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: channel.prove()});
         vm.chainId(2);
-        channel.recvMessage(message, abi.encode(proof), gasleft());
+        channel.recvMessage(message, abi.encode(proof));
     }
 
     function test_recvMessage_fuzz() public {
@@ -96,19 +89,26 @@ contract ChannelTest is Test, Verifier {
             assertEq(msgHash, hash(message));
             Proof memory proof = Proof({blockNumber: block.number, messageIndex: index, messageProof: channel.prove()});
             vm.chainId(2);
-            channel.recvMessage(message, abi.encode(proof), gasleft());
+            channel.recvMessage(message, abi.encode(proof));
         }
-    }
-
-    function recv(Message calldata, uint256) external pure returns (bool) {
-        return true;
-    }
-
-    function getAppConfig(address) external view returns (Config memory) {
-        return Config(self, self);
     }
 
     function merkleRoot(uint256, uint256) public view override returns (bytes32) {
         return channel.root();
+    }
+}
+
+contract ChannelWrapper is Channel {
+    constructor(address dao) Channel(dao) {}
+
+    function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
+        public
+        returns (bytes32)
+    {
+        return _send(from, toChainId, to, encoded);
+    }
+
+    function recvMessage(Message calldata message, bytes calldata proof) public {
+        _recv(message, proof);
     }
 }

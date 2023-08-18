@@ -18,15 +18,12 @@
 pragma solidity 0.8.17;
 
 import "../interfaces/IEndpoint.sol";
-import "../interfaces/IUserConfig.sol";
 
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract Application {
-    address public immutable USER_CONFIG;
     address public immutable TRUSTED_ENDPOINT;
 
-    constructor(address config, address endpoint) {
-        USER_CONFIG = config;
+    constructor(address endpoint) {
         TRUSTED_ENDPOINT = endpoint;
     }
 

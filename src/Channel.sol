@@ -17,8 +17,7 @@
 
 pragma solidity 0.8.17;
 
-import "./interfaces/IEndpoint.sol";
-import "./interfaces/IUserConfig.sol";
+import "./UserConfig.sol";
 import "./interfaces/IVerifier.sol";
 import "./imt/IncrementalMerkleTree.sol";
 
@@ -31,7 +30,7 @@ import "./imt/IncrementalMerkleTree.sol";
 /// @dev Messages live in an incremental merkle tree (imt)
 /// > A Merkle tree is a binary and complete tree decorated with
 /// > the Merkle (hash) attribute.
-contract Channel {
+contract Channel is UserConfig {
     using IncrementalMerkleTree for IncrementalMerkleTree.Tree;
 
     /// @dev Incremental merkle tree root which all message hashes live in leafs.
@@ -41,13 +40,6 @@ contract Channel {
     /// @dev msgHash => isDispathed.
     mapping(bytes32 => bool) public dones;
 
-    /// @dev User config address.
-    address public CONFIG;
-    /// @dev Endpoint address.
-    address public ENDPOINT;
-
-    /// @dev Factory immutable address.
-    address public immutable FACTORY;
     address private immutable _self = address(this);
 
     /// @dev Notifies an observer that the message has been accepted.
@@ -60,25 +52,10 @@ contract Channel {
     /// @param dispatchResult The message dispatch result.
     event MessageDispatched(bytes32 indexed msgHash, bool dispatchResult);
 
-    modifier onlyEndpoint() {
-        require(msg.sender == ENDPOINT, "!endpoint");
-        _;
-    }
-
     /// @dev Init code.
-    constructor() {
+    constructor(address dao) UserConfig(dao) {
         // init with empty tree
         root = 0x27ae5ba08d7291c96c8cbddcc148bf48a6d68c7974b94356f53754ef6171d757;
-        FACTORY = msg.sender;
-    }
-
-    /// @dev Called once by the factory at time of deployment
-    /// @param config User config immutable address.
-    /// @param endpoint Endpoint immutable address.
-    function init(address config, address endpoint) external {
-        require(FACTORY == msg.sender, "!factory");
-        CONFIG = config;
-        ENDPOINT = endpoint;
     }
 
     /// @dev Fetch local chain id.
@@ -95,11 +72,7 @@ contract Channel {
     /// @param toChainId The Message destination chain id.
     /// @param to User application contract address which receive the message.
     /// @param encoded The calldata which encoded by ABI Encoding.
-    function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
-        external
-        onlyEndpoint
-        returns (bytes32)
-    {
+    function _send(address from, uint256 toChainId, address to, bytes calldata encoded) internal returns (bytes32) {
         // only cross-chain message
         require(toChainId != LOCAL_CHAINID(), "!cross-chain");
         // get this message leaf index.
@@ -132,10 +105,9 @@ contract Channel {
     /// @notice Only message.to's config relayer could relayer this message.
     /// @param message Received message info.
     /// @param proof Message proof of this message.
-    /// @param gasLimit The gas limit of message execute.
-    function recvMessage(Message calldata message, bytes calldata proof, uint256 gasLimit) external {
+    function _recv(Message calldata message, bytes calldata proof) internal {
         // get message.to user config.
-        Config memory uaConfig = IUserConfig(CONFIG).getAppConfig(message.to);
+        Config memory uaConfig = getAppConfig(message.to);
         // only the config relayer could relay this message.
         require(uaConfig.relayer == msg.sender, "!auth");
 
@@ -150,11 +122,6 @@ contract Channel {
         require(dones[msgHash] == false, "done");
         // set the message is dispatched.
         dones[msgHash] = true;
-
-        // then, dispatch message to endpoint.
-        bool dispatchResult = IEndpoint(ENDPOINT).recv(message, gasLimit);
-        // emit dispatched message event.
-        emit MessageDispatched(msgHash, dispatchResult);
     }
 
     /// @dev Fetch the messages count of incremental merkle tree.
