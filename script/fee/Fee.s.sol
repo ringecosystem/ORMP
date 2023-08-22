@@ -3,10 +3,8 @@ pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
 import {stdJson} from "forge-std/StdJson.sol";
-import {console2 as console} from "forge-std/console2.sol";
 
-import {Chains} from "../Chains.sol";
-import {ScriptTools} from "../ScriptTools.sol";
+import "../Common.s.sol";
 
 interface III {
     function isApproved(address operator) external view returns (bool);
@@ -20,40 +18,28 @@ interface III {
     function fee(uint256 toChainId, address ua, uint256 size, bytes calldata params) external view returns (uint256);
 }
 
-contract Fee is Script {
+contract Fee is Common {
     using stdJson for string;
     using ScriptTools for string;
-    using Chains for uint256;
 
     string instanceId;
     string config;
     string deployedContracts;
     address dao;
 
-    function name() public pure returns (string memory) {
+    function name() public pure override returns (string memory) {
         return "Fee";
     }
 
-    function setUp() public {
-        uint256 chainId = vm.envOr("CHAIN_ID", block.chainid);
-        createSelectFork(chainId);
-        console.log("Connected to network with chainid %s", chainId);
-
+    function setUp() public override {
         instanceId = vm.envOr("INSTANCE_ID", string("fee.c"));
-        vm.setEnv("FOUNDRY_ROOT_CHAINID", vm.toString(block.chainid));
-        vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", vm.toString(true));
         config = ScriptTools.readInput(instanceId);
         deployedContracts = ScriptTools.readOutput("deploy.a");
-
         dao = deployedContracts.readAddress(".DAO");
-
-        console.log("Script: %s", name());
-        console.log("Context: %s", getContext());
     }
 
     function run(uint256 chainId) public {
         require(dao == msg.sender, "!dao");
-
         setOracleFee(chainId);
         setRelayerFee(chainId);
     }
@@ -85,25 +71,5 @@ contract Fee is Script {
         }
         III(relayer).setDstPrice(chainId, dstPriceRatio, dstGasPriceInWei);
         III(relayer).setDstConfig(chainId, baseGas, gasPerByte);
-    }
-
-    modifier broadcast() {
-        vm.startBroadcast();
-        _;
-        vm.stopBroadcast();
-    }
-
-    function getContext() internal returns (string memory) {
-        string memory context = vm.envOr("DEPLOYMENT_CONTEXT", string(""));
-        if (bytes(context).length > 0) {
-            return context;
-        }
-
-        uint256 chainid = vm.envOr("CHAIN_ID", block.chainid);
-        return chainid.toChainName();
-    }
-
-    function createSelectFork(uint256 chainid) public {
-        vm.createSelectFork(chainid.toChainName());
     }
 }

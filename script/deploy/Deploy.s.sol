@@ -2,11 +2,9 @@
 pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
-import {console2 as console} from "forge-std/console2.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 
-import {Chains} from "../Chains.sol";
-import {ScriptTools} from "../ScriptTools.sol";
+import "../Common.s.sol";
 
 import "../../src/Endpoint.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
@@ -26,12 +24,10 @@ interface III {
 /// @notice Script used to deploy a ORMP protocol. The entire protocol is deployed within the `run` function.
 ///         To add a new contract to the protocol, add a public function that deploys that individual contract.
 ///         Then add a call to that function inside of `run`.
-contract Deploy is Script {
+contract Deploy is Common {
     using stdJson for string;
     using ScriptTools for string;
-    using Chains for uint256;
 
-    address immutable SAFE_CREATE2_ADDR = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
     address immutable ENDPOINT_ADDR = 0x00000000fec9f746a2138D9C6f42794236f3aca8;
     bytes32 immutable ENDPOINT_SALT = 0x7380f497506e3882cfa3c434e0248d56c459927f453ad4fca7c4d3ae7f79992f;
     address immutable ORACLE_ADDR = 0x00000012f877F68a8D2410b683FDC8214f4b5194;
@@ -49,28 +45,21 @@ contract Deploy is Script {
 
     /// @notice The name of the script, used to ensure the right deploy artifacts
     ///         are used.
-    function name() public pure returns (string memory) {
+    function name() public pure override returns (string memory) {
         return "Deploy";
     }
 
-    function setUp() public {
-        uint256 chainId = vm.envOr("CHAIN_ID", block.chainid);
-        createSelectFork(chainId);
-        console.log("Connected to network with chainid %s", chainId);
+    function setUp() public override {
+        super.setUp();
 
         instanceId = vm.envOr("INSTANCE_ID", string("deploy.c"));
         outputName = "deploy.a";
-        vm.setEnv("FOUNDRY_ROOT_CHAINID", vm.toString(block.chainid));
-        vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", vm.toString(true));
         config = ScriptTools.readInput(instanceId);
 
         deployer = config.readAddress(".DEPLOYER");
         dao = config.readAddress(".DAO");
         oracleOperator = config.readAddress(".ORACLE_OPERATOR");
         relayerOperator = config.readAddress(".RELAYER_OPERATOR");
-
-        console.log("Deploying from %s", name());
-        console.log("Deployment context: %s", getDeploymentContext());
     }
 
     /// @notice Deploy all of the contracts
@@ -88,12 +77,6 @@ contract Deploy is Script {
         ScriptTools.exportContract(outputName, "ENDPOINT", endpoint);
         ScriptTools.exportContract(outputName, "ORACLE", oracle);
         ScriptTools.exportContract(outputName, "RELAYER", relayer);
-    }
-
-    function _deploy(bytes32 salt, bytes memory initCode) public returns (address) {
-        bytes memory data = bytes.concat(salt, initCode);
-        (, bytes memory addr) = SAFE_CREATE2_ADDR.call(data);
-        return payable(address(uint160(bytes20(addr))));
     }
 
     /// @notice Deploy the Endpoint
@@ -153,28 +136,5 @@ contract Deploy is Script {
 
         III(relayer).changeOwner(dao);
         require(III(relayer).owner() == dao, "!dao");
-    }
-
-    /// @notice Modifier that wraps a function in broadcasting.
-    modifier broadcast() {
-        vm.startBroadcast();
-        _;
-        vm.stopBroadcast();
-    }
-
-    /// @notice The context of the deployment is used to namespace the artifacts.
-    ///         An unknown context will use the chainid as the context name.
-    function getDeploymentContext() internal returns (string memory) {
-        string memory context = vm.envOr("DEPLOYMENT_CONTEXT", string(""));
-        if (bytes(context).length > 0) {
-            return context;
-        }
-
-        uint256 chainid = vm.envOr("CHAIN_ID", block.chainid);
-        return chainid.toChainName();
-    }
-
-    function createSelectFork(uint256 chainid) public {
-        vm.createSelectFork(chainid.toChainName());
     }
 }
