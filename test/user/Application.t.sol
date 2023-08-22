@@ -47,7 +47,7 @@ contract ApplicationTest is Test {
 }
 
 contract UserApplication is Application {
-    constructor(address endpoint) Application(endpoint) {}
+    constructor(address ormp) Application(ormp) {}
 
     function clearFailedMessage(Message calldata message) external override {}
 
@@ -61,6 +61,6 @@ contract UserApplication is Application {
         address xmsgSender = _xmsgSender();
         require(msgHash == bytes32(uint256(1)));
         require(fromChainid == 1);
-        require(xmsgSender == TRUSTED_ENDPOINT);
+        require(xmsgSender == TRUSTED_ORMP);
     }
 }

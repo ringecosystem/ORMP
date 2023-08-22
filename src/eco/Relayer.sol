@@ -35,7 +35,7 @@ contract Relayer {
         uint64 gasPerByte;
     }
 
-    address public immutable ENDPOINT;
+    address public immutable PROTOCOL;
     address public owner;
 
     // chainId => price
@@ -53,8 +53,8 @@ contract Relayer {
         _;
     }
 
-    constructor(address dao, address endpoint) {
-        ENDPOINT = endpoint;
+    constructor(address dao, address ormp) {
+        PROTOCOL = ormp;
         owner = dao;
     }
 
@@ -108,11 +108,11 @@ contract Relayer {
     }
 
     function assign(bytes32 msgHash, bytes calldata params) external payable {
-        require(msg.sender == ENDPOINT, "!enpoint");
-        emit Assigned(msgHash, msg.value, params, IEndpoint(ENDPOINT).prove());
+        require(msg.sender == PROTOCOL, "!ormp");
+        emit Assigned(msgHash, msg.value, params, IEndpoint(PROTOCOL).prove());
     }
 
     function relay(Message calldata message, bytes calldata proof, uint256 gasLimit) external onlyApproved {
-        IEndpoint(ENDPOINT).recv(message, proof, gasLimit);
+        IEndpoint(PROTOCOL).recv(message, proof, gasLimit);
     }
 }

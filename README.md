@@ -6,7 +6,7 @@ Oracle and Relayer based Message Protocol.
 
 |  Contract  |  Canonical Cross-chain Deployment Address  |
 |------------|--------------------------------------------|
-| Endpoint   | 0x00000000fec9f746a2138D9C6f42794236f3aca8 |
+| ORMP       | 0x00000000fec9f746a2138D9C6f42794236f3aca8 |
 | Oracle     | 0x00000012f877F68a8D2410b683FDC8214f4b5194 |
 | Relayer    | 0x000000fbfBc6954C8CBba3130b5Aee7f3Ea5108e |
 

@@ -67,7 +67,6 @@ contract Channel is UserConfig {
     }
 
     /// @dev Send message.
-    /// @notice Only endpoint could call this function.
     /// @param from User application contract address which send the message.
     /// @param toChainId The Message destination chain id.
     /// @param to User application contract address which receive the message.

@@ -6,12 +6,12 @@ import {stdJson} from "forge-std/StdJson.sol";
 
 import "../Common.s.sol";
 
-import "../../src/Endpoint.sol";
+import "../../src/ORMP.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
 import {Oracle} from "../../src/eco/Oracle.sol";
 
 interface III {
-    function ENDPOINT() external view returns (address);
+    function PROTOCOL() external view returns (address);
     function isApproved(address operator) external view returns (bool);
     function setApproved(address operator, bool approve) external;
     function owner() external view returns (address);
@@ -28,8 +28,8 @@ contract Deploy is Common {
     using stdJson for string;
     using ScriptTools for string;
 
-    address immutable ENDPOINT_ADDR = 0x00000000fec9f746a2138D9C6f42794236f3aca8;
-    bytes32 immutable ENDPOINT_SALT = 0x7380f497506e3882cfa3c434e0248d56c459927f453ad4fca7c4d3ae7f79992f;
+    address immutable ORMP_ADDR = 0x00000000fec9f746a2138D9C6f42794236f3aca8;
+    bytes32 immutable ORMP_SALT = 0x7380f497506e3882cfa3c434e0248d56c459927f453ad4fca7c4d3ae7f79992f;
     address immutable ORACLE_ADDR = 0x00000012f877F68a8D2410b683FDC8214f4b5194;
     bytes32 immutable ORACLE_SALT = 0x28a8dc03b07b43b2b00a5ce326d8b1a2f763383799fdccab482196a6a67c206a;
     address immutable RELAYER_ADDR = 0x000000fbfBc6954C8CBba3130b5Aee7f3Ea5108e;
@@ -66,60 +66,60 @@ contract Deploy is Common {
     function run() public {
         require(deployer == msg.sender, "!deployer");
 
-        address endpoint = deployEndpoint();
+        address ormp = deployProtocol();
 
-        address oracle = deployOralce(endpoint);
-        address relayer = deployRelayer(endpoint);
+        address oracle = deployOralce(ormp);
+        address relayer = deployRelayer(ormp);
 
-        setConfig(endpoint, oracle, relayer);
+        setConfig(ormp, oracle, relayer);
 
         ScriptTools.exportContract(outputName, "DAO", dao);
-        ScriptTools.exportContract(outputName, "ENDPOINT", endpoint);
+        ScriptTools.exportContract(outputName, "ormp", ormp);
         ScriptTools.exportContract(outputName, "ORACLE", oracle);
         ScriptTools.exportContract(outputName, "RELAYER", relayer);
     }
 
-    /// @notice Deploy the Endpoint
-    function deployEndpoint() public broadcast returns (address) {
-        bytes memory byteCode = type(Endpoint).creationCode;
+    /// @notice Deploy the protocol
+    function deployProtocol() public broadcast returns (address) {
+        bytes memory byteCode = type(ORMP).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer));
-        address endpoint = _deploy(ENDPOINT_SALT, initCode);
-        require(endpoint == ENDPOINT_ADDR, "!endpoint");
-        require(III(endpoint).setter() == deployer, "!deployer");
-        console.log("Endpoint   deployed at %s", endpoint);
-        return endpoint;
+        address ormp = _deploy(ORMP_SALT, initCode);
+        require(ormp == ORMP_ADDR, "!ormp");
+        require(III(ormp).setter() == deployer, "!deployer");
+        console.log("ormp   deployed at %s", ormp);
+        return ormp;
     }
 
     /// @notice Deploy the Oracle
-    function deployOralce(address endpoint) public broadcast returns (address) {
+    function deployOralce(address ormp) public broadcast returns (address) {
         bytes memory byteCode = type(Oracle).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint));
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ormp));
         address oracle = _deploy(ORACLE_SALT, initCode);
         require(oracle == ORACLE_ADDR, "!oracle");
 
         require(III(oracle).owner() == deployer);
-        require(III(oracle).ENDPOINT() == endpoint);
+        require(III(oracle).PROTOCOL() == ormp);
         console.log("Oracle     deployed at %s", oracle);
         return oracle;
     }
 
     /// @notice Deploy the Relayer
-    function deployRelayer(address endpoint) public broadcast returns (address) {
+    function deployRelayer(address ormp) public broadcast returns (address) {
         bytes memory byteCode = type(Relayer).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, endpoint));
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ormp));
         address relayer = _deploy(RELAYER_SALT, initCode);
         require(relayer == RELAYER_ADDR, "!relayer");
 
         require(III(relayer).owner() == deployer);
-        require(III(relayer).ENDPOINT() == endpoint);
+        require(III(relayer).PROTOCOL() == ormp);
         console.log("Relayer    deployed at %s", relayer);
         return relayer;
     }
 
     /// @notice Set the protocol config
-    function setConfig(address endpoint, address oracle, address relayer) public broadcast {
-        Endpoint(endpoint).setDefaultConfig(oracle, relayer);
-        Config memory cfg = Endpoint(endpoint).getDefaultConfig();
+    function setConfig(address ormp, address oracle, address relayer) public broadcast {
+        ORMP(ormp).setDefaultConfig(oracle, relayer);
+        Config memory cfg = ORMP(ormp).getDefaultConfig();
         require(cfg.oracle == oracle, "!oracle");
         require(cfg.relayer == relayer, "!relayer");
 
@@ -128,8 +128,8 @@ contract Deploy is Common {
         III(relayer).setApproved(relayerOperator, true);
         require(III(relayer).isApproved(relayerOperator), "!r-operator");
 
-        III(endpoint).changeSetter(dao);
-        require(III(endpoint).setter() == dao, "!dao");
+        III(ormp).changeSetter(dao);
+        require(III(ormp).setter() == dao, "!dao");
 
         III(oracle).changeOwner(dao);
         require(III(oracle).owner() == dao, "!dao");

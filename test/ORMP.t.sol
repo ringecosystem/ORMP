@@ -18,21 +18,21 @@
 pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
-import "../src/Endpoint.sol";
+import "../src/ORMP.sol";
 import "../src/Verifier.sol";
 
-contract EndpointTest is Test, Verifier {
-    Endpoint endpoint;
+contract ORMPTest is Test, Verifier {
+    ORMP ormp;
     Message message;
     Proof proof;
     address immutable self = address(this);
 
     function setUp() public {
         vm.chainId(1);
-        endpoint = new Endpoint(self);
-        endpoint.setDefaultConfig(self, self);
+        ormp = new ORMP(self);
+        ormp.setDefaultConfig(self, self);
         message = Message({
-            channel: address(endpoint),
+            channel: address(ormp),
             index: 0,
             fromChainId: 1,
             from: self,
@@ -47,40 +47,40 @@ contract EndpointTest is Test, Verifier {
     }
 
     function perform_send() public {
-        uint256 f = endpoint.fee(2, self, "", "");
-        endpoint.send{value: f}(2, self, "", "");
+        uint256 f = ormp.fee(2, self, "", "");
+        ormp.send{value: f}(2, self, "", "");
         proof = Proof({
             blockNumber: block.number,
-            messageIndex: endpoint.messageCount() - 1,
-            messageProof: endpoint.prove()
+            messageIndex: ormp.messageCount() - 1,
+            messageProof: ormp.prove()
         });
         vm.chainId(2);
     }
 
     function test_recv() public {
         perform_send();
-        bool r = endpoint.recv(message, abi.encode(proof), gasleft());
+        bool r = ormp.recv(message, abi.encode(proof), gasleft());
         assertEq(r, false);
     }
 
     function test_retry() public {
         perform_send();
-        bool r = endpoint.recv(message, abi.encode(proof), gasleft());
+        bool r = ormp.recv(message, abi.encode(proof), gasleft());
         assertEq(r, false);
-        r = endpoint.retryFailedMessage(message);
+        r = ormp.retryFailedMessage(message);
         assertEq(r, false);
     }
 
     function test_clear() public {
         bytes32 msgHash = hash(message);
-        bool failed = endpoint.fails(msgHash);
+        bool failed = ormp.fails(msgHash);
         assertEq(failed, false);
         perform_send();
-        endpoint.recv(message, abi.encode(proof), gasleft());
-        failed = endpoint.fails(msgHash);
+        ormp.recv(message, abi.encode(proof), gasleft());
+        failed = ormp.fails(msgHash);
         assertEq(failed, true);
-        endpoint.clearFailedMessage(message);
-        failed = endpoint.fails(msgHash);
+        ormp.clearFailedMessage(message);
+        failed = ormp.fails(msgHash);
         assertEq(failed, false);
     }
 
@@ -96,6 +96,6 @@ contract EndpointTest is Test, Verifier {
     }
 
     function merkleRoot(uint256, uint256) public view override returns (bytes32) {
-        return endpoint.root();
+        return ormp.root();
     }
 }
