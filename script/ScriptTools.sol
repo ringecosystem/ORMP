@@ -37,8 +37,7 @@ library ScriptTools {
     }
 
     function readInput(string memory root, string memory name) internal view returns (string memory) {
-        string memory chainInputFolder =
-            string(abi.encodePacked("/script/input/", vm.toString(getRootChainId()), "/"));
+        string memory chainInputFolder = string(abi.encodePacked("/script/input/", vm.toString(getRootChainId()), "/"));
         return vm.readFile(string(abi.encodePacked(root, chainInputFolder, name, ".json")));
     }
 
