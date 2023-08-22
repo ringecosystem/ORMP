@@ -1,19 +1,12 @@
 # Application
-[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/user/Application.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/user/Application.sol)
 
 
 ## State Variables
-### USER_CONFIG
+### TRUSTED_ORMP
 
 ```solidity
-address public immutable USER_CONFIG;
-```
-
-
-### TRUSTED_ENDPOINT
-
-```solidity
-address public immutable TRUSTED_ENDPOINT;
+address public immutable TRUSTED_ORMP;
 ```
 
 
@@ -22,7 +15,7 @@ address public immutable TRUSTED_ENDPOINT;
 
 
 ```solidity
-constructor(address config, address endpoint);
+constructor(address ormp);
 ```
 
 ### clearFailedMessage
@@ -46,11 +39,11 @@ function retryFailedMessage(Message calldata message) external virtual returns (
 function setAppConfig(address relayer, address oracle) external virtual;
 ```
 
-### isTrustedEndpoint
+### isTrustedORMP
 
 
 ```solidity
-function isTrustedEndpoint(address endpoint) public view returns (bool);
+function isTrustedORMP(address ormp) public view returns (bool);
 ```
 
 ### _messageId

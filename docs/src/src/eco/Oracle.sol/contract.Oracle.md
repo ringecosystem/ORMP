@@ -1,15 +1,15 @@
 # Oracle
-[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/eco/Oracle.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/eco/Oracle.sol)
 
 **Inherits:**
 [Verifier](/src/Verifier.sol/abstract.Verifier.md)
 
 
 ## State Variables
-### ENDPOINT
+### PROTOCOL
 
 ```solidity
-address public immutable ENDPOINT;
+address public immutable PROTOCOL;
 ```
 
 
@@ -60,7 +60,7 @@ modifier onlyApproved();
 
 
 ```solidity
-constructor(address endpoint);
+constructor(address dao, address ormp);
 ```
 
 ### receive

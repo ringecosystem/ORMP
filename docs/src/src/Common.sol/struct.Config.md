@@ -1,10 +1,13 @@
-# hash
+# Config
 [Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/Common.sol)
 
-*Hash of the message.*
+*User application custom configuration.*
 
 
 ```solidity
-function hash(Message memory message) pure returns (bytes32);
+struct Config {
+    address oracle;
+    address relayer;
+}
 ```
 

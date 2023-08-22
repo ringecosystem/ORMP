@@ -1,19 +1,12 @@
 # Relayer
-[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/eco/Relayer.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/eco/Relayer.sol)
 
 
 ## State Variables
-### ENDPOINT
+### PROTOCOL
 
 ```solidity
-address public immutable ENDPOINT;
-```
-
-
-### CHANNEL
-
-```solidity
-address public immutable CHANNEL;
+address public immutable PROTOCOL;
 ```
 
 
@@ -64,7 +57,7 @@ modifier onlyApproved();
 
 
 ```solidity
-constructor(address endpoint, address channel);
+constructor(address dao, address ormp);
 ```
 
 ### receive
@@ -141,7 +134,7 @@ function relay(Message calldata message, bytes calldata proof, uint256 gasLimit)
 ### Assigned
 
 ```solidity
-event Assigned(bytes32 indexed msgHash, uint256 fee, bytes parmas);
+event Assigned(bytes32 indexed msgHash, uint256 fee, bytes parmas, bytes32[32] proof);
 ```
 
 ### SetDstPrice
