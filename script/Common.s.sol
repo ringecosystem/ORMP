@@ -36,7 +36,6 @@ abstract contract Common is Script {
         console.log("Context: %s", context());
     }
 
-
     function createSelectFork(uint256 chainid) public {
         vm.createSelectFork(chainid.toChainName());
     }
@@ -58,5 +57,4 @@ abstract contract Common is Script {
         (, bytes memory addr) = SAFE_CREATE2_ADDR.call(data);
         return address(uint160(bytes20(addr)));
     }
-
 }

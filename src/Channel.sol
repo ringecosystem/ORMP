@@ -105,7 +105,7 @@ contract Channel is UserConfig {
     /// @notice Only message.to's config relayer could relayer this message.
     /// @param message Received message info.
     /// @param proof Message proof of this message.
-    function _recv(Message calldata message, bytes calldata proof) internal {
+    function _recv(Message calldata message, bytes calldata proof) internal returns (bytes32) {
         // get message.to user config.
         Config memory uaConfig = getAppConfig(message.to);
         // only the config relayer could relay this message.
@@ -122,6 +122,8 @@ contract Channel is UserConfig {
         require(dones[msgHash] == false, "done");
         // set the message is dispatched.
         dones[msgHash] = true;
+
+        return msgHash;
     }
 
     /// @dev Fetch the messages count of incremental merkle tree.

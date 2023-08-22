@@ -32,9 +32,9 @@ contract Endpoint is ReentrancyGuard, Channel {
 
     /// msgHash => isFailed
     mapping(bytes32 => bool) public fails;
-
     /// @dev Notifies an observer that the failed message has been cleared.
     /// @param msgHash Hash of the message.
+
     event ClearFailedMessage(bytes32 indexed msgHash);
     /// @dev Notifies an observer that the failed message has been retried.
     /// @param msgHash Hash of the message.
@@ -124,8 +124,7 @@ contract Endpoint is ReentrancyGuard, Channel {
         recvNonReentrant
         returns (bool dispatchResult)
     {
-        _recv(message, proof);
-        bytes32 msgHash = hash(message);
+        bytes32 msgHash = _recv(message, proof);
         dispatchResult = _dispatch(message, msgHash, gasLimit);
         if (!dispatchResult) {
             fails[msgHash] = true;
@@ -165,7 +164,7 @@ contract Endpoint is ReentrancyGuard, Channel {
     {
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
-            gasLimit, 0, abi.encodePacked(message.encoded, msgHash, uint256(message.fromChainId), message.from)
+            gasLimit, 0, abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
         );
     }
 }
