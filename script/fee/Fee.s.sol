@@ -32,6 +32,8 @@ contract Fee is Common {
     }
 
     function setUp() public override {
+        super.setUp();
+
         instanceId = vm.envOr("INSTANCE_ID", string("fee.c"));
         config = ScriptTools.readInput(instanceId);
         deployedContracts = ScriptTools.readOutput("deploy.a");
