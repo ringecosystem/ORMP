@@ -20,14 +20,14 @@ pragma solidity 0.8.17;
 import "forge-std/Test.sol";
 import "../../script/Chains.sol";
 import "../../src/Verifier.sol";
-import "../../src/Endpoint.sol";
+import "../../src/ORMP.sol";
 import "../../src/eco/Oracle.sol";
 import "../../src/eco/Relayer.sol";
 
-contract EndpointBenchmarkTest is Test {
+contract ORMPBenchmarkTest is Test {
     using Chains for uint256;
 
-    Endpoint endpoint = Endpoint(0x00000000fec9f746a2138D9C6f42794236f3aca8);
+    ORMP ormp = ORMP(0x00000000fec9f746a2138D9C6f42794236f3aca8);
     Relayer relayer = Relayer(payable(0x000000fbfBc6954C8CBba3130b5Aee7f3Ea5108e));
     Oracle oracle = Oracle(payable(0x00000012f877F68a8D2410b683FDC8214f4b5194));
 
@@ -48,8 +48,8 @@ contract EndpointBenchmarkTest is Test {
         perform_send(fromChainId, toChainId, encoded);
 
         Message memory message = Message({
-            channel: address(endpoint),
-            index: endpoint.messageCount() - 1,
+            channel: address(ormp),
+            index: ormp.messageCount() - 1,
             fromChainId: fromChainId,
             from: self,
             toChainId: toChainId,
@@ -60,9 +60,9 @@ contract EndpointBenchmarkTest is Test {
     }
 
     function perform_recv(Message memory message) public {
-        root = endpoint.root();
+        root = ormp.root();
         Verifier.Proof memory proof =
-            Verifier.Proof({blockNumber: block.number, messageIndex: message.index, messageProof: endpoint.prove()});
+            Verifier.Proof({blockNumber: block.number, messageIndex: message.index, messageProof: ormp.prove()});
 
         vm.createSelectFork(message.toChainId.toChainName());
         vm.store(address(oracle), bytes32(uint256(0)), bytes32(uint256(uint160(self))));
@@ -70,7 +70,7 @@ contract EndpointBenchmarkTest is Test {
         oracle.setDapi(message.fromChainId, self);
 
         vm.prank(address(relayer));
-        endpoint.recv(message, abi.encode(proof), 0);
+        ormp.recv(message, abi.encode(proof), 0);
     }
 
     function messageRoot() public view returns (bytes32) {
@@ -79,7 +79,7 @@ contract EndpointBenchmarkTest is Test {
 
     function perform_send(uint256 fromChainId, uint256 toChainId, bytes calldata encoded) public {
         vm.createSelectFork(fromChainId.toChainName());
-        uint256 f = endpoint.fee(toChainId, self, encoded, abi.encode(uint256(0)));
-        endpoint.send{value: f}(toChainId, self, encoded, abi.encode(uint256(0)));
+        uint256 f = ormp.fee(toChainId, self, encoded, abi.encode(uint256(0)));
+        ormp.send{value: f}(toChainId, self, encoded, abi.encode(uint256(0)));
     }
 }

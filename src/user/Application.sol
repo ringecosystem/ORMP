@@ -17,14 +17,14 @@
 
 pragma solidity 0.8.17;
 
-import "../interfaces/IEndpoint.sol";
+import "../Common.sol";
 
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract Application {
-    address public immutable TRUSTED_ENDPOINT;
+    address public immutable TRUSTED_ORMP;
 
-    constructor(address endpoint) {
-        TRUSTED_ENDPOINT = endpoint;
+    constructor(address ormp) {
+        TRUSTED_ORMP = ormp;
     }
 
     function clearFailedMessage(Message calldata message) external virtual;
@@ -33,8 +33,8 @@ abstract contract Application {
 
     function setAppConfig(address relayer, address oracle) external virtual;
 
-    function isTrustedEndpoint(address endpoint) public view returns (bool) {
-        return TRUSTED_ENDPOINT == endpoint;
+    function isTrustedORMP(address ormp) public view returns (bool) {
+        return TRUSTED_ORMP == ormp;
     }
 
     function _messageId() internal pure returns (bytes32 _msgDataMessageId) {
@@ -52,7 +52,7 @@ abstract contract Application {
     }
 
     function _xmsgSender() internal view returns (address payable _from) {
-        require(msg.data.length >= 20 && isTrustedEndpoint(msg.sender), "!xmsgSender");
+        require(msg.data.length >= 20 && isTrustedORMP(msg.sender), "!xmsgSender");
         assembly {
             _from := shr(96, calldataload(sub(calldatasize(), 20)))
         }

@@ -23,11 +23,11 @@ import "./interfaces/IRelayer.sol";
 import "./security/ReentrancyGuard.sol";
 import "./security/ExcessivelySafeCall.sol";
 
-/// @title Endpoint
+/// @title ORMP
 /// @notice An endpoint is a type of network node for cross-chain communication.
 /// It is an interface exposed by a communication channel.
 /// @dev An endpoint is associated with an immutable channel and user configuration.
-contract Endpoint is ReentrancyGuard, Channel {
+contract ORMP is ReentrancyGuard, Channel {
     using ExcessivelySafeCall for address;
 
     /// msgHash => isFailed

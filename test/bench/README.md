@@ -1,6 +1,6 @@
 ### Benchmark
 
-| Endpoint contract |                 |        |        |        |         |
+| ORMP contract     |                 |        |        |        |         |
 |-------------------|-----------------|--------|--------|--------|---------|
 | Function Name     | min             | avg    | median | max    | # calls |
 | prove             | 17483           | 17483  | 17483  | 17483  | 1       |

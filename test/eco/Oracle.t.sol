@@ -32,7 +32,7 @@ contract OracleTest is Test {
     }
 
     function test_constructorArgs() public {
-        assertEq(oracle.ENDPOINT(), self);
+        assertEq(oracle.PROTOCOL(), self);
         assertEq(oracle.owner(), self);
     }
 

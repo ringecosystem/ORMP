@@ -26,7 +26,7 @@ contract Oracle is Verifier {
     event SetDapi(uint256 indexed chainId, address dapi);
     event SetApproved(address operator, bool approve);
 
-    address public immutable ENDPOINT;
+    address public immutable PROTOCOL;
     address public owner;
 
     // chainId => price
@@ -45,8 +45,8 @@ contract Oracle is Verifier {
         _;
     }
 
-    constructor(address dao, address endpoint) {
-        ENDPOINT = endpoint;
+    constructor(address dao, address ormp) {
+        PROTOCOL = ormp;
         owner = dao;
     }
 
@@ -85,7 +85,7 @@ contract Oracle is Verifier {
     }
 
     function assign(bytes32 msgHash) external payable {
-        require(msg.sender == ENDPOINT, "!enpoint");
+        require(msg.sender == PROTOCOL, "!enpoint");
         emit Assigned(msgHash, msg.value);
     }
 

@@ -32,7 +32,7 @@ contract RelayerTest is Test {
     }
 
     function test_constructorArgs() public {
-        assertEq(relayer.ENDPOINT(), self);
+        assertEq(relayer.PROTOCOL(), self);
         assertEq(relayer.owner(), self);
     }
 
