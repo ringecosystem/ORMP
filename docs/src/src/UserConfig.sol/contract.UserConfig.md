@@ -1,5 +1,5 @@
 # UserConfig
-[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/UserConfig.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/UserConfig.sol)
 
 User config could select their own relayer and oracle.
 The default configuration is used by default.
@@ -47,7 +47,7 @@ modifier onlySetter();
 
 
 ```solidity
-constructor();
+constructor(address dao);
 ```
 
 ### changeSetter
@@ -85,6 +85,13 @@ function setDefaultConfig(address oracle, address relayer) external onlySetter;
 |`relayer`|`address`|Default relayer.|
 
 
+### getDefaultConfig
+
+
+```solidity
+function getDefaultConfig() external view returns (Config memory);
+```
+
 ### getAppConfig
 
 If user application has not configured, then the default config is used.
@@ -93,7 +100,7 @@ If user application has not configured, then the default config is used.
 
 
 ```solidity
-function getAppConfig(address ua) external view returns (Config memory);
+function getAppConfig(address ua) public view returns (Config memory);
 ```
 **Parameters**
 

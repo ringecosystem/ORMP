@@ -1,5 +1,8 @@
 # Channel
-[Git Source](https://github.com/darwinia-network/ORMP/blob/5d245763e88118b1bc6b2cfd18dc541a2fe3481d/src/Channel.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/Channel.sol)
+
+**Inherits:**
+[UserConfig](/src/UserConfig.sol/contract.UserConfig.md)
 
 A channel is a logical connection over cross-chain network.
 It used for cross-chain message transfer.
@@ -40,24 +43,6 @@ mapping(bytes32 => bool) public dones;
 ```
 
 
-### ENDPOINT
-*Endpoint immutable address.*
-
-
-```solidity
-address public immutable ENDPOINT;
-```
-
-
-### CONFIG
-*User config immutable address.*
-
-
-```solidity
-address public immutable CONFIG;
-```
-
-
 ### _self
 
 ```solidity
@@ -66,28 +51,14 @@ address private immutable _self = address(this);
 
 
 ## Functions
-### onlyEndpoint
-
-
-```solidity
-modifier onlyEndpoint();
-```
-
 ### constructor
 
 *Init code.*
 
 
 ```solidity
-constructor(address config, address endpoint);
+constructor(address dao) UserConfig(dao);
 ```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`config`|`address`|User config immutable address.|
-|`endpoint`|`address`|Endpoint immutable address.|
-
 
 ### LOCAL_CHAINID
 
@@ -104,18 +75,13 @@ function LOCAL_CHAINID() public view returns (uint256 chainId);
 |`chainId`|`uint256`|Local chain id.|
 
 
-### sendMessage
-
-Only endpoint could call this function.
+### _send
 
 *Send message.*
 
 
 ```solidity
-function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
-    external
-    onlyEndpoint
-    returns (bytes32);
+function _send(address from, uint256 toChainId, address to, bytes calldata encoded) internal returns (bytes32);
 ```
 **Parameters**
 
@@ -127,7 +93,7 @@ function sendMessage(address from, uint256 toChainId, address to, bytes calldata
 |`encoded`|`bytes`|The calldata which encoded by ABI Encoding.|
 
 
-### recvMessage
+### _recv
 
 Only message.to's config relayer could relayer this message.
 
@@ -135,7 +101,7 @@ Only message.to's config relayer could relayer this message.
 
 
 ```solidity
-function recvMessage(Message calldata message, bytes calldata proof, uint256 gasLimit) external;
+function _recv(Message calldata message, bytes calldata proof) internal returns (bytes32);
 ```
 **Parameters**
 
@@ -143,7 +109,6 @@ function recvMessage(Message calldata message, bytes calldata proof, uint256 gas
 |----|----|-----------|
 |`message`|`Message`|Received message info.|
 |`proof`|`bytes`|Message proof of this message.|
-|`gasLimit`|`uint256`|The gas limit of message execute.|
 
 
 ### messageCount
@@ -162,6 +127,15 @@ function messageCount() public view returns (uint256);
 
 ```solidity
 function imtBranch() public view returns (bytes32[32] memory);
+```
+
+### prove
+
+*Fetch the latest message proof*
+
+
+```solidity
+function prove() public view returns (bytes32[32] memory);
 ```
 
 ## Events
