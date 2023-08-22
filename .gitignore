@@ -4,5 +4,5 @@
 /artifacts
 /broadcast
 deployments/*/.deploy
-/script/deploy/output/*/*.json
-!/script/deploy/output/*/*-latest.json
+/script/output/*/*.json
+!/script/output/*/*-latest.json

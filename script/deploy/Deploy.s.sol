@@ -2,12 +2,11 @@
 pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
-import {Test} from "forge-std/Test.sol";
 import {console2 as console} from "forge-std/console2.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 
-import {Chains} from "./Chains.sol";
-import {ScriptTools} from "./ScriptTools.sol";
+import {Chains} from "../Chains.sol";
+import {ScriptTools} from "../ScriptTools.sol";
 
 import "../../src/Endpoint.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
@@ -33,12 +32,12 @@ contract Deploy is Script {
     using Chains for uint256;
 
     address immutable SAFE_CREATE2_ADDR = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
-    bytes32 immutable ENDPOINT_SALT = 0x942cd227fe072b89976a98f8b18e5ded802a44c974dbaf170ca03f285fc06147;
-    address immutable ENDPOINT_ADDR = 0x00000042Ed82A8EeD15256698Ee5101b7bB3B085;
-    bytes32 immutable ORACLE_SALT = 0x6ea373bcb0969347cb4d9045d9739f604e5833943e6d07fb01b2c384462fef06;
-    address immutable ORACLE_ADDR = 0x000000bf66D164eDAEC1907553945447070CeB50;
-    bytes32 immutable RELAYER_SALT = 0x8dddce273462cdb13a6f05111cdc8732c46aa487a3ad1bbadd71d88716898d29;
-    address immutable RELAYER_ADDR = 0x000000347Bb13c72A7b6eB7e4eE9E0410Bc4f9DE;
+    address immutable ENDPOINT_ADDR = 0x00000000fec9f746a2138D9C6f42794236f3aca8;
+    bytes32 immutable ENDPOINT_SALT = 0x7380f497506e3882cfa3c434e0248d56c459927f453ad4fca7c4d3ae7f79992f;
+    address immutable ORACLE_ADDR = 0x00000012f877F68a8D2410b683FDC8214f4b5194;
+    bytes32 immutable ORACLE_SALT = 0x28a8dc03b07b43b2b00a5ce326d8b1a2f763383799fdccab482196a6a67c206a;
+    address immutable RELAYER_ADDR = 0x000000fbfBc6954C8CBba3130b5Aee7f3Ea5108e;
+    bytes32 immutable RELAYER_SALT = 0xca2e642f6df8329eb191014b3e8bcea3ac247a1d17a2007aee1c019f58a07178;
 
     string config;
     string instanceId;

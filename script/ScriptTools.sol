@@ -38,14 +38,14 @@ library ScriptTools {
 
     function readInput(string memory root, string memory name) internal view returns (string memory) {
         string memory chainInputFolder =
-            string(abi.encodePacked("/script/deploy/input/", vm.toString(getRootChainId()), "/"));
+            string(abi.encodePacked("/script/input/", vm.toString(getRootChainId()), "/"));
         return vm.readFile(string(abi.encodePacked(root, chainInputFolder, name, ".json")));
     }
 
     function readOutput(string memory name, uint256 timestamp) internal view returns (string memory) {
         string memory root = vm.projectRoot();
         string memory chainOutputFolder =
-            string(abi.encodePacked("/script/deploy/output/", vm.toString(getRootChainId()), "/"));
+            string(abi.encodePacked("/script/output/", vm.toString(getRootChainId()), "/"));
         return
             vm.readFile(string(abi.encodePacked(root, chainOutputFolder, name, "-", vm.toString(timestamp), ".json")));
     }
@@ -53,7 +53,7 @@ library ScriptTools {
     function readOutput(string memory name) internal view returns (string memory) {
         string memory root = vm.projectRoot();
         string memory chainOutputFolder =
-            string(abi.encodePacked("/script/deploy/output/", vm.toString(getRootChainId()), "/"));
+            string(abi.encodePacked("/script/output/", vm.toString(getRootChainId()), "/"));
         return vm.readFile(string(abi.encodePacked(root, chainOutputFolder, name, "-latest.json")));
     }
 
@@ -129,7 +129,7 @@ library ScriptTools {
         string memory root = vm.projectRoot();
 
         string memory chainOutputFolder =
-            string(abi.encodePacked(root, "/script/deploy/output/", vm.toString(getRootChainId()), "/"));
+            string(abi.encodePacked(root, "/script/output/", vm.toString(getRootChainId()), "/"));
         try vm.createDir(chainOutputFolder, true) {} catch (bytes memory) {}
         vm.writeJson(
             json, string(abi.encodePacked(chainOutputFolder, name, "-", vm.toString(block.timestamp), ".json"))

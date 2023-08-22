@@ -6,9 +6,9 @@ Oracle and Relayer based Message Protocol.
 
 |  Contract  |  Canonical Cross-chain Deployment Address  |
 |------------|--------------------------------------------|
-| Endpoint   | 0x00000042Ed82A8EeD15256698Ee5101b7bB3B085 |
-| Oracle     | 0x000000bf66D164eDAEC1907553945447070CeB50 |
-| Relayer    | 0x000000347Bb13c72A7b6eB7e4eE9E0410Bc4f9DE |
+| Endpoint   | 0x00000000fec9f746a2138D9C6f42794236f3aca8 |
+| Oracle     | 0x00000012f877F68a8D2410b683FDC8214f4b5194 |
+| Relayer    | 0x000000fbfBc6954C8CBba3130b5Aee7f3Ea5108e |
 
 
 ## Usage
