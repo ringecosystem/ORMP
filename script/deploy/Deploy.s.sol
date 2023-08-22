@@ -2,12 +2,11 @@
 pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
-import {Test} from "forge-std/Test.sol";
 import {console2 as console} from "forge-std/console2.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 
-import {Chains} from "./Chains.sol";
-import {ScriptTools} from "./ScriptTools.sol";
+import {Chains} from "../Chains.sol";
+import {ScriptTools} from "../ScriptTools.sol";
 
 import "../../src/Endpoint.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";

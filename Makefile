@@ -14,3 +14,4 @@ foundry:; curl -L https://foundry.paradigm.xyz | bash
 
 doc    :; @bash ./bin/doc.sh
 salt   :; @bash ./bin/salt.sh
+fee    :; @bash ./bin/fee.sh ${local} ${remote}
