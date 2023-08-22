@@ -32,9 +32,9 @@ contract ORMP is ReentrancyGuard, Channel {
 
     /// msgHash => isFailed
     mapping(bytes32 => bool) public fails;
+
     /// @dev Notifies an observer that the failed message has been cleared.
     /// @param msgHash Hash of the message.
-
     event ClearFailedMessage(bytes32 indexed msgHash);
     /// @dev Notifies an observer that the failed message has been retried.
     /// @param msgHash Hash of the message.

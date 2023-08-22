@@ -39,7 +39,7 @@ contract Channel is UserConfig {
     IncrementalMerkleTree.Tree private imt;
     /// @dev msgHash => isDispathed.
     mapping(bytes32 => bool) public dones;
-
+    /// @dev Self contract address cache.
     address private immutable _self = address(this);
 
     /// @dev Notifies an observer that the message has been accepted.
