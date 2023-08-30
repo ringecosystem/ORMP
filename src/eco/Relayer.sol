@@ -20,7 +20,7 @@ pragma solidity 0.8.17;
 import "../interfaces/IEndpoint.sol";
 
 contract Relayer {
-    event Assigned(bytes32 indexed msgHash, uint256 fee, bytes parmas, bytes32[32] proof);
+    event Assigned(bytes32 indexed msgHash, uint256 fee, bytes params, bytes32[32] proof);
     event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
     event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address operator, bool approve);
