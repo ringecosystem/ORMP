@@ -31,15 +31,8 @@ contract ORMPTest is Test, Verifier {
         vm.chainId(1);
         ormp = new ORMP(self);
         ormp.setDefaultConfig(self, self);
-        message = Message({
-            channel: address(ormp),
-            index: 0,
-            fromChainId: 1,
-            from: self,
-            toChainId: 2,
-            to: self,
-            encoded: ""
-        });
+        message =
+            Message({channel: address(ormp), index: 0, fromChainId: 1, from: self, toChainId: 2, to: self, encoded: ""});
     }
 
     function test_send() public {
@@ -49,11 +42,7 @@ contract ORMPTest is Test, Verifier {
     function perform_send() public {
         uint256 f = ormp.fee(2, self, "", "");
         ormp.send{value: f}(2, self, "", "");
-        proof = Proof({
-            blockNumber: block.number,
-            messageIndex: ormp.messageCount() - 1,
-            messageProof: ormp.prove()
-        });
+        proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
         vm.chainId(2);
     }
 

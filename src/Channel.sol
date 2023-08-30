@@ -137,6 +137,6 @@ contract Channel is UserConfig {
 
     /// @dev Fetch the latest message proof
     function prove() public view returns (bytes32[32] memory) {
-        return imt.prove(messageCount() - 1);
+        return imt.prove();
     }
 }
