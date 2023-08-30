@@ -126,7 +126,8 @@ library IncrementalMerkleTree {
         }
     }
 
-    function prove(Tree storage _tree, uint256 _index) internal view returns (bytes32[TREE_DEPTH] memory proof) {
+    function prove(Tree storage _tree) internal view returns (bytes32[TREE_DEPTH] memory proof) {
+        uint256 _index = _tree.count - 1;
         bytes32[TREE_DEPTH] memory left = _tree.branch;
         bytes32[TREE_DEPTH] memory right = zeroHashes();
         for (uint256 i = 0; i < TREE_DEPTH; i++) {
