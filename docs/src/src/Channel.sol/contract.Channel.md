@@ -1,5 +1,5 @@
 # Channel
-[Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/Channel.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/bc92759f925cb7b2b882f5ab3b1cf34d66098e41/src/Channel.sol)
 
 **Inherits:**
 [UserConfig](/src/UserConfig.sol/contract.UserConfig.md)
@@ -44,6 +44,8 @@ mapping(bytes32 => bool) public dones;
 
 
 ### _self
+*Self contract address cache.*
+
 
 ```solidity
 address private immutable _self = address(this);
