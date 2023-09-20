@@ -1,5 +1,5 @@
 # IncrementalMerkleTree
-[Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/imt/IncrementalMerkleTree.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/bc92759f925cb7b2b882f5ab3b1cf34d66098e41/src/imt/IncrementalMerkleTree.sol)
 
 **Author:**
 Illusory Systems Inc.
@@ -343,7 +343,7 @@ function branchRoot(bytes32 _item, bytes32[TREE_DEPTH] memory _branch, uint256 _
 
 
 ```solidity
-function prove(Tree storage _tree, uint256 _index) internal view returns (bytes32[TREE_DEPTH] memory proof);
+function prove(Tree storage _tree) internal view returns (bytes32[TREE_DEPTH] memory proof);
 ```
 
 ## Structs
