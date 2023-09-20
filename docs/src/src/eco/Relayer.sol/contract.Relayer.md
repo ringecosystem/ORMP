@@ -1,5 +1,5 @@
 # Relayer
-[Git Source](https://github.com/darwinia-network/ORMP/blob/bfc33075bd9a7ec216d3d5b5407194e8cde9bd94/src/eco/Relayer.sol)
+[Git Source](https://github.com/darwinia-network/ORMP/blob/bc92759f925cb7b2b882f5ab3b1cf34d66098e41/src/eco/Relayer.sol)
 
 
 ## State Variables
@@ -134,7 +134,7 @@ function relay(Message calldata message, bytes calldata proof, uint256 gasLimit)
 ### Assigned
 
 ```solidity
-event Assigned(bytes32 indexed msgHash, uint256 fee, bytes parmas, bytes32[32] proof);
+event Assigned(bytes32 indexed msgHash, uint256 fee, bytes params, bytes32[32] proof);
 ```
 
 ### SetDstPrice
