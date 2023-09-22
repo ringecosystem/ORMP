@@ -17,7 +17,9 @@
 
 pragma solidity 0.8.17;
 
-interface IOracle {
+import "./IVerifier.sol";
+
+interface IOracle is IVerifier {
     /// @notice Fetch oracle price to relay message root to the destination chain.
     /// @param toChainId The destination chain id.
     /// @param ua The user application which send the message.
@@ -30,6 +32,7 @@ interface IOracle {
 
     /// @notice Fetch message root oracle.
     /// @param chainId The destination chain id.
+    /// @param blockNumber The block number of message root to query.
     /// @return Message root in destination chain.
-    function merkleRoot(uint256 chainId) external view returns (bytes32);
+    function merkleRoot(uint256 chainId, uint256 blockNumber) external view returns (bytes32);
 }
