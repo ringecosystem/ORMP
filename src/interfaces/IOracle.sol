@@ -29,10 +29,4 @@ interface IOracle is IVerifier {
     /// @notice Assign the relay message root task to oracle maintainer.
     /// @param msgHash Hash of the message.
     function assign(bytes32 msgHash) external payable;
-
-    /// @notice Fetch message root oracle.
-    /// @param chainId The destination chain id.
-    /// @param blockNumber The block number of message root to query.
-    /// @return Message root in destination chain.
-    function merkleRoot(uint256 chainId, uint256 blockNumber) external view returns (bytes32);
 }
