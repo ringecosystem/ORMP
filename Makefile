@@ -1,4 +1,4 @@
-.PHONY: add clean test bench deploy
+.PHONY: all clean test bench deploy
 .PHONY: doc salt tools foundry
 
 -include .env
@@ -9,7 +9,7 @@ test   :; forge test --nmc Benchmark
 bench  :; forge test --mc Benchmark
 deploy :; forge script script/deploy/Deploy.s.sol:Deploy --chain-id ${chain-id} --broadcast --verify
 
-tools  :; foundry
+tools  :  foundry
 foundry:; curl -L https://foundry.paradigm.xyz | bash
 
 doc    :; @bash ./bin/doc.sh
