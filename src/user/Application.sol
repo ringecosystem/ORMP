@@ -18,6 +18,7 @@
 pragma solidity 0.8.17;
 
 import "../Common.sol";
+import "../interfaces/IEndpoint.sol";
 
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract Application {
@@ -27,11 +28,17 @@ abstract contract Application {
         TRUSTED_ORMP = ormp;
     }
 
-    function clearFailedMessage(Message calldata message) external virtual;
+    function clearFailedMessage(Message calldata message) external virtual {
+        return IEndpoint(TRUSTED_ORMP).clearFailedMessage(message);
+    }
 
-    function retryFailedMessage(Message calldata message) external virtual returns (bool dispatchResult);
+    function retryFailedMessage(Message calldata message) external virtual returns (bool dispatchResult) {
+        return IEndpoint(TRUSTED_ORMP).retryFailedMessage(message);
+    }
 
-    function setAppConfig(address relayer, address oracle) external virtual;
+    function setAppConfig(address, address) external virtual {
+        revert("default");
+    }
 
     function isTrustedORMP(address ormp) public view returns (bool) {
         return TRUSTED_ORMP == ormp;
