@@ -37,7 +37,10 @@ interface IEndpoint {
     //  @param to User application contract address which receive the message.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param params General extensibility for relayer to custom functionality.
-    function fee(uint256 toChainId, address, /*to*/ bytes calldata encoded, bytes calldata params) external view;
+    function fee(uint256 toChainId, address, /*to*/ bytes calldata encoded, bytes calldata params)
+        external
+        view
+        returns (uint256);
 
     /// @dev Retry failed message.
     /// @notice Only message.to could clear this message.

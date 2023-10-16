@@ -1,10 +1,11 @@
-.PHONY: all clean test bench deploy
+.PHONY: all clean test bench deploy fmt
 .PHONY: doc salt tools foundry
 
 -include .env
 
 all    :; @forge build
 clean  :; @forge clean
+fmt    :; @forge fmt
 test   :; @forge test --nmc Benchmark
 bench  :; @forge test --mc Benchmark
 deploy :; @forge script script/deploy/Deploy.s.sol:Deploy --chain-id ${chain-id} --broadcast --verify
