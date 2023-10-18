@@ -30,7 +30,7 @@ library Chains {
         } else if (chainid == Pangolin) {
             return "pangolin";
         } else if (chainid == Crab) {
-            return "Crab";
+            return "crab";
         } else if (chainid == Pangoro) {
             return "pangoro";
         } else if (chainid == Darwinia) {
