@@ -28,16 +28,16 @@ abstract contract Application {
         TRUSTED_ORMP = ormp;
     }
 
-    function clearFailedMessage(Message calldata message) external virtual {
+    function _clearFailedMessage(Message calldata message) internal virtual {
         return IEndpoint(TRUSTED_ORMP).clearFailedMessage(message);
     }
 
-    function retryFailedMessage(Message calldata message) external virtual returns (bool dispatchResult) {
+    function retryFailedMessage(Message calldata message) public virtual returns (bool dispatchResult) {
         return IEndpoint(TRUSTED_ORMP).retryFailedMessage(message);
     }
 
-    function setAppConfig(address, address) external virtual {
-        revert("default");
+    function setAppConfig(address oracle, address relayer) public virtual {
+        IEndpoint(TRUSTED_ORMP).setAppConfig(oracle, relayer);
     }
 
     function isTrustedORMP(address ormp) public view returns (bool) {
