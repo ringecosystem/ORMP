@@ -36,7 +36,6 @@ abstract contract Application {
         return IEndpoint(TRUSTED_ORMP).clearFailedMessage(message);
     }
 
-
     function retryFailedMessage(Message calldata message) public virtual returns (bool dispatchResult) {
         return IEndpoint(TRUSTED_ORMP).retryFailedMessage(message);
     }
