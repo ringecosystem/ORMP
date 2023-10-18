@@ -28,12 +28,12 @@ contract Deploy is Common {
     using stdJson for string;
     using ScriptTools for string;
 
-    address immutable ORMP_ADDR = 0x0000000000BD9dcFDa5C60697039E2b3B28b079b;
-    bytes32 immutable ORMP_SALT = 0x249b176af880c430789c516a4ae7feb3730fa8cd983de7a9de1cdd4963c74c48;
-    address immutable ORACLE_ADDR = 0x000000003e2E2C9C8DD469E129E02E1666898E76;
-    bytes32 immutable ORACLE_SALT = 0x7429aab91d9b077c564373a71ac64e0475192f246f029cd8d0b3d395abf468f6;
-    address immutable RELAYER_ADDR = 0x000000007e24Da6666c773280804d8021E12e13F;
-    bytes32 immutable RELAYER_SALT = 0x86c315e04314aa177ab3a31fb933d4747f209b357a81a7a064306e1a1e89c689;
+    address immutable ORMP_ADDR = 0x0034607daf9c1dc6628f6e09E81bB232B6603A89;
+    bytes32 immutable ORMP_SALT = 0x4a177511c10933b157108cb8d40e2cbeeccafdec51c3445d5e117ac1981285be;
+    address immutable ORACLE_ADDR = 0x0002396F1D52323fcd1ae8079b38808F046882c3;
+    bytes32 immutable ORACLE_SALT = 0x4988d5215faf6ade0dcd51066e709ccb81edc58914ea7a60b0afa1f3a01c71f3;
+    address immutable RELAYER_ADDR = 0x007EED6207c9AF3715964Fb7f8B5f44E002a3498;
+    bytes32 immutable RELAYER_SALT = 0xcd9f567f57f0c293ba969f9c702f7684bb9e758d3a6bb88da8c99e6f1e851e5d;
 
     string config;
     string instanceId;
@@ -74,7 +74,7 @@ contract Deploy is Common {
         setConfig(ormp, oracle, relayer);
 
         ScriptTools.exportContract(outputName, "DAO", dao);
-        ScriptTools.exportContract(outputName, "ormp", ormp);
+        ScriptTools.exportContract(outputName, "ORMP", ormp);
         ScriptTools.exportContract(outputName, "ORACLE", oracle);
         ScriptTools.exportContract(outputName, "RELAYER", relayer);
     }
@@ -86,7 +86,7 @@ contract Deploy is Common {
         address ormp = _deploy(ORMP_SALT, initCode);
         require(ormp == ORMP_ADDR, "!ormp");
         require(III(ormp).setter() == deployer, "!deployer");
-        console.log("ormp   deployed at %s", ormp);
+        console.log("ORMP    deployed at: %s", ormp);
         return ormp;
     }
 
@@ -99,7 +99,7 @@ contract Deploy is Common {
 
         require(III(oracle).owner() == deployer);
         require(III(oracle).PROTOCOL() == ormp);
-        console.log("Oracle     deployed at %s", oracle);
+        console.log("Oracle  deployed at: %s", oracle);
         return oracle;
     }
 
@@ -112,7 +112,7 @@ contract Deploy is Common {
 
         require(III(relayer).owner() == deployer);
         require(III(relayer).PROTOCOL() == ormp);
-        console.log("Relayer    deployed at %s", relayer);
+        console.log("Relayer deployed at: %s", relayer);
         return relayer;
     }
 
@@ -128,7 +128,7 @@ contract Deploy is Common {
         III(relayer).setApproved(relayerOperator, true);
         require(III(relayer).isApproved(relayerOperator), "!r-operator");
 
-        III(ormp).changeSetter(dao);
+        III(ormp).changeSetter{gas: 200000}(dao);
         require(III(ormp).setter() == dao, "!dao");
 
         III(oracle).changeOwner(dao);

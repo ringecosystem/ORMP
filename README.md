@@ -5,9 +5,9 @@ Oracle and Relayer based Message Protocol.
 ### Canonical Cross-chain Deployment Addresses
 |  Contract  |  Canonical Cross-chain Deployment Address  |
 |------------|--------------------------------------------|
-| ORMP       | 0x0000000000BD9dcFDa5C60697039E2b3B28b079b |
-| Oracle     | 0x000000003e2E2C9C8DD469E129E02E1666898E76 |
-| Relayer    | 0x000000007e24Da6666c773280804d8021E12e13F |
+| ORMP       | 0x0034607daf9c1dc6628f6e09E81bB232B6603A89 |
+| Oracle     | 0x0002396F1D52323fcd1ae8079b38808F046882c3 |
+| Relayer    | 0x007EED6207c9AF3715964Fb7f8B5f44E002a3498 |
 
 ## Usage
 To install with [**Foundry**](https://github.com/gakonst/foundry):
