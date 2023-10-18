@@ -53,7 +53,7 @@ contract UserApplication is Application {
 
     function retryFailedMessage(Message calldata message) public override returns (bool dispatchResult) {}
 
-    function setAppConfig(address relayer, address oracle) public override {}
+    function setAppConfig(address relayer, address oracle) public {}
 
     function recv() public view {
         bytes32 msgHash = _messageId();
