@@ -49,11 +49,11 @@ contract ApplicationTest is Test {
 contract UserApplication is Application {
     constructor(address ormp) Application(ormp) {}
 
-    function clearFailedMessage(Message calldata message) external override {}
+    function clearFailedMessage(Message calldata message) public {}
 
-    function retryFailedMessage(Message calldata message) external override returns (bool dispatchResult) {}
+    function retryFailedMessage(Message calldata message) public override returns (bool dispatchResult) {}
 
-    function setAppConfig(address relayer, address oracle) external override {}
+    function setAppConfig(address relayer, address oracle) public override {}
 
     function recv() public view {
         bytes32 msgHash = _messageId();
