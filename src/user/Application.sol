@@ -28,7 +28,7 @@ abstract contract Application {
         TRUSTED_ORMP = ormp;
     }
 
-    function _clearFailedMessage(Message calldata message) internal virtual {
+    function _clearFailedMessage(Message memory message) internal virtual {
         return IEndpoint(TRUSTED_ORMP).clearFailedMessage(message);
     }
 
