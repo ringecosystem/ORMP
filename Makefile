@@ -1,5 +1,5 @@
 .PHONY: all clean test bench deploy fmt
-.PHONY: doc salt tools foundry
+.PHONY: doc salt tools foundry fee config verify
 
 -include .env
 
@@ -17,3 +17,4 @@ salt   :; @bash ./bin/salt.sh
 deploy :; @bash ./bin/deploy.sh
 fee    :; @bash ./bin/fee.sh
 config :; @bash ./bin/config.sh
+verify :; @bash ./bin/verify.sh
