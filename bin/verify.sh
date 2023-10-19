@@ -18,7 +18,7 @@ forge verify-contract \
   --verifier-url https://api-goerli.arbiscan.io/api \
   --show-standard-json-input \
   0x0034607daf9c1dc6628f6e09E81bB232B6603A89 \
-  src/ORMP.sol:ORMP > script/output/421614/ormp.v.json
+  src/ORMP.sol:ORMP > script/output/421614/ORMP.v.json
 
 forge verify-contract \
   --chain-id 421614 \
@@ -31,7 +31,7 @@ forge verify-contract \
   --verifier-url https://api-goerli.arbiscan.io/api \
   --show-standard-json-input \
   0x0002396F1D52323fcd1ae8079b38808F046882c3 \
-  src/eco/Oracle.sol:Oracle > script/output/421614/oracle.v.json
+  src/eco/Oracle.sol:Oracle > script/output/421614/Oracle.v.json
 
 forge verify-contract \
   --chain-id 421614 \
@@ -44,7 +44,7 @@ forge verify-contract \
   --verifier-url https://api-goerli.arbiscan.io/api \
   --show-standard-json-input \
   0x007EED6207c9AF3715964Fb7f8B5f44E002a3498 \
-  src/eco/Relayer.sol:Relayer > script/output/421614/relayer.v.json
+  src/eco/Relayer.sol:Relayer > script/output/421614/Relayer.v.json
 
 
 forge verify-contract \
@@ -58,7 +58,7 @@ forge verify-contract \
   --verifier-url https://crab.api.subscan.io/api/scan/evm/contract/verifysource \
   --show-standard-json-input \
   0x0034607daf9c1dc6628f6e09E81bB232B6603A89 \
-  src/ORMP.sol:ORMP > script/output/44/ormp.v.json
+  src/ORMP.sol:ORMP > script/output/44/ORMP.v.json
 
 forge verify-contract \
   --chain-id 44 \
@@ -71,7 +71,7 @@ forge verify-contract \
   --verifier-url https://crab.api.subscan.io/api/scan/evm/contract/verifysource \
   --show-standard-json-input \
   0x0002396F1D52323fcd1ae8079b38808F046882c3 \
-  src/eco/Oracle.sol:Oracle > script/output/44/oracle.v.json
+  src/eco/Oracle.sol:Oracle > script/output/44/Oracle.v.json
 
 forge verify-contract \
   --chain-id 44 \
@@ -84,5 +84,5 @@ forge verify-contract \
   --verifier-url https://crab.api.subscan.io/api/scan/evm/contract/verifysource \
   --show-standard-json-input \
   0x007EED6207c9AF3715964Fb7f8B5f44E002a3498 \
-  src/eco/Relayer.sol:Relayer > script/output/44/relayer.v.json
+  src/eco/Relayer.sol:Relayer > script/output/44/Relayer.v.json
 
