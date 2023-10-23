@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# python -m pip install eth-utils
+
+import json
+import sys
+import os
+from eth_utils import to_hex
+from eth_utils import keccak
+
+path = sys.argv[1]
+with open(path, 'r') as f:
+    data = json.load(f)
+    sources = data['sources']
+    targe = ''
+    for k in sources:
+        if targe == '':
+            targe = k
+        v = sources[k]['content']
+        v = to_hex(text=v)
+        h = to_hex(keccak(hexstr=v))
+        sources[k]['keccak256'] = h
+    settings = data['settings']
+    name = os.path.basename(targe)
+    compilationTarget = {
+      targe: os.path.splitext(name)[0]
+    }
+    settings['compilationTarget'] = compilationTarget
+    j = json.dumps(data)
+
+with open(path, 'w') as f:
+    f.write(j)
+
