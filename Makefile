@@ -1,4 +1,4 @@
-.PHONY: all clean test bench deploy fmt
+.PHONY: all clean test bench deploy fmt sync
 .PHONY: doc salt tools foundry fee config verify
 
 -include .env
@@ -11,6 +11,7 @@ bench  :; @forge test --mc Benchmark
 
 tools  :  foundry
 foundry:; curl -L https://foundry.paradigm.xyz | bash
+sync   :; @git submodule update --recursive
 
 doc    :; @bash ./bin/doc.sh
 salt   :; @bash ./bin/salt.sh
