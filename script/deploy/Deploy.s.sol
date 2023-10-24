@@ -84,7 +84,7 @@ contract Deploy is Common {
     function deployProtocol() public broadcast returns (address) {
         bytes memory byteCode = type(ORMP).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer));
-        address ormp = _deploy2(ORMP_SALT, initCode);
+        address ormp = _deploy3(ORMP_SALT, initCode);
         require(ormp == ORMP_ADDR, "!ormp");
         require(III(ormp).setter() == deployer, "!deployer");
         console.log("ORMP    deployed at: %s", ormp);
@@ -95,7 +95,7 @@ contract Deploy is Common {
     function deployOralce(address ormp) public broadcast returns (address) {
         bytes memory byteCode = type(Oracle).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ormp));
-        address oracle = _deploy2(ORACLE_SALT, initCode);
+        address oracle = _deploy3(ORACLE_SALT, initCode);
         require(oracle == ORACLE_ADDR, "!oracle");
 
         require(III(oracle).owner() == deployer);
@@ -108,7 +108,7 @@ contract Deploy is Common {
     function deployRelayer(address ormp) public broadcast returns (address) {
         bytes memory byteCode = type(Relayer).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ormp));
-        address relayer = _deploy2(RELAYER_SALT, initCode);
+        address relayer = _deploy3(RELAYER_SALT, initCode);
         require(relayer == RELAYER_ADDR, "!relayer");
 
         require(III(relayer).owner() == deployer);
