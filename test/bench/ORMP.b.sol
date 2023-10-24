@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
-import "../../script/Chains.sol";
+import {Chains} from "create3-deploy/script/Chains.sol";
 import "../../src/Verifier.sol";
 import "../../src/ORMP.sol";
 import "../../src/eco/Oracle.sol";

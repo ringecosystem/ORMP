@@ -3,8 +3,9 @@ pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
 import {stdJson} from "forge-std/StdJson.sol";
-
-import "../Common.s.sol";
+import {console2 as console} from "forge-std/console2.sol";
+import {Common} from "create3-deploy/script/Common.s.sol";
+import {ScriptTools} from "create3-deploy/script/ScriptTools.sol";
 
 import "../../src/ORMP.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
@@ -83,7 +84,7 @@ contract Deploy is Common {
     function deployProtocol() public broadcast returns (address) {
         bytes memory byteCode = type(ORMP).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer));
-        address ormp = _deploy(ORMP_SALT, initCode);
+        address ormp = _deploy2(ORMP_SALT, initCode);
         require(ormp == ORMP_ADDR, "!ormp");
         require(III(ormp).setter() == deployer, "!deployer");
         console.log("ORMP    deployed at: %s", ormp);
@@ -94,7 +95,7 @@ contract Deploy is Common {
     function deployOralce(address ormp) public broadcast returns (address) {
         bytes memory byteCode = type(Oracle).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ormp));
-        address oracle = _deploy(ORACLE_SALT, initCode);
+        address oracle = _deploy2(ORACLE_SALT, initCode);
         require(oracle == ORACLE_ADDR, "!oracle");
 
         require(III(oracle).owner() == deployer);
@@ -107,7 +108,7 @@ contract Deploy is Common {
     function deployRelayer(address ormp) public broadcast returns (address) {
         bytes memory byteCode = type(Relayer).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ormp));
-        address relayer = _deploy(RELAYER_SALT, initCode);
+        address relayer = _deploy2(RELAYER_SALT, initCode);
         require(relayer == RELAYER_ADDR, "!relayer");
 
         require(III(relayer).owner() == deployer);

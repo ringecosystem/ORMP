@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 import {Script} from "forge-std/Script.sol";
 import {stdJson} from "forge-std/StdJson.sol";
-
-import "../Common.s.sol";
+import {Common} from "create3-deploy/script/Common.s.sol";
+import {ScriptTools} from "create3-deploy/script/ScriptTools.sol";
 
 interface III {
     function isApproved(address operator) external view returns (bool);
