@@ -1,5 +1,5 @@
-.PHONY: all clean test bench deploy fmt
-.PHONY: doc salt tools foundry fee config verify
+.PHONY: all clean test bench deploy fmt sync
+.PHONY: doc salt tools foundry fee config verify create3
 
 -include .env
 
@@ -9,11 +9,13 @@ fmt    :; @forge fmt
 test   :; @forge test --nmc Benchmark
 bench  :; @forge test --mc Benchmark
 
-tools  :  foundry
+tools  :  foundry create3
 foundry:; curl -L https://foundry.paradigm.xyz | bash
+create3:; @cargo install --git https://github.com/darwinia-network/create3-deploy -f
+sync   :; @git submodule update --recursive
 
 doc    :; @bash ./bin/doc.sh
-salt   :; @bash ./bin/salt.sh
+salt   :; @create3 -s 00000000000000
 deploy :; @bash ./bin/deploy.sh
 fee    :; @bash ./bin/fee.sh
 config :; @bash ./bin/config.sh
