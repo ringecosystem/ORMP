@@ -32,14 +32,6 @@ abstract contract Application {
         IEndpoint(TRUSTED_ORMP).setAppConfig(oracle, relayer);
     }
 
-    function _clearFailedMessage(Message memory message) internal virtual {
-        return IEndpoint(TRUSTED_ORMP).clearFailedMessage(message);
-    }
-
-    function retryFailedMessage(Message calldata message) public virtual returns (bool dispatchResult) {
-        return IEndpoint(TRUSTED_ORMP).retryFailedMessage(message);
-    }
-
     function isTrustedORMP(address ormp) public view returns (bool) {
         return TRUSTED_ORMP == ormp;
     }

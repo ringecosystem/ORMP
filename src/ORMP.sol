@@ -30,17 +30,6 @@ import "./security/ExcessivelySafeCall.sol";
 contract ORMP is ReentrancyGuard, Channel {
     using ExcessivelySafeCall for address;
 
-    /// msgHash => isFailed
-    mapping(bytes32 => bool) public fails;
-
-    /// @dev Notifies an observer that the failed message has been cleared.
-    /// @param msgHash Hash of the message.
-    event ClearFailedMessage(bytes32 indexed msgHash);
-    /// @dev Notifies an observer that the failed message has been retried.
-    /// @param msgHash Hash of the message.
-    /// @param dispatchResult Result of the message dispatch.
-    event RetryFailedMessage(bytes32 indexed msgHash, bool dispatchResult);
-
     constructor(address dao) Channel(dao) {}
 
     /// @dev Send a cross-chain message over the endpoint.
@@ -126,35 +115,8 @@ contract ORMP is ReentrancyGuard, Channel {
     {
         bytes32 msgHash = _recv(message, proof);
         dispatchResult = _dispatch(message, msgHash, gasLimit);
-        if (!dispatchResult) {
-            fails[msgHash] = true;
-        }
         // emit dispatched message event.
         emit MessageDispatched(msgHash, dispatchResult);
-    }
-
-    /// @dev Retry failed message.
-    /// @param message Failed message info.
-    /// @return dispatchResult Result of the message dispatch.
-    function retryFailedMessage(Message calldata message) external recvNonReentrant returns (bool dispatchResult) {
-        bytes32 msgHash = hash(message);
-        require(fails[msgHash] == true, "!failed");
-        dispatchResult = _dispatch(message, msgHash, gasleft());
-        if (dispatchResult) {
-            delete fails[msgHash];
-        }
-        emit RetryFailedMessage(msgHash, dispatchResult);
-    }
-
-    /// @dev Retry failed message.
-    /// @notice Only message.to could clear this message.
-    /// @param message Failed message info.
-    function clearFailedMessage(Message calldata message) external {
-        bytes32 msgHash = hash(message);
-        require(fails[msgHash] == true, "!failed");
-        require(message.to == msg.sender, "!auth");
-        delete fails[msgHash];
-        emit ClearFailedMessage(msgHash);
     }
 
     /// @dev Dispatch the cross chain message.
