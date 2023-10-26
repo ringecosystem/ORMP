@@ -19,7 +19,7 @@ pragma solidity 0.8.17;
 
 import "../Common.sol";
 
-interface IEndpoint {
+interface IORMP {
     /// @dev Send a cross-chain message over the endpoint.
     /// @notice follow https://eips.ethereum.org/EIPS/eip-5750
     /// @param toChainId The Message destination chain id.

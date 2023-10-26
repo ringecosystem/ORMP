@@ -18,7 +18,7 @@
 pragma solidity 0.8.17;
 
 import "../Common.sol";
-import "../interfaces/IEndpoint.sol";
+import "../interfaces/IORMP.sol";
 
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract Application {
@@ -29,7 +29,7 @@ abstract contract Application {
     }
 
     function _setAppConfig(address oracle, address relayer) internal virtual {
-        IEndpoint(TRUSTED_ORMP).setAppConfig(oracle, relayer);
+        IORMP(TRUSTED_ORMP).setAppConfig(oracle, relayer);
     }
 
     modifier onlyORMP() {
