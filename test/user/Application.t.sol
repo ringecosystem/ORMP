@@ -49,10 +49,6 @@ contract ApplicationTest is Test {
 contract UserApplication is Application {
     constructor(address ormp) Application(ormp) {}
 
-    function clearFailedMessage(Message calldata message) public {}
-
-    function retryFailedMessage(Message calldata message) public override returns (bool dispatchResult) {}
-
     function setAppConfig(address relayer, address oracle) public {}
 
     function recv() public view {

@@ -52,27 +52,6 @@ contract ORMPTest is Test, Verifier {
         assertEq(r, false);
     }
 
-    function test_retry() public {
-        perform_send();
-        bool r = ormp.recv(message, abi.encode(proof), gasleft());
-        assertEq(r, false);
-        r = ormp.retryFailedMessage(message);
-        assertEq(r, false);
-    }
-
-    function test_clear() public {
-        bytes32 msgHash = hash(message);
-        bool failed = ormp.fails(msgHash);
-        assertEq(failed, false);
-        perform_send();
-        ormp.recv(message, abi.encode(proof), gasleft());
-        failed = ormp.fails(msgHash);
-        assertEq(failed, true);
-        ormp.clearFailedMessage(message);
-        failed = ormp.fails(msgHash);
-        assertEq(failed, false);
-    }
-
     function fee(uint256, address) external pure returns (uint256) {
         return 2;
     }

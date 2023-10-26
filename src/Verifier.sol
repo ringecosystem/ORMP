@@ -30,10 +30,7 @@ abstract contract Verifier is IVerifier {
         bytes32[32] messageProof;
     }
 
-    /// @notice Fetch message root oracle.
-    /// @param chainId The destination chain id.
-    /// @param blockNumber The block number where the message root is located.
-    /// @return Message root in destination chain.
+    /// @inheritdoc IVerifier
     function merkleRoot(uint256 chainId, uint256 blockNumber) public view virtual returns (bytes32);
 
     /// @inheritdoc IVerifier

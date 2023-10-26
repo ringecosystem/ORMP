@@ -42,16 +42,6 @@ interface IEndpoint {
         view
         returns (uint256);
 
-    /// @dev Retry failed message.
-    /// @notice Only message.to could clear this message.
-    /// @param message Failed message info.
-    function clearFailedMessage(Message calldata message) external;
-
-    /// @dev Retry failed message.
-    /// @param message Failed message info.
-    /// @return dispatchResult Result of the message dispatch.
-    function retryFailedMessage(Message calldata message) external returns (bool dispatchResult);
-
     /// @dev Recv verified message and dispatch to destination user application address.
     /// @param message Verified receive message info.
     /// @param proof Message proof of this message.
