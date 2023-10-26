@@ -32,8 +32,9 @@ abstract contract Application {
         IEndpoint(TRUSTED_ORMP).setAppConfig(oracle, relayer);
     }
 
-    function isTrustedORMP(address ormp) public view returns (bool) {
-        return TRUSTED_ORMP == ormp;
+    modifier onlyORMP() {
+        require(TRUSTED_ORMP == msg.sender, "!ormp");
+        _;
     }
 
     function _messageId() internal pure returns (bytes32 _msgDataMessageId) {
@@ -50,8 +51,8 @@ abstract contract Application {
         }
     }
 
-    function _xmsgSender() internal view returns (address payable _from) {
-        require(msg.data.length >= 20 && isTrustedORMP(msg.sender), "!xmsgSender");
+    function _xmsgSender() internal pure returns (address payable _from) {
+        require(msg.data.length >= 20, "!xmsgSender");
         assembly {
             _from := shr(96, calldataload(sub(calldatasize(), 20)))
         }
