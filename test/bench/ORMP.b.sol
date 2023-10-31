@@ -54,7 +54,8 @@ contract ORMPBenchmarkTest is Test {
             from: self,
             toChainId: toChainId,
             to: self,
-            encoded: encoded
+            encoded: encoded,
+            gasLimit: 0
         });
         perform_recv(message);
     }
@@ -70,7 +71,7 @@ contract ORMPBenchmarkTest is Test {
         oracle.setDapi(message.fromChainId, self);
 
         vm.prank(address(relayer));
-        ormp.recv(message, abi.encode(proof), 0);
+        ormp.recv(message, abi.encode(proof));
     }
 
     function messageRoot() public view returns (bytes32) {
@@ -79,7 +80,7 @@ contract ORMPBenchmarkTest is Test {
 
     function perform_send(uint256 fromChainId, uint256 toChainId, bytes calldata encoded) public {
         vm.createSelectFork(fromChainId.toChainName());
-        uint256 f = ormp.fee(toChainId, self, encoded, abi.encode(uint256(0)));
-        ormp.send{value: f}(toChainId, self, encoded, self, abi.encode(uint256(0)));
+        uint256 f = ormp.fee(toChainId, self, 0, encoded, abi.encode(uint256(0)));
+        ormp.send{value: f}(toChainId, self, 0, encoded, self, abi.encode(uint256(0)));
     }
 }

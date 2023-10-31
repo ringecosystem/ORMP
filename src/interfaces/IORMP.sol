@@ -24,14 +24,19 @@ interface IORMP {
     /// @notice follow https://eips.ethereum.org/EIPS/eip-5750
     /// @param toChainId The Message destination chain id.
     /// @param to User application contract address which receive the message.
+    /// @param gasLimit Gas limit for UA used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param refund Return extra fee to refund address.
     /// @param params General extensibility for relayer to custom functionality.
     /// @return Return the hash of the message as message id.
-    function send(uint256 toChainId, address to, bytes calldata encoded, address refund, bytes calldata params)
-        external
-        payable
-        returns (bytes32);
+    function send(
+        uint256 toChainId,
+        address to,
+        uint256 gasLimit,
+        bytes calldata encoded,
+        address refund,
+        bytes calldata params
+    ) external payable returns (bytes32);
 
     /// @notice Get a quote in source native gas, for the amount that send() requires to pay for message delivery.
     /// @param toChainId The Message destination chain id.
@@ -46,11 +51,8 @@ interface IORMP {
     /// @dev Recv verified message and dispatch to destination user application address.
     /// @param message Verified receive message info.
     /// @param proof Message proof of this message.
-    /// @param gasLimit The gas limit of message execute.
     /// @return dispatchResult Result of the message dispatch.
-    function recv(Message calldata message, bytes calldata proof, uint256 gasLimit)
-        external
-        returns (bool dispatchResult);
+    function recv(Message calldata message, bytes calldata proof) external returns (bool dispatchResult);
 
     function prove() external view returns (bytes32[32] memory);
 

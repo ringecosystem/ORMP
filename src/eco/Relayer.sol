@@ -89,12 +89,15 @@ contract Relayer {
     }
 
     // params = [extraGas]
-    function fee(uint256 toChainId, address, /*ua*/ uint256 size, bytes calldata params)
-        public
-        view
-        returns (uint256)
-    {
-        uint256 extraGas = abi.decode(params, (uint256));
+    function fee(
+        uint256 toChainId,
+        address, /*ua*/
+        uint256 gasLimit,
+        bytes calldata encoded,
+        bytes calldata /*params*/
+    ) public view returns (uint256) {
+        uint256 size = encoded.length;
+        uint256 extraGas = gasLimit;
         DstPrice memory p = priceOf[toChainId];
         DstConfig memory c = configOf[toChainId];
 
@@ -112,7 +115,7 @@ contract Relayer {
         emit Assigned(msgHash, msg.value, params, IORMP(PROTOCOL).prove());
     }
 
-    function relay(Message calldata message, bytes calldata proof, uint256 gasLimit) external onlyApproved {
-        IORMP(PROTOCOL).recv(message, proof, gasLimit);
+    function relay(Message calldata message, bytes calldata proof) external onlyApproved {
+        IORMP(PROTOCOL).recv(message, proof);
     }
 }

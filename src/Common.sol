@@ -26,6 +26,7 @@ pragma solidity 0.8.17;
 /// @param from User application contract address which send the message.
 /// @param toChainId The Message destination chain id.
 /// @param to User application contract address which receive the message.
+/// @param gasLimit Gas limit for UA used.
 /// @param encoded The calldata which encoded by ABI Encoding.
 struct Message {
     address channel;
@@ -34,6 +35,7 @@ struct Message {
     address from;
     uint256 toChainId;
     address to;
+    uint256 gasLimit;
     bytes encoded; /*(abi.encodePacked(SELECTOR, PARAMS))*/
 }
 
