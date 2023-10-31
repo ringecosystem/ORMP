@@ -7,7 +7,7 @@ import {console2 as console} from "forge-std/console2.sol";
 import {Common} from "create3-deploy/script/Common.s.sol";
 import {ScriptTools} from "create3-deploy/script/ScriptTools.sol";
 
-import "../../src/ORMP.sol";
+import {ORMP} from "../../src/ORMP.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
 import {Oracle} from "../../src/eco/Oracle.sol";
 
@@ -69,17 +69,16 @@ contract Deploy is Common {
     function run() public {
         require(deployer == msg.sender, "!deployer");
 
-        address ormp = deployProtocol();
+        deployProtocol();
+        deployOralce();
+        deployRelayer();
 
-        address oracle = deployOralce(ormp);
-        address relayer = deployRelayer(ormp);
-
-        setConfig(ormp, oracle, relayer);
+        setConfig();
 
         ScriptTools.exportContract(outputName, "DAO", dao);
-        ScriptTools.exportContract(outputName, "ORMP", ormp);
-        ScriptTools.exportContract(outputName, "ORACLE", oracle);
-        ScriptTools.exportContract(outputName, "RELAYER", relayer);
+        ScriptTools.exportContract(outputName, "ORMP", ORMP_ADDR);
+        ScriptTools.exportContract(outputName, "ORACLE", ORMP_ADDR);
+        ScriptTools.exportContract(outputName, "RELAYER", RELAYER_ADDR);
     }
 
     /// @notice Deploy the protocol
@@ -94,50 +93,50 @@ contract Deploy is Common {
     }
 
     /// @notice Deploy the Oracle
-    function deployOralce(address ormp) public broadcast returns (address) {
+    function deployOralce() public broadcast returns (address) {
         bytes memory byteCode = type(Oracle).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ormp));
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ORMP_ADDR));
         address oracle = _deploy3(ORACLE_SALT, initCode);
         require(oracle == ORACLE_ADDR, "!oracle");
 
         require(III(oracle).owner() == deployer);
-        require(III(oracle).PROTOCOL() == ormp);
+        require(III(oracle).PROTOCOL() == ORMP_ADDR);
         console.log("Oracle  deployed at: %s", oracle);
         return oracle;
     }
 
     /// @notice Deploy the Relayer
-    function deployRelayer(address ormp) public broadcast returns (address) {
+    function deployRelayer() public broadcast returns (address) {
         bytes memory byteCode = type(Relayer).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ormp));
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ORMP_ADDR));
         address relayer = _deploy3(RELAYER_SALT, initCode);
         require(relayer == RELAYER_ADDR, "!relayer");
 
         require(III(relayer).owner() == deployer);
-        require(III(relayer).PROTOCOL() == ormp);
+        require(III(relayer).PROTOCOL() == ORMP_ADDR);
         console.log("Relayer deployed at: %s", relayer);
         return relayer;
     }
 
     /// @notice Set the protocol config
-    function setConfig(address ormp, address oracle, address relayer) public broadcast {
-        ORMP(ormp).setDefaultConfig(oracle, relayer);
-        Config memory cfg = ORMP(ormp).getDefaultConfig();
-        require(cfg.oracle == oracle, "!oracle");
-        require(cfg.relayer == relayer, "!relayer");
+    function setConfig() public broadcast {
+        ORMP(ORMP_ADDR).setDefaultConfig(ORACLE_ADDR, RELAYER_ADDR);
+        Config memory cfg = ORMP(ORMP_ADDR).getDefaultConfig();
+        require(cfg.oracle == ORACLE_ADDR, "!oracle");
+        require(cfg.relayer == RELAYER_ADDR, "!relayer");
 
-        III(oracle).setApproved(oracleOperator, true);
-        require(III(oracle).isApproved(oracleOperator), "!o-operator");
-        III(relayer).setApproved(relayerOperator, true);
-        require(III(relayer).isApproved(relayerOperator), "!r-operator");
+        III(ORACLE_ADDR).setApproved(oracleOperator, true);
+        require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");
+        III(RELAYER_ADDR).setApproved(relayerOperator, true);
+        require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
 
-        III(ormp).changeSetter{gas: 200000}(dao);
-        require(III(ormp).setter() == dao, "!dao");
+        III(ORMP_ADDR).changeSetter(dao);
+        require(III(ORMP_ADDR).setter() == dao, "!dao");
 
-        III(oracle).changeOwner(dao);
-        require(III(oracle).owner() == dao, "!dao");
+        III(ORACLE_ADDR).changeOwner(dao);
+        require(III(ORACLE_ADDR).owner() == dao, "!dao");
 
-        III(relayer).changeOwner(dao);
-        require(III(relayer).owner() == dao, "!dao");
+        III(RELAYER_ADDR).changeOwner(dao);
+        require(III(RELAYER_ADDR).owner() == dao, "!dao");
     }
 }
