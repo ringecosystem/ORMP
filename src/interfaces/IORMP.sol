@@ -25,9 +25,10 @@ interface IORMP {
     /// @param toChainId The Message destination chain id.
     /// @param to User application contract address which receive the message.
     /// @param encoded The calldata which encoded by ABI Encoding.
+    /// @param refund Return extra fee to refund address.
     /// @param params General extensibility for relayer to custom functionality.
     /// @return Return the hash of the message as message id.
-    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params)
+    function send(uint256 toChainId, address to, bytes calldata encoded, address refund, bytes calldata params)
         external
         payable
         returns (bytes32);
@@ -37,7 +38,7 @@ interface IORMP {
     //  @param to User application contract address which receive the message.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param params General extensibility for relayer to custom functionality.
-    function fee(uint256 toChainId, address, /*to*/ bytes calldata encoded, bytes calldata params)
+    function fee(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params)
         external
         view
         returns (uint256);
