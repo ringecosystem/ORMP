@@ -37,8 +37,9 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @param toChainId The Message destination chain id.
     /// @param to User application contract address which receive the message.
     /// @param encoded The calldata which encoded by ABI Encoding.
+    /// @param refund Return extra fee to refund address.
     /// @param params General extensibility for relayer to custom functionality.
-    function send(uint256 toChainId, address to, bytes calldata encoded, bytes calldata params)
+    function send(uint256 toChainId, address to, bytes calldata encoded, address refund, bytes calldata params)
         external
         payable
         sendNonReentrant
@@ -58,8 +59,8 @@ contract ORMP is ReentrancyGuard, Channel {
 
         //refund
         if (msg.value > relayerFee + oracleFee) {
-            uint256 refund = msg.value - (relayerFee + oracleFee);
-            (bool success,) = ua.call{value: refund}("");
+            uint256 refundFee = msg.value - (relayerFee + oracleFee);
+            (bool success,) = refund.call{value: refundFee}("");
             require(success, "!refund");
         }
 
