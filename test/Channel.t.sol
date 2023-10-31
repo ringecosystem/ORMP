@@ -47,15 +47,15 @@ contract ChannelTest is Test, Verifier {
     }
 
     function test_sendMessage() public {
-        channel.sendMessage(self, 2, self, "");
+        channel.sendMessage(self, 2, self, 0, "");
     }
 
     function testFail_sendMessage_notCrossChain() public {
-        channel.sendMessage(self, 1, self, "");
+        channel.sendMessage(self, 1, self, 0, "");
     }
 
     function test_recvMessage() public {
-        bytes32 msgHash = channel.sendMessage(self, 2, self, "");
+        bytes32 msgHash = channel.sendMessage(self, 2, self, 0, "");
 
         Message memory message = Message({
             channel: address(channel),
@@ -64,6 +64,7 @@ contract ChannelTest is Test, Verifier {
             from: self,
             toChainId: 2,
             to: self,
+            gasLimit: 0,
             encoded: ""
         });
         assertEq(msgHash, hash(message));
@@ -76,7 +77,7 @@ contract ChannelTest is Test, Verifier {
         for (uint256 i = 0; i < 100; i++) {
             vm.chainId(1);
             uint256 index = channel.messageCount();
-            bytes32 msgHash = channel.sendMessage(self, 2, self, "");
+            bytes32 msgHash = channel.sendMessage(self, 2, self, 0, "");
             Message memory message = Message({
                 channel: address(channel),
                 index: index,
@@ -84,6 +85,7 @@ contract ChannelTest is Test, Verifier {
                 from: self,
                 toChainId: 2,
                 to: self,
+                gasLimit: 0,
                 encoded: ""
             });
             assertEq(msgHash, hash(message));
@@ -101,11 +103,11 @@ contract ChannelTest is Test, Verifier {
 contract ChannelWrapper is Channel {
     constructor(address dao) Channel(dao) {}
 
-    function sendMessage(address from, uint256 toChainId, address to, bytes calldata encoded)
+    function sendMessage(address from, uint256 toChainId, address to, uint256 gasLimit, bytes calldata encoded)
         public
         returns (bytes32)
     {
-        return _send(from, toChainId, to, encoded);
+        return _send(from, toChainId, to, gasLimit, encoded);
     }
 
     function recvMessage(Message calldata message, bytes calldata proof) public {

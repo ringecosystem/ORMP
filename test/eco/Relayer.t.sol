@@ -78,24 +78,32 @@ contract RelayerTest is Test {
     function test_setPrice() public {
         relayer.setDstPrice(1, 10 ** 10, 1);
         relayer.setDstConfig(1, 1, 1);
-        uint256 f = relayer.fee(1, self, 1, abi.encode(uint256(1)));
+        uint256 f = relayer.fee(1, self, 1, hex"00", abi.encode(uint256(1)));
         assertEq(f, 3);
     }
 
     function test_assign() public {
         relayer.setDstPrice(1, 10 ** 10, 1);
         relayer.setDstConfig(1, 1, 1);
-        uint256 v = relayer.fee(1, address(1), 1, abi.encode(uint256(1)));
+        uint256 v = relayer.fee(1, address(1), 1, hex"00", abi.encode(uint256(1)));
         relayer.assign{value: v}(bytes32(0), abi.encode(uint256(1)));
         assertEq(v, 3);
     }
 
     function test_relay() public {
-        Message memory message =
-            Message({channel: address(0xc), index: 0, fromChainId: 1, from: self, toChainId: 2, to: self, encoded: ""});
-        relayer.relay(message, "", gasleft());
+        Message memory message = Message({
+            channel: address(0xc),
+            index: 0,
+            fromChainId: 1,
+            from: self,
+            toChainId: 2,
+            to: self,
+            gasLimit: 0,
+            encoded: ""
+        });
+        relayer.relay(message, "");
     }
 
-    function recv(Message calldata message, bytes calldata proof, uint256) external returns (bool) {}
+    function recv(Message calldata message, bytes calldata proof) external returns (bool) {}
     function prove() external returns (bytes32[32] memory) {}
 }

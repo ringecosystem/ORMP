@@ -31,8 +31,16 @@ contract ORMPTest is Test, Verifier {
         vm.chainId(1);
         ormp = new ORMP(self);
         ormp.setDefaultConfig(self, self);
-        message =
-            Message({channel: address(ormp), index: 0, fromChainId: 1, from: self, toChainId: 2, to: self, encoded: ""});
+        message = Message({
+            channel: address(ormp),
+            index: 0,
+            fromChainId: 1,
+            from: self,
+            toChainId: 2,
+            to: self,
+            gasLimit: 0,
+            encoded: ""
+        });
     }
 
     function test_send() public {
@@ -40,15 +48,15 @@ contract ORMPTest is Test, Verifier {
     }
 
     function perform_send() public {
-        uint256 f = ormp.fee(2, self, "", "");
-        ormp.send{value: f}(2, self, "", self, "");
+        uint256 f = ormp.fee(2, self, 0, "", "");
+        ormp.send{value: f}(2, self, 0, "", self, "");
         proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
         vm.chainId(2);
     }
 
     function test_recv() public {
         perform_send();
-        bool r = ormp.recv(message, abi.encode(proof), gasleft());
+        bool r = ormp.recv(message, abi.encode(proof));
         assertEq(r, false);
     }
 
@@ -59,7 +67,7 @@ contract ORMPTest is Test, Verifier {
     function assign(bytes32) external payable {}
     function assign(bytes32, bytes calldata) external payable {}
 
-    function fee(uint256, address, uint256, bytes calldata) external pure returns (uint256) {
+    function fee(uint256, address, uint256, bytes calldata, bytes calldata) external pure returns (uint256) {
         return 1;
     }
 

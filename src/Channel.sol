@@ -70,8 +70,12 @@ contract Channel is UserConfig {
     /// @param from User application contract address which send the message.
     /// @param toChainId The Message destination chain id.
     /// @param to User application contract address which receive the message.
+    /// @param gasLimit Gas limit for UA used.
     /// @param encoded The calldata which encoded by ABI Encoding.
-    function _send(address from, uint256 toChainId, address to, bytes calldata encoded) internal returns (bytes32) {
+    function _send(address from, uint256 toChainId, address to, uint256 gasLimit, bytes calldata encoded)
+        internal
+        returns (bytes32)
+    {
         // only cross-chain message
         require(toChainId != LOCAL_CHAINID(), "!cross-chain");
         // get this message leaf index.
@@ -84,6 +88,7 @@ contract Channel is UserConfig {
             from: from,
             toChainId: toChainId,
             to: to,
+            gasLimit: gasLimit,
             encoded: encoded
         });
         // hash the message.
