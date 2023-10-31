@@ -16,12 +16,13 @@ library ExcessivelySafeCall {
     /// to memory.
     /// @param _target The address to call
     /// @param _gas The amount of gas to forward to the remote contract
+    /// @param _value Value in wei to send to the account
     /// @param _maxCopy The maximum number of bytes of returndata to copy
     /// to memory.
     /// @param _calldata The data to send to the remote contract
     /// @return success and returndata, as `.call()`. Returndata is capped to
     /// `_maxCopy` bytes.
-    function excessivelySafeCall(address _target, uint256 _gas, uint16 _maxCopy, bytes memory _calldata)
+    function excessivelySafeCall(address _target, uint256 _gas, uint256 _value, uint16 _maxCopy, bytes memory _calldata)
         internal
         returns (bool, bytes memory)
     {
@@ -38,7 +39,7 @@ library ExcessivelySafeCall {
                 call(
                     _gas, // gas
                     _target, // recipient
-                    0, // ether value
+                    _value, // ether value
                     add(_calldata, 0x20), // inloc
                     mload(_calldata), // inlen
                     0, // outloc

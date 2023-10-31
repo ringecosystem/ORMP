@@ -35,7 +35,7 @@ contract ContractTest is DSTest {
         bool _success;
         bytes memory _ret;
 
-        (_success, _ret) = target.excessivelySafeCall(100_000, 0, abi.encodeWithSelector(CallTarget.one.selector));
+        (_success, _ret) = target.excessivelySafeCall(100_000, 0, 0, abi.encodeWithSelector(CallTarget.one.selector));
         assertEq(t.called(), 1);
     }
 
@@ -55,13 +55,13 @@ contract ContractTest is DSTest {
         bytes memory _ret;
 
         (_success, _ret) = target.excessivelySafeCall(
-            100_000, _maxCopy, abi.encodeWithSelector(CallTarget.retBytes.selector, uint256(_requested))
+            100_000, 0, _maxCopy, abi.encodeWithSelector(CallTarget.retBytes.selector, uint256(_requested))
         );
         assertTrue(_success);
         assertEq(_ret.length, _toCopy, "return copied wrong amount");
 
         (_success, _ret) = target.excessivelySafeCall(
-            100_000, _maxCopy, abi.encodeWithSelector(CallTarget.revBytes.selector, uint256(_requested))
+            100_000, 0, _maxCopy, abi.encodeWithSelector(CallTarget.revBytes.selector, uint256(_requested))
         );
         assertTrue(!_success);
         assertEq(_ret.length, _toCopy, "revert copied wrong amount");
@@ -90,12 +90,14 @@ contract ContractTest is DSTest {
         bool _success;
         bytes memory _ret;
 
-        (_success, _ret) = target.excessivelySafeCall(3_000_000, 32, abi.encodeWithSelector(CallTarget.badRet.selector));
+        (_success, _ret) =
+            target.excessivelySafeCall(3_000_000, 0, 32, abi.encodeWithSelector(CallTarget.badRet.selector));
         assertTrue(_success);
         assertEq(returnSize(), 1_000_000, "didn't return all");
         assertEq(_ret.length, 32, "revert didn't truncate");
 
-        (_success, _ret) = target.excessivelySafeCall(3_000_000, 32, abi.encodeWithSelector(CallTarget.badRev.selector));
+        (_success, _ret) =
+            target.excessivelySafeCall(3_000_000, 0, 32, abi.encodeWithSelector(CallTarget.badRev.selector));
         assertTrue(!_success);
         assertEq(returnSize(), 1_000_000, "didn't return all");
         assertEq(_ret.length, 32, "revert didn't truncate");
