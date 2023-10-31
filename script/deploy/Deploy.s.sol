@@ -29,12 +29,14 @@ contract Deploy is Common {
     using stdJson for string;
     using ScriptTools for string;
 
-    address immutable ORMP_ADDR = 0x0034607daf9c1dc6628f6e09E81bB232B6603A89;
-    bytes32 immutable ORMP_SALT = 0x4a177511c10933b157108cb8d40e2cbeeccafdec51c3445d5e117ac1981285be;
-    address immutable ORACLE_ADDR = 0x0002396F1D52323fcd1ae8079b38808F046882c3;
-    bytes32 immutable ORACLE_SALT = 0x4988d5215faf6ade0dcd51066e709ccb81edc58914ea7a60b0afa1f3a01c71f3;
-    address immutable RELAYER_ADDR = 0x007EED6207c9AF3715964Fb7f8B5f44E002a3498;
-    bytes32 immutable RELAYER_SALT = 0xcd9f567f57f0c293ba969f9c702f7684bb9e758d3a6bb88da8c99e6f1e851e5d;
+    address immutable ORMP_ADDR = 0x009D223Aad560e72282db9c0438Ef1ef2bf7703D;
+    bytes32 immutable ORMP_SALT = 0x0a68f3af806b448a1e6e4b5b2fced6f144cff5e1bfd733bcb51916a6d696e7aa;
+
+    address immutable ORACLE_ADDR = 0x00BD655DDfA7aFeF4BB109FE1F938724527B49D8;
+    bytes32 immutable ORACLE_SALT = 0xfbb782802ad938a1df1c89407273c248c1d7af7b4f9e94704564a4ca792a4296;
+
+    address immutable RELAYER_ADDR = 0x0065a081a11cc1f6e1692c2A08E9AF36b17973eC;
+    bytes32 immutable RELAYER_SALT = 0x5f1532f1a200d9076629b2691489b82712c30ba913251eae5871243a0faa5062;
 
     string config;
     string instanceId;
