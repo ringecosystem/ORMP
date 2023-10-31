@@ -47,7 +47,7 @@ sizes = false
 via_ir = false
 no_storage_caching = false
 no_rpc_rate_limit = false
-bytecode_hash = "none"
+bytecode_hash = "ipfs"
 cbor_metadata = true
 
 fs_permissions = [
