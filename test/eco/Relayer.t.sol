@@ -104,6 +104,6 @@ contract RelayerTest is Test {
         relayer.relay(message, "");
     }
 
-    function recv(Message calldata message, bytes calldata proof, uint256) external returns (bool) {}
+    function recv(Message calldata message, bytes calldata proof) external returns (bool) {}
     function prove() external returns (bytes32[32] memory) {}
 }
