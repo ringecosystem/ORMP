@@ -7,7 +7,7 @@ import {console2 as console} from "forge-std/console2.sol";
 import {Common} from "create3-deploy/script/Common.s.sol";
 import {ScriptTools} from "create3-deploy/script/ScriptTools.sol";
 
-import {ORMP} from "../../src/ORMP.sol";
+import {Config, ORMP} from "../../src/ORMP.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
 import {Oracle} from "../../src/eco/Oracle.sol";
 
@@ -69,16 +69,16 @@ contract Deploy is Common {
     function run() public {
         require(deployer == msg.sender, "!deployer");
 
-        deployProtocol();
-        deployOralce();
-        deployRelayer();
+        // deployProtocol();
+        // deployOralce();
+        // deployRelayer();
 
         setConfig();
 
-        ScriptTools.exportContract(outputName, "DAO", dao);
-        ScriptTools.exportContract(outputName, "ORMP", ORMP_ADDR);
-        ScriptTools.exportContract(outputName, "ORACLE", ORMP_ADDR);
-        ScriptTools.exportContract(outputName, "RELAYER", RELAYER_ADDR);
+        // ScriptTools.exportContract(outputName, "DAO", dao);
+        // ScriptTools.exportContract(outputName, "ORMP", ORMP_ADDR);
+        // ScriptTools.exportContract(outputName, "ORACLE", ORMP_ADDR);
+        // ScriptTools.exportContract(outputName, "RELAYER", RELAYER_ADDR);
     }
 
     /// @notice Deploy the protocol
