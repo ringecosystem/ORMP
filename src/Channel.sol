@@ -88,8 +88,8 @@ contract Channel is UserConfig {
             from: from,
             toChainId: toChainId,
             to: to,
-            encoded: encoded,
-            gasLimit: gasLimit
+            gasLimit: gasLimit,
+            encoded: encoded
         });
         // hash the message.
         bytes32 msgHash = hash(message);

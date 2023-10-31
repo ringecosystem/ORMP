@@ -64,8 +64,8 @@ contract ChannelTest is Test, Verifier {
             from: self,
             toChainId: 2,
             to: self,
-            encoded: "",
-            gasLimit: 0
+            gasLimit: 0,
+            encoded: ""
         });
         assertEq(msgHash, hash(message));
         Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: channel.prove()});
@@ -85,8 +85,8 @@ contract ChannelTest is Test, Verifier {
                 from: self,
                 toChainId: 2,
                 to: self,
-                encoded: "",
-                gasLimit: 0
+                gasLimit: 0,
+                encoded: ""
             });
             assertEq(msgHash, hash(message));
             Proof memory proof = Proof({blockNumber: block.number, messageIndex: index, messageProof: channel.prove()});

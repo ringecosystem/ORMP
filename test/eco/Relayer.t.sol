@@ -98,8 +98,8 @@ contract RelayerTest is Test {
             from: self,
             toChainId: 2,
             to: self,
-            encoded: "",
-            gasLimit: 0
+            gasLimit: 0,
+            encoded: ""
         });
         relayer.relay(message, "");
     }

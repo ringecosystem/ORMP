@@ -88,7 +88,7 @@ contract Relayer {
         require(success, "!withdraw");
     }
 
-    // params = [extraGas]
+    // extraGas = gasLimit
     function fee(
         uint256 toChainId,
         address, /*ua*/

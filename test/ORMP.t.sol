@@ -38,8 +38,8 @@ contract ORMPTest is Test, Verifier {
             from: self,
             toChainId: 2,
             to: self,
-            encoded: "",
-            gasLimit: 0
+            gasLimit: 0,
+            encoded: ""
         });
     }
 

@@ -54,8 +54,8 @@ contract ORMPBenchmarkTest is Test {
             from: self,
             toChainId: toChainId,
             to: self,
-            encoded: encoded,
-            gasLimit: 0
+            gasLimit: 0,
+            encoded: encoded
         });
         perform_recv(message);
     }
