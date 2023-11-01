@@ -54,7 +54,7 @@ contract ORMPBenchmarkTest is Test {
         test_recv(fromChainId, toChainId, encoded);
     }
 
-    function test_recv(uint256 fromChainId, uint256 toChainId, bytes calldata encoded) public {
+    function test_recv(uint256 fromChainId, uint256 toChainId, bytes calldata encoded) internal {
         perform_send(fromChainId, toChainId, encoded);
 
         Message memory message = Message({
