@@ -101,6 +101,7 @@ contract Relayer {
         DstPrice memory p = priceOf[toChainId];
         DstConfig memory c = configOf[toChainId];
 
+        require(c.baseGas != 0, "!baseGas");
         // remoteToken = dstGasPriceInWei * (baseGas + extraGas)
         uint256 remoteToken = p.dstGasPriceInWei * (c.baseGas + extraGas);
         // dstPriceRatio = dstPrice / localPrice * 10^10

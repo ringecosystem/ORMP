@@ -35,8 +35,8 @@ contract Deploy is Common {
     address immutable ORACLE_ADDR = 0x00BD655DDfA7aFeF4BB109FE1F938724527B49D8;
     bytes32 immutable ORACLE_SALT = 0xfbb782802ad938a1df1c89407273c248c1d7af7b4f9e94704564a4ca792a4296;
 
-    address immutable RELAYER_ADDR = 0x0065a081a11cc1f6e1692c2A08E9AF36b17973eC;
-    bytes32 immutable RELAYER_SALT = 0x5f1532f1a200d9076629b2691489b82712c30ba913251eae5871243a0faa5062;
+    address immutable RELAYER_ADDR = 0x003605167cd4C36063a7B63e604497e623Bb8B10;
+    bytes32 immutable RELAYER_SALT = 0x5209fea465d02b614816418fde3b910357bae75dbcb0312a9b7a7b83718271cc;
 
     string config;
     string instanceId;
@@ -69,16 +69,16 @@ contract Deploy is Common {
     function run() public {
         require(deployer == msg.sender, "!deployer");
 
-        // deployProtocol();
-        // deployOralce();
-        // deployRelayer();
+        deployProtocol();
+        deployOralce();
+        deployRelayer();
 
         setConfig();
 
-        // ScriptTools.exportContract(outputName, "DAO", dao);
-        // ScriptTools.exportContract(outputName, "ORMP", ORMP_ADDR);
-        // ScriptTools.exportContract(outputName, "ORACLE", ORMP_ADDR);
-        // ScriptTools.exportContract(outputName, "RELAYER", RELAYER_ADDR);
+        ScriptTools.exportContract(outputName, "DAO", dao);
+        ScriptTools.exportContract(outputName, "ORMP", ORMP_ADDR);
+        ScriptTools.exportContract(outputName, "ORACLE", ORMP_ADDR);
+        ScriptTools.exportContract(outputName, "RELAYER", RELAYER_ADDR);
     }
 
     /// @notice Deploy the protocol
