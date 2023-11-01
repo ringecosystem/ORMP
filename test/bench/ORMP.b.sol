@@ -27,24 +27,34 @@ import "../../src/eco/Relayer.sol";
 contract ORMPBenchmarkTest is Test {
     using Chains for uint256;
 
-    ORMP ormp = ORMP(0x00000000fec9f746a2138D9C6f42794236f3aca8);
-    Relayer relayer = Relayer(payable(0x000000fbfBc6954C8CBba3130b5Aee7f3Ea5108e));
-    Oracle oracle = Oracle(payable(0x00000012f877F68a8D2410b683FDC8214f4b5194));
+    ORMP ormp = ORMP(0x009D223Aad560e72282db9c0438Ef1ef2bf7703D);
+    Relayer relayer = Relayer(payable(0x0065a081a11cc1f6e1692c2A08E9AF36b17973eC));
+    Oracle oracle = Oracle(payable(0x00BD655DDfA7aFeF4BB109FE1F938724527B49D8));
 
     bytes32 root;
     address immutable self = address(this);
 
     function test_send_fuzz1(bytes calldata encoded) public {
-        perform_send(Chains.Pangolin, Chains.ArbitrumGoerli, encoded);
+        perform_send(Chains.Crab, Chains.ArbitrumSepolia, encoded);
     }
 
     function test_send_fuzz2(bytes calldata encoded) public {
-        perform_send(Chains.ArbitrumGoerli, Chains.Pangolin, encoded);
+        perform_send(Chains.ArbitrumSepolia, Chains.Crab, encoded);
     }
 
-    function test_recv_fuzz(bytes calldata encoded) public {
-        uint256 fromChainId = Chains.Pangolin;
-        uint256 toChainId = Chains.ArbitrumGoerli;
+    function test_recv_fuzz1(bytes calldata encoded) public {
+        uint256 fromChainId = Chains.Crab;
+        uint256 toChainId = Chains.ArbitrumSepolia;
+        test_recv(fromChainId, toChainId, encoded);
+    }
+
+    function test_recv_fuzz2(bytes calldata encoded) public {
+        uint256 fromChainId = Chains.ArbitrumSepolia;
+        uint256 toChainId = Chains.Crab;
+        test_recv(fromChainId, toChainId, encoded);
+    }
+
+    function test_recv(uint256 fromChainId, uint256 toChainId, bytes calldata encoded) public {
         perform_send(fromChainId, toChainId, encoded);
 
         Message memory message = Message({
