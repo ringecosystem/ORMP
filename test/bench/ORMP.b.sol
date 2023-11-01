@@ -28,7 +28,7 @@ contract ORMPBenchmarkTest is Test {
     using Chains for uint256;
 
     ORMP ormp = ORMP(0x009D223Aad560e72282db9c0438Ef1ef2bf7703D);
-    Relayer relayer = Relayer(payable(0x0065a081a11cc1f6e1692c2A08E9AF36b17973eC));
+    Relayer relayer = Relayer(payable(0x003605167cd4C36063a7B63e604497e623Bb8B10));
     Oracle oracle = Oracle(payable(0x00BD655DDfA7aFeF4BB109FE1F938724527B49D8));
 
     bytes32 root;

@@ -7,7 +7,7 @@ Oracle and Relayer based Message Protocol.
 |------------|--------------------------------------------|
 | ORMP       | 0x009D223Aad560e72282db9c0438Ef1ef2bf7703D |
 | Oracle     | 0x00BD655DDfA7aFeF4BB109FE1F938724527B49D8 |
-| Relayer    | 0x0065a081a11cc1f6e1692c2A08E9AF36b17973eC |
+| Relayer    | 0x003605167cd4C36063a7B63e604497e623Bb8B10 |
 
 ## Usage
 To install with [**Foundry**](https://github.com/gakonst/foundry):
