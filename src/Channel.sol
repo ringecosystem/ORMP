@@ -24,7 +24,7 @@ import "./imt/IncrementalMerkleTree.sol";
 /// @title Channel
 /// @notice A channel is a logical connection over cross-chain network.
 /// It used for cross-chain message transfer.
-/// - Accepts messages to be dispatched to remote chains,
+/// - Accepts messages to be dispatched to destination chains,
 ///   constructs a Merkle tree of the messages.
 /// - Dispatches verified messages from source chains.
 /// @dev Messages live in an incremental merkle tree (imt)
@@ -36,11 +36,12 @@ contract Channel is UserConfig {
     /// @dev Incremental merkle tree root which all message hashes live in leafs.
     bytes32 public root;
     /// @dev Incremental merkle tree.
-    IncrementalMerkleTree.Tree private imt;
+    IncrementalMerkleTree.Tree private _imt;
     /// @dev msgHash => isDispathed.
     mapping(bytes32 => bool) public dones;
+
     /// @dev Self contract address cache.
-    address private immutable _self = address(this);
+    address private immutable __self = address(this);
 
     /// @dev Notifies an observer that the message has been accepted.
     /// @param msgHash Hash of the message.
@@ -70,7 +71,7 @@ contract Channel is UserConfig {
     /// @param from User application contract address which send the message.
     /// @param toChainId The Message destination chain id.
     /// @param to User application contract address which receive the message.
-    /// @param gasLimit Gas limit for UA used.
+    /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     function _send(address from, uint256 toChainId, address to, uint256 gasLimit, bytes calldata encoded)
         internal
@@ -82,7 +83,7 @@ contract Channel is UserConfig {
         uint256 index = messageCount();
         // constuct message object.
         Message memory message = Message({
-            channel: _self,
+            channel: __self,
             index: index,
             fromChainId: LOCAL_CHAINID(),
             from: from,
@@ -94,9 +95,9 @@ contract Channel is UserConfig {
         // hash the message.
         bytes32 msgHash = hash(message);
         // insert msg hash to imt.
-        imt.insert(msgHash);
+        _imt.insert(msgHash);
         // update new imt.root to root storage.
-        root = imt.root();
+        root = _imt.root();
 
         // emit accepted message event.
         emit MessageAccepted(msgHash, root, message);
@@ -106,7 +107,7 @@ contract Channel is UserConfig {
     }
 
     /// @dev Receive messages.
-    /// @notice Only message.to's config relayer could relayer this message.
+    /// @notice Only message.to's config relayer could relay this message.
     /// @param message Received message info.
     /// @param proof Message proof of this message.
     function _recv(Message calldata message, bytes calldata proof) internal returns (bytes32) {
@@ -132,16 +133,16 @@ contract Channel is UserConfig {
 
     /// @dev Fetch the messages count of incremental merkle tree.
     function messageCount() public view returns (uint256) {
-        return imt.count;
+        return _imt.count;
     }
 
     /// @dev Fetch the branch of incremental merkle tree.
     function imtBranch() public view returns (bytes32[32] memory) {
-        return imt.branch;
+        return _imt.branch;
     }
 
     /// @dev Fetch the latest message proof
     function prove() public view returns (bytes32[32] memory) {
-        return imt.prove();
+        return _imt.prove();
     }
 }

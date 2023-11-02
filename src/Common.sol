@@ -24,9 +24,9 @@ pragma solidity 0.8.17;
 /// @param index The leaf index lives in channel's incremental mekle tree.
 /// @param fromChainId The message source chain id.
 /// @param from User application contract address which send the message.
-/// @param toChainId The Message destination chain id.
+/// @param toChainId The message destination chain id.
 /// @param to User application contract address which receive the message.
-/// @param gasLimit Gas limit for UA used.
+/// @param gasLimit Gas limit for destination UA used.
 /// @param encoded The calldata which encoded by ABI Encoding.
 struct Message {
     address channel;

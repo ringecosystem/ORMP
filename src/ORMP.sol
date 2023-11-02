@@ -36,7 +36,7 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @notice follow https://eips.ethereum.org/EIPS/eip-5750
     /// @param toChainId The Message destination chain id.
     /// @param to User application contract address which receive the message.
-    /// @param gasLimit Gas limit for UA used.
+    /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param refund Return extra fee to refund address.
     /// @param params General extensibility for relayer to custom functionality.
@@ -86,7 +86,7 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @notice Get a quote in source native gas, for the amount that send() requires to pay for message delivery.
     /// @param toChainId The Message destination chain id.
     //  @param ua User application contract address which send the message.
-    /// @param gasLimit Gas limit for UA used.
+    /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param params General extensibility for relayer to custom functionality.
     function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata params)

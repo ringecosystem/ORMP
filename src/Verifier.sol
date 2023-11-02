@@ -22,6 +22,7 @@ import "./imt/IncrementalMerkleTree.sol";
 
 abstract contract Verifier is IVerifier {
     /// @notice Message proof.
+    /// @param blockNumber The block number corresponding to the proof.
     /// @param messageIndex Leaf index of the message hash in incremental merkle tree.
     /// @param messageProof Merkle proof of the message hash.
     struct Proof {
