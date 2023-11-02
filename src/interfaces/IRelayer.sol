@@ -21,7 +21,7 @@ interface IRelayer {
     /// @notice Fetch relayer price to relay message to the destination chain.
     /// @param toChainId The destination chain id.
     /// @param ua The user application which send the message.
-    /// @param gasLimit Gas limit for UA used.
+    /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param params General extensibility for relayer to custom functionality.
     /// @return Relayer price in source native gas.
