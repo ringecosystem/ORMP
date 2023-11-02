@@ -27,8 +27,8 @@ contract Oracle is Verifier {
     event SetApproved(address operator, bool approve);
 
     address public immutable PROTOCOL;
-    address public owner;
 
+    address public owner;
     // chainId => price
     mapping(uint256 => uint256) public feeOf;
     // chainId => dapi
@@ -52,22 +52,22 @@ contract Oracle is Verifier {
 
     receive() external payable {}
 
-    function changeOwner(address owner_) external onlyOwner {
-        owner = owner_;
+    function withdraw(address to, uint256 amount) external onlyApproved {
+        (bool success,) = to.call{value: amount}("");
+        require(success, "!withdraw");
     }
 
     function isApproved(address operator) public view returns (bool) {
         return approvedOf[operator];
     }
 
-    function setApproved(address operator, bool approve) public onlyOwner {
-        approvedOf[operator] = approve;
-        emit SetApproved(operator, approve);
+    function changeOwner(address owner_) external onlyOwner {
+        owner = owner_;
     }
 
-    function withdraw(address to, uint256 amount) external onlyApproved {
-        (bool success,) = to.call{value: amount}("");
-        require(success, "!withdraw");
+    function setApproved(address operator, bool approve) external onlyOwner {
+        approvedOf[operator] = approve;
+        emit SetApproved(operator, approve);
     }
 
     function setFee(uint256 chainId, uint256 fee_) external onlyApproved {
@@ -85,7 +85,7 @@ contract Oracle is Verifier {
     }
 
     function assign(bytes32 msgHash) external payable {
-        require(msg.sender == PROTOCOL, "!enpoint");
+        require(msg.sender == PROTOCOL, "!auth");
         emit Assigned(msgHash, msg.value);
     }
 

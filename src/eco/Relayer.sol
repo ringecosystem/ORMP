@@ -36,8 +36,8 @@ contract Relayer {
     }
 
     address public immutable PROTOCOL;
-    address public owner;
 
+    address public owner;
     // chainId => price
     mapping(uint256 => DstPrice) public priceOf;
     mapping(uint256 => DstConfig) public configOf;
@@ -60,12 +60,17 @@ contract Relayer {
 
     receive() external payable {}
 
-    function changeOwner(address owner_) external onlyOwner {
-        owner = owner_;
+    function withdraw(address to, uint256 amount) external onlyApproved {
+        (bool success,) = to.call{value: amount}("");
+        require(success, "!withdraw");
     }
 
     function isApproved(address operator) public view returns (bool) {
         return approvedOf[operator];
+    }
+
+    function changeOwner(address owner_) external onlyOwner {
+        owner = owner_;
     }
 
     function setApproved(address operator, bool approve) public onlyOwner {
@@ -81,11 +86,6 @@ contract Relayer {
     function setDstConfig(uint256 chainId, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
         configOf[chainId] = DstConfig(baseGas, gasPerByte);
         emit SetDstConfig(chainId, baseGas, gasPerByte);
-    }
-
-    function withdraw(address to, uint256 amount) external onlyApproved {
-        (bool success,) = to.call{value: amount}("");
-        require(success, "!withdraw");
     }
 
     // extraGas = gasLimit
