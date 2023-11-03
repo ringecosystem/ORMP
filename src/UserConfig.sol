@@ -22,19 +22,19 @@ import "./Common.sol";
 /// @title UserConfig
 /// @notice User config could select their own relayer and oracle.
 /// The default configuration is used by default.
-/// @dev Only setter could set default config.
+/// @dev Only setter could set default user config.
 contract UserConfig {
     /// @dev Setter address.
     address public setter;
-    /// @dev Default config.
-    Config public defaultConfig;
-    /// @dev ua => config.
-    mapping(address => Config) public appConfig;
+    /// @dev Default user config.
+    UC public defaultUC;
+    /// @dev ua => uc.
+    mapping(address => UC) public ucOf;
 
-    /// @dev Notifies an observer that the default config has updated.
+    /// @dev Notifies an observer that the default user config has updated.
     /// @param oracle Default oracle.
     /// @param relayer Default relayer.
-    event defaultConfigUpdated(address oracle, address relayer);
+    event DefaultConfigUpdated(address oracle, address relayer);
     /// @dev Notifies an observer that the user application config has updated.
     /// @param ua User application contract address.
     /// @param oracle Oracle which the user application choose.
@@ -57,36 +57,36 @@ contract UserConfig {
         setter = setter_;
     }
 
-    /// @dev Set default config for all user application.
+    /// @dev Set default user config for all user application.
     /// @notice Only setter could call.
     /// @param oracle Default oracle.
     /// @param relayer Default relayer.
     function setDefaultConfig(address oracle, address relayer) external onlySetter {
-        defaultConfig = Config(oracle, relayer);
-        emit defaultConfigUpdated(oracle, relayer);
+        defaultUC = UC(oracle, relayer);
+        emit DefaultConfigUpdated(oracle, relayer);
     }
 
     /// @notice Set user application config.
     /// @param oracle Oracle which user application.
     /// @param relayer Relayer which user application choose.
     function setAppConfig(address oracle, address relayer) external {
-        appConfig[msg.sender] = Config(oracle, relayer);
+        ucOf[msg.sender] = UC(oracle, relayer);
         emit AppConfigUpdated(msg.sender, oracle, relayer);
     }
 
     /// @dev Fetch user application config.
-    /// @notice If user application has not configured, then the default config is used.
+    /// @notice If user application has not configured, then the default user config is used.
     /// @param ua User application contract address.
     /// @return user application config.
-    function getAppConfig(address ua) public view returns (Config memory) {
-        Config memory c = appConfig[ua];
+    function getAppConfig(address ua) public view returns (UC memory) {
+        UC memory c = ucOf[ua];
 
         if (c.relayer == address(0x0)) {
-            c.relayer = defaultConfig.relayer;
+            c.relayer = defaultUC.relayer;
         }
 
         if (c.oracle == address(0x0)) {
-            c.oracle = defaultConfig.oracle;
+            c.oracle = defaultUC.oracle;
         }
 
         return c;

@@ -61,14 +61,12 @@ interface IORMP {
     /// @notice If user application has not configured, then the default config is used.
     /// @param ua User application contract address.
     /// @return user application config.
-    function getAppConfig(address ua) external view returns (Config memory);
+    function getAppConfig(address ua) external view returns (UC memory);
 
     /// @notice Set user application config.
     /// @param oracle Oracle which user application choose.
     /// @param relayer Relayer which user application choose.
     function setAppConfig(address oracle, address relayer) external;
 
-    function setDefaultConfig(address oracle, address relayer) external;
-    function defaultConfig() external view returns (Config memory);
-    function changeSetter(address setter_) external;
+    function defaultUC() external view returns (UC memory);
 }
