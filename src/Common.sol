@@ -42,7 +42,7 @@ struct Message {
 /// @dev User application custom configuration.
 /// @param oracle Oracle contract address.
 /// @param relayer Relayer contract address.
-struct Config {
+struct UC {
     address oracle;
     address relayer;
 }

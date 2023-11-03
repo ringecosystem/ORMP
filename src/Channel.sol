@@ -112,14 +112,14 @@ contract Channel is UserConfig {
     /// @param proof Message proof of this message.
     function _recv(Message calldata message, bytes calldata proof) internal returns (bytes32) {
         // get message.to user config.
-        Config memory uaConfig = getAppConfig(message.to);
+        UC memory uc = getAppConfig(message.to);
         // only the config relayer could relay this message.
-        require(uaConfig.relayer == msg.sender, "!auth");
+        require(uc.relayer == msg.sender, "!auth");
 
         // hash the message.
         bytes32 msgHash = hash(message);
         // verify message by the config oracle.
-        require(IVerifier(uaConfig.oracle).verifyMessageProof(message.fromChainId, msgHash, proof), "!proof");
+        require(IVerifier(uc.oracle).verifyMessageProof(message.fromChainId, msgHash, proof), "!proof");
 
         // check destination chain id is correct.
         require(LOCAL_CHAINID() == message.toChainId, "!toChainId");

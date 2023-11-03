@@ -30,7 +30,7 @@ contract UserConfigTest is Test {
 
     function test_constructorArgs() public {
         assertEq(config.setter(), self);
-        (address relayer, address oracle) = config.defaultConfig();
+        (address relayer, address oracle) = config.defaultUC();
         assertEq(relayer, address(0));
         assertEq(oracle, address(0));
     }
@@ -48,7 +48,7 @@ contract UserConfigTest is Test {
 
     function test_setDefaultConfig() public {
         config.setDefaultConfig(address(1), address(2));
-        (address oracle, address relayer) = config.defaultConfig();
+        (address oracle, address relayer) = config.defaultUC();
         assertEq(oracle, address(1));
         assertEq(relayer, address(2));
     }
@@ -59,7 +59,7 @@ contract UserConfigTest is Test {
     }
 
     function test_setAppConfig() public {
-        Config memory c = config.getAppConfig(self);
+        UC memory c = config.getAppConfig(self);
         assertEq(c.oracle, address(0));
         assertEq(c.relayer, address(0));
 
@@ -70,7 +70,7 @@ contract UserConfigTest is Test {
     }
 
     function test_getAppConfig() public {
-        Config memory c = config.getAppConfig(self);
+        UC memory c = config.getAppConfig(self);
         assertEq(c.relayer, address(0));
         assertEq(c.oracle, address(0));
 

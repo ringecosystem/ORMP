@@ -69,11 +69,11 @@ contract ORMP is ReentrancyGuard, Channel {
         bytes calldata params
     ) internal {
         // fetch user application's config.
-        Config memory uaConfig = getAppConfig(ua);
+        UC memory uc = getAppConfig(ua);
         // handle relayer fee
-        uint256 relayerFee = _handleRelayer(uaConfig.relayer, msgHash, toChainId, ua, gasLimit, encoded, params);
+        uint256 relayerFee = _handleRelayer(uc.relayer, msgHash, toChainId, ua, gasLimit, encoded, params);
         // handle oracle fee
-        uint256 oracleFee = _handleOracle(uaConfig.oracle, msgHash, toChainId, ua);
+        uint256 oracleFee = _handleOracle(uc.oracle, msgHash, toChainId, ua);
 
         // refund
         if (msg.value > relayerFee + oracleFee) {
@@ -94,9 +94,9 @@ contract ORMP is ReentrancyGuard, Channel {
         view
         returns (uint256)
     {
-        Config memory uaConfig = getAppConfig(ua);
-        uint256 relayerFee = IRelayer(uaConfig.relayer).fee(toChainId, ua, gasLimit, encoded, params);
-        uint256 oracleFee = IOracle(uaConfig.oracle).fee(toChainId, ua);
+        UC memory uc = getAppConfig(ua);
+        uint256 relayerFee = IRelayer(uc.relayer).fee(toChainId, ua, gasLimit, encoded, params);
+        uint256 oracleFee = IOracle(uc.oracle).fee(toChainId, ua);
         return relayerFee + oracleFee;
     }
 

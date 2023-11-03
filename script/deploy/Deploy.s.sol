@@ -7,7 +7,7 @@ import {console2 as console} from "forge-std/console2.sol";
 import {Common} from "create3-deploy/script/Common.s.sol";
 import {ScriptTools} from "create3-deploy/script/ScriptTools.sol";
 
-import {Config, ORMP} from "../../src/ORMP.sol";
+import {ORMP} from "../../src/ORMP.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
 import {Oracle} from "../../src/eco/Oracle.sol";
 
@@ -121,7 +121,7 @@ contract Deploy is Common {
     /// @notice Set the protocol config
     function setConfig() public broadcast {
         ORMP(ORMP_ADDR).setDefaultConfig(ORACLE_ADDR, RELAYER_ADDR);
-        (address o, address r) = ORMP(ORMP_ADDR).defaultConfig();
+        (address o, address r) = ORMP(ORMP_ADDR).defaultUC();
         require(o == ORACLE_ADDR, "!oracle");
         require(r == RELAYER_ADDR, "!relayer");
 
