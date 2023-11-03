@@ -34,7 +34,7 @@ contract UserConfig {
     /// @dev Notifies an observer that the default config has updated.
     /// @param oracle Default oracle.
     /// @param relayer Default relayer.
-    event defaultConfigUpdated(address oracle, address relayer);
+    event DefaultConfigUpdated(address oracle, address relayer);
     /// @dev Notifies an observer that the user application config has updated.
     /// @param ua User application contract address.
     /// @param oracle Oracle which the user application choose.
@@ -63,7 +63,7 @@ contract UserConfig {
     /// @param relayer Default relayer.
     function setDefaultConfig(address oracle, address relayer) external onlySetter {
         defaultConfig = Config(oracle, relayer);
-        emit defaultConfigUpdated(oracle, relayer);
+        emit DefaultConfigUpdated(oracle, relayer);
     }
 
     /// @notice Set user application config.
