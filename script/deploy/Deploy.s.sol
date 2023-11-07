@@ -59,12 +59,12 @@ contract Deploy is Common {
         config = ScriptTools.readInput(instanceId);
         c3 = ScriptTools.readInput("../c3");
 
-        ORMP_ADDR = c3.readAddress("ORMP_ADDR");
-        ORMP_SALT = c3.readBytes32("ORMP_SALT");
-        ORACLE_ADDR = c3.readAddress("ORACLE_ADDR");
-        ORACLE_SALT = c3.readBytes32("ORACLE_SALT");
-        RELAYER_ADDR = c3.readAddress("RELAYER_ADDR");
-        RELAYER_SALT = c3.readBytes32("RELAYER_SALT");
+        ORMP_ADDR = c3.readAddress(".ORMP_ADDR");
+        ORMP_SALT = c3.readBytes32(".ORMP_SALT");
+        ORACLE_ADDR = c3.readAddress(".ORACLE_ADDR");
+        ORACLE_SALT = c3.readBytes32(".ORACLE_SALT");
+        RELAYER_ADDR = c3.readAddress(".RELAYER_ADDR");
+        RELAYER_SALT = c3.readBytes32(".RELAYER_SALT");
 
         deployer = config.readAddress(".DEPLOYER");
         dao = config.readAddress(".DAO");
@@ -84,7 +84,7 @@ contract Deploy is Common {
 
         ScriptTools.exportContract(outputName, "DAO", dao);
         ScriptTools.exportContract(outputName, "ORMP", ORMP_ADDR);
-        ScriptTools.exportContract(outputName, "ORACLE", ORMP_ADDR);
+        ScriptTools.exportContract(outputName, "ORACLE", ORACLE_ADDR);
         ScriptTools.exportContract(outputName, "RELAYER", RELAYER_ADDR);
     }
 
@@ -137,13 +137,13 @@ contract Deploy is Common {
         III(RELAYER_ADDR).setApproved(relayerOperator, true);
         require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
 
-        III(ORMP_ADDR).changeSetter(dao);
-        require(III(ORMP_ADDR).setter() == dao, "!dao");
+        // III(ORMP_ADDR).changeSetter(dao);
+        // require(III(ORMP_ADDR).setter() == dao, "!dao");
 
-        III(ORACLE_ADDR).changeOwner(dao);
-        require(III(ORACLE_ADDR).owner() == dao, "!dao");
+        // III(ORACLE_ADDR).changeOwner(dao);
+        // require(III(ORACLE_ADDR).owner() == dao, "!dao");
 
-        III(RELAYER_ADDR).changeOwner(dao);
-        require(III(RELAYER_ADDR).owner() == dao, "!dao");
+        // III(RELAYER_ADDR).changeOwner(dao);
+        // require(III(RELAYER_ADDR).owner() == dao, "!dao");
     }
 }
