@@ -2,10 +2,12 @@
 
 set -eo pipefail
 
-deployer=0x0f14341A7f464320319025540E8Fe48Ad0fe5aec
-ormp=0x009D223Aad560e72282db9c0438Ef1ef2bf7703D
-oracle=0x00BD655DDfA7aFeF4BB109FE1F938724527B49D8
-relayer=0x003605167cd4C36063a7B63e604497e623Bb8B10
+c3=$PWD/script/input/c3.json
+
+deployer=$(jq -r ".DEPLOYER" $C3)
+ormp=$(jq -r ".ORMP_ADDR" $c3)
+oracle=$(jq -r ".ORACLE_ADDR" $c3)
+relayer=$(jq -r ".RELAYER_ADDR" $c3)
 
 verify() {
   local addr; addr=$1
