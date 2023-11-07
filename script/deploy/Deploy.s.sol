@@ -64,7 +64,7 @@ contract Deploy is Common {
         ORACLE_ADDR = c3.readAddress("ORACLE_ADDR");
         ORACLE_SALT = c3.readBytes32("ORACLE_SALT");
         RELAYER_ADDR = c3.readAddress("RELAYER_ADDR");
-        REALYER_SALT = c3.readBytes32("RELAYER_SALT");
+        RELAYER_SALT = c3.readBytes32("RELAYER_SALT");
 
         deployer = config.readAddress(".DEPLOYER");
         dao = config.readAddress(".DAO");

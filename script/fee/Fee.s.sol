@@ -25,6 +25,7 @@ contract Fee is Common {
     string instanceId;
     string config;
     string deployedContracts;
+    address dao;
 
     function name() public pure override returns (string memory) {
         return "Fee";
