@@ -2,8 +2,7 @@
 
 set -eo pipefail
 
-
-c3=$(dirname $0)/script/input/c3.json
+c3=$PWD/script/input/c3.json
 
 deployer=$(jq -r ".DEPLOYER" $C3)
 ormp=$(jq -r ".ORMP_ADDR" $c3)
