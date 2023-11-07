@@ -84,7 +84,7 @@ contract Deploy is Common {
 
         ScriptTools.exportContract(outputName, "DAO", dao);
         ScriptTools.exportContract(outputName, "ORMP", ORMP_ADDR);
-        ScriptTools.exportContract(outputName, "ORACLE", ORMP_ADDR);
+        ScriptTools.exportContract(outputName, "ORACLE", ORACLE_ADDR);
         ScriptTools.exportContract(outputName, "RELAYER", RELAYER_ADDR);
     }
 
