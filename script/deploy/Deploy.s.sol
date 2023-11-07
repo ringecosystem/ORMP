@@ -29,15 +29,14 @@ contract Deploy is Common {
     using stdJson for string;
     using ScriptTools for string;
 
-    address immutable ORMP_ADDR = 0x009D223Aad560e72282db9c0438Ef1ef2bf7703D;
-    bytes32 immutable ORMP_SALT = 0x0a68f3af806b448a1e6e4b5b2fced6f144cff5e1bfd733bcb51916a6d696e7aa;
+    address ORMP_ADDR;
+    bytes32 ORMP_SALT;
+    address ORACLE_ADDR;
+    bytes32 ORACLE_SALT;
+    address RELAYER_ADDR;
+    bytes32 RELAYER_SALT;
 
-    address immutable ORACLE_ADDR = 0x00BD655DDfA7aFeF4BB109FE1F938724527B49D8;
-    bytes32 immutable ORACLE_SALT = 0xfbb782802ad938a1df1c89407273c248c1d7af7b4f9e94704564a4ca792a4296;
-
-    address immutable RELAYER_ADDR = 0x003605167cd4C36063a7B63e604497e623Bb8B10;
-    bytes32 immutable RELAYER_SALT = 0x5209fea465d02b614816418fde3b910357bae75dbcb0312a9b7a7b83718271cc;
-
+    string c3;
     string config;
     string instanceId;
     string outputName;
@@ -58,6 +57,14 @@ contract Deploy is Common {
         instanceId = vm.envOr("INSTANCE_ID", string("deploy.c"));
         outputName = "deploy.a";
         config = ScriptTools.readInput(instanceId);
+        c3 = ScriptTools.readInput("../c3");
+
+        ORMP_ADDR = c3.readAddress("ORMP_ADDR");
+        ORMP_SALT = c3.readBytes32("ORMP_SALT");
+        ORACLE_ADDR = c3.readAddress("ORACLE_ADDR");
+        ORACLE_SALT = c3.readBytes32("ORACLE_SALT");
+        RELAYER_ADDR = c3.readAddress("RELAYER_ADDR");
+        REALYER_SALT = c3.readBytes32("RELAYER_SALT");
 
         deployer = config.readAddress(".DEPLOYER");
         dao = config.readAddress(".DAO");
