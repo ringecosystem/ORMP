@@ -27,9 +27,9 @@ import "../../src/eco/Relayer.sol";
 contract ORMPBenchmarkTest is Test {
     using Chains for uint256;
 
-    ORMP ormp = ORMP(0x009D223Aad560e72282db9c0438Ef1ef2bf7703D);
-    Relayer relayer = Relayer(payable(0x003605167cd4C36063a7B63e604497e623Bb8B10));
-    Oracle oracle = Oracle(payable(0x00BD655DDfA7aFeF4BB109FE1F938724527B49D8));
+    ORMP ormp = ORMP(0x00000000001523057a05d6293C1e5171eE33eE0A);
+    Oracle oracle = Oracle(payable(0x0000000000ba03146Cc235509E802873D418a6bc));
+    Relayer relayer = Relayer(payable(0x0000000000808fE9bDCc1d180EfbF5C53552a6b1));
 
     bytes32 root;
     address immutable self = address(this);
