@@ -3,5 +3,5 @@
 set -eo pipefail
 
 set -x
-forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 421614 --chain-id 44     --broadcast --slow
-forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 44     --chain-id 421614 --broadcast --slow --legacy
+forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 42161 --chain-id 46    --broadcast --slow
+forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 46    --chain-id 42161 --broadcast --slow --legacy
