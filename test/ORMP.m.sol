@@ -22,8 +22,9 @@ import "../src/Verifier.sol";
 
 contract ORMPMock is Verifier {
     ORMP ormp;
-    address oracle = 0x0000000000ba03146Cc235509E802873D418a6bc;
+    address immutable caller;
     address immutable self = address(this);
+    address constant oracle = 0x0000000000ba03146Cc235509E802873D418a6bc;
 
     struct P {
         Message message;
@@ -31,6 +32,7 @@ contract ORMPMock is Verifier {
     }
 
     constructor() {
+        caller = msg.sender;
         ormp = new ORMP(self);
         ormp.setDefaultConfig(self, self);
     }
@@ -53,6 +55,7 @@ contract ORMPMock is Verifier {
     }
 
     function dryrun_recv(bytes memory input) public {
+        require(caller == msg.sender, "!auth");
         IVerifier(oracle).merkleRoot(46, 0);
         P memory p = abi.decode(input, (P));
         ormp.recv(p.message, p.proof);
