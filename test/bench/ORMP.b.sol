@@ -33,25 +33,23 @@ contract ORMPBenchmarkTest is Test {
 
     bytes32 root;
     address immutable self = address(this);
+    uint256 chain1 = Chains.Darwinia;
+    uint256 chain2 = Chains.Arbitrum;
 
     function test_send_fuzz1(bytes calldata encoded) public {
-        perform_send(Chains.Crab, Chains.ArbitrumSepolia, encoded);
+        perform_send(chain1, chain2, encoded);
     }
 
     function test_send_fuzz2(bytes calldata encoded) public {
-        perform_send(Chains.ArbitrumSepolia, Chains.Crab, encoded);
+        perform_send(chain2, chain1, encoded);
     }
 
     function test_recv_fuzz1(bytes calldata encoded) public {
-        uint256 fromChainId = Chains.Crab;
-        uint256 toChainId = Chains.ArbitrumSepolia;
-        test_recv(fromChainId, toChainId, encoded);
+        test_recv(chain1, chain2, encoded);
     }
 
     function test_recv_fuzz2(bytes calldata encoded) public {
-        uint256 fromChainId = Chains.ArbitrumSepolia;
-        uint256 toChainId = Chains.Crab;
-        test_recv(fromChainId, toChainId, encoded);
+        test_recv(chain2, chain1, encoded);
     }
 
     function test_recv(uint256 fromChainId, uint256 toChainId, bytes calldata encoded) internal {
