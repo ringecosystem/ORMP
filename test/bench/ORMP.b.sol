@@ -74,15 +74,15 @@ contract ORMPBenchmarkTest is Test {
             Verifier.Proof({blockNumber: block.number, messageIndex: message.index, messageProof: ormp.prove()});
 
         vm.createSelectFork(message.toChainId.toChainName());
+        // TODO: setDefaltOracle
         vm.store(address(oracle), bytes32(uint256(0)), bytes32(uint256(uint160(self))));
         assertEq(oracle.owner(), self);
-        oracle.setDapi(message.fromChainId, self);
 
         vm.prank(address(relayer));
         ormp.recv(message, abi.encode(proof));
     }
 
-    function messageRoot() public view returns (bytes32) {
+    function messageRootOf(uint256) external view returns (bytes32) {
         return root;
     }
 

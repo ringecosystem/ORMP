@@ -27,6 +27,7 @@ contract Oracle is Verifier {
     event SetApproved(address operator, bool approve);
 
     address public immutable PROTOCOL;
+    address public immutable SUBAPI;
 
     address public owner;
     // chainId => price
@@ -45,7 +46,8 @@ contract Oracle is Verifier {
         _;
     }
 
-    constructor(address dao, address ormp) {
+    constructor(address dao, address ormp, address subapi) {
+        SUBAPI = subapi;
         PROTOCOL = ormp;
         owner = dao;
     }
@@ -75,11 +77,6 @@ contract Oracle is Verifier {
         emit SetFee(chainId, fee_);
     }
 
-    function setDapi(uint256 chainId, address dapi) external onlyOwner {
-        dapiOf[chainId] = dapi;
-        emit SetDapi(chainId, dapi);
-    }
-
     function fee(uint256 toChainId, address /*ua*/ ) public view returns (uint256) {
         return feeOf[toChainId];
     }
@@ -90,7 +87,6 @@ contract Oracle is Verifier {
     }
 
     function merkleRoot(uint256 chainId, uint256 /*blockNumber*/ ) public view override returns (bytes32) {
-        address dapi = dapiOf[chainId];
-        return IFeedOracle(dapi).messageRoot();
+        return IFeedOracle(SUBAPI).messageRootOf(chainId);
     }
 }
