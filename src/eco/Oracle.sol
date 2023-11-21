@@ -23,7 +23,6 @@ import "../interfaces/IFeedOracle.sol";
 contract Oracle is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
-    event SetDapi(uint256 indexed chainId, address dapi);
     event SetApproved(address operator, bool approve);
 
     address public immutable PROTOCOL;
@@ -33,7 +32,6 @@ contract Oracle is Verifier {
     // chainId => price
     mapping(uint256 => uint256) public feeOf;
     // chainId => dapi
-    mapping(uint256 => address) public dapiOf;
     mapping(address => bool) public approvedOf;
 
     modifier onlyOwner() {
