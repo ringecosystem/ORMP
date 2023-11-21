@@ -2,6 +2,9 @@
   "ORACLE": {
     "44": {
       "fee": 500000000000
+    },
+    "11155111": {
+      "fee": 500000000000000
     }
   },
   "RELAYER": {
@@ -9,6 +12,12 @@
       "dstPriceRatio": 12000,
       "dstGasPriceInWei": 180000000000,
       "baseGas": 85000,
+      "gasPerByte": 16
+    },
+    "11155111": {
+      "dstPriceRatio": 10000000000,
+      "dstGasPriceInWei": 10000000000,
+      "baseGas": 1,
       "gasPerByte": 16
     }
   }

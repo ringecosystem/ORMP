@@ -28,7 +28,7 @@ contract ORMPBenchmarkTest is Test {
     using Chains for uint256;
 
     ORMP ormp = ORMP(0x00000000001523057a05d6293C1e5171eE33eE0A);
-    Oracle oracle = Oracle(payable(0x0000000000ba03146Cc235509E802873D418a6bc));
+    Oracle oracle = Oracle(payable(0x00000000046bc530804d66B6b64f7aF69B4E4E81));
     Relayer relayer = Relayer(payable(0x0000000000808fE9bDCc1d180EfbF5C53552a6b1));
 
     bytes32 root;
@@ -74,15 +74,15 @@ contract ORMPBenchmarkTest is Test {
             Verifier.Proof({blockNumber: block.number, messageIndex: message.index, messageProof: ormp.prove()});
 
         vm.createSelectFork(message.toChainId.toChainName());
+        // TODO: setDefaltOracle
         vm.store(address(oracle), bytes32(uint256(0)), bytes32(uint256(uint160(self))));
         assertEq(oracle.owner(), self);
-        oracle.setDapi(message.fromChainId, self);
 
         vm.prank(address(relayer));
         ormp.recv(message, abi.encode(proof));
     }
 
-    function messageRoot() public view returns (bytes32) {
+    function messageRootOf(uint256) external view returns (bytes32) {
         return root;
     }
 

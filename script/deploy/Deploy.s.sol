@@ -35,6 +35,7 @@ contract Deploy is Common {
     bytes32 ORACLE_SALT;
     address RELAYER_ADDR;
     bytes32 RELAYER_SALT;
+    address SUBAPI_ADDR;
 
     string c3;
     string config;
@@ -65,6 +66,7 @@ contract Deploy is Common {
         ORACLE_SALT = c3.readBytes32(".ORACLE_SALT");
         RELAYER_ADDR = c3.readAddress(".RELAYER_ADDR");
         RELAYER_SALT = c3.readBytes32(".RELAYER_SALT");
+        SUBAPI_ADDR = c3.readAddress(".SUBAPI_ADDR");
 
         deployer = config.readAddress(".DEPLOYER");
         dao = config.readAddress(".DAO");
@@ -102,7 +104,7 @@ contract Deploy is Common {
     /// @notice Deploy the Oracle
     function deployOralce() public broadcast returns (address) {
         bytes memory byteCode = type(Oracle).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ORMP_ADDR));
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ORMP_ADDR, SUBAPI_ADDR));
         address oracle = _deploy3(ORACLE_SALT, initCode);
         require(oracle == ORACLE_ADDR, "!oracle");
 

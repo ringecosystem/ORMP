@@ -18,5 +18,5 @@
 pragma solidity 0.8.17;
 
 interface IFeedOracle {
-    function messageRoot() external view returns (bytes32);
+    function messageRootOf(uint256 chainid) external view returns (bytes32);
 }

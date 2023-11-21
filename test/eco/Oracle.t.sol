@@ -27,7 +27,7 @@ contract OracleTest is Test {
     receive() external payable {}
 
     function setUp() public {
-        oracle = new Oracle(self, self);
+        oracle = new Oracle(self, self, self);
         oracle.setApproved(self, true);
     }
 
@@ -66,28 +66,17 @@ contract OracleTest is Test {
         oracle.setFee(1, 1);
     }
 
-    function test_setDapi() public {
-        oracle.setDapi(1, address(1));
-        assertEq(oracle.dapiOf(1), address(1));
-    }
-
-    function testFail_setDapi() public {
-        vm.prank(address(1));
-        oracle.setDapi(1, address(1));
-    }
-
     function test_assign() public {
         oracle.setFee(1, 1);
         oracle.assign{value: 1}(bytes32(0));
     }
 
     function test_merkleRoot() public {
-        oracle.setDapi(1, self);
         bytes32 r = oracle.merkleRoot(1, 1);
         assertEq(r, bytes32(uint256(1)));
     }
 
-    function messageRoot() external pure returns (bytes32) {
+    function messageRootOf(uint256) external pure returns (bytes32) {
         return bytes32(uint256(1));
     }
 }
