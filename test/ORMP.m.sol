@@ -24,7 +24,7 @@ contract ORMPMock is Verifier {
     ORMP ormp;
     address immutable caller;
     address immutable self = address(this);
-    address constant oracle = 0x0000000000ba03146Cc235509E802873D418a6bc;
+    address constant oracle = 0x00000000046bc530804d66B6b64f7aF69B4E4E81;
 
     struct P {
         Message message;
