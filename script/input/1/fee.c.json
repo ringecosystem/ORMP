@@ -3,8 +3,8 @@
     "46": {
       "fee": 20000000000000
     },
-    "1": {
-      "fee": 100000000000000000
+    "42161": {
+      "fee": 5000000000000000
     }
   },
   "RELAYER": {
@@ -14,10 +14,10 @@
       "baseGas": 200000,
       "gasPerByte": 16
     },
-    "1": {
+    "42161": {
       "dstPriceRatio": 10000000000,
-      "dstGasPriceInWei": 50000000000,
-      "baseGas": 200000,
+      "dstGasPriceInWei": 110000000,
+      "baseGas": 1,
       "gasPerByte": 16
     }
   }
