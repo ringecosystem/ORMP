@@ -51,6 +51,10 @@ contract Fee is Common {
         uint256 fee = config.readUint(key);
         address oracle = deployedContracts.readAddress(".ORACLE");
 
+        bool approved = III(oracle).isApproved(dao);
+        if (!approved) {
+            III(oracle).setApproved(dao, true);
+        }
         III(oracle).setFee(chainId, fee);
         require(III(oracle).fee(chainId, address(0)) == fee);
     }

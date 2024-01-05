@@ -42,6 +42,7 @@ contract Deploy is Common {
     string outputName;
     address deployer;
     address dao;
+    address oracleOperator;
     address relayerOperator;
 
     /// @notice The name of the script, used to ensure the right deploy artifacts
@@ -67,6 +68,7 @@ contract Deploy is Common {
 
         deployer = config.readAddress(".DEPLOYER");
         dao = config.readAddress(".DAO");
+        oracleOperator = config.readAddress(".ORACLE_OPERATOR");
         relayerOperator = config.readAddress(".RELAYER_OPERATOR");
     }
 
@@ -130,6 +132,8 @@ contract Deploy is Common {
         require(o == ORACLE_ADDR, "!oracle");
         require(r == RELAYER_ADDR, "!relayer");
 
+        III(ORACLE_ADDR).setApproved(oracleOperator, true);
+        require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");
         // III(RELAYER_ADDR).setApproved(relayerOperator, true);
         // require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
 

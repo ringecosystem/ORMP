@@ -33,9 +33,16 @@ contract OracleV2 is Verifier {
     mapping(uint256 => uint256) public feeOf;
     // chainId => blockNumber => messageRoot
     mapping(uint256 => mapping(uint256 => bytes32)) rootOf;
+    // operator => isApproved
+    mapping(address => bool) public approvedOf;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "!owner");
+        _;
+    }
+
+    modifier onlyApproved() {
+        require(isApproved(msg.sender), "!approve");
         _;
     }
 
@@ -51,7 +58,7 @@ contract OracleV2 is Verifier {
         emit ImporedMessageRoot(chainId, blockNumber, messageRoot);
     }
 
-    function withdraw(address to, uint256 amount) external onlyOwner {
+    function withdraw(address to, uint256 amount) external onlyApproved {
         (bool success,) = to.call{value: amount}("");
         require(success, "!withdraw");
     }
@@ -60,7 +67,16 @@ contract OracleV2 is Verifier {
         owner = owner_;
     }
 
-    function setFee(uint256 chainId, uint256 fee_) external onlyOwner {
+    function isApproved(address operator) public view returns (bool) {
+        return approvedOf[operator];
+    }
+
+    function setApproved(address operator, bool approve) external onlyOwner {
+        approvedOf[operator] = approve;
+        emit SetApproved(operator, approve);
+    }
+
+    function setFee(uint256 chainId, uint256 fee_) external onlyApproved {
         feeOf[chainId] = fee_;
         emit SetFee(chainId, fee_);
     }
