@@ -43,7 +43,7 @@ contract Fee is Common {
     function run(uint256 chainId) public {
         require(dao == msg.sender, "!dao");
         setOracleFee(chainId);
-        setRelayerFee(chainId);
+        // setRelayerFee(chainId);
     }
 
     function setOracleFee(uint256 chainId) public broadcast {
@@ -51,10 +51,6 @@ contract Fee is Common {
         uint256 fee = config.readUint(key);
         address oracle = deployedContracts.readAddress(".ORACLE");
 
-        bool approved = III(oracle).isApproved(dao);
-        if (!approved) {
-            III(oracle).setApproved(dao, true);
-        }
         III(oracle).setFee(chainId, fee);
         require(III(oracle).fee(chainId, address(0)) == fee);
     }
