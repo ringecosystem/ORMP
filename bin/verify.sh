@@ -6,9 +6,8 @@ c3=$PWD/script/input/c3.json
 
 deployer=$(jq -r ".DEPLOYER" $c3)
 ormp=$(jq -r ".ORMP_ADDR" $c3)
-oracle=$(jq -r ".ORACLE_ADDR" $c3)
+oracle=$(jq -r ".ORACLEV2_ADDR" $c3)
 relayer=$(jq -r ".RELAYER_ADDR" $c3)
-subapi=$(jq -r ".SUBAPI_ADDR" $c3)
 
 verify() {
   local addr; addr=$1
@@ -27,6 +26,8 @@ verify() {
     $addr \
     $path > script/output/$chain_id/$name.v.json)
 }
+
+verify $oracle  44    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
 
 # verify $ormp    42161 $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
 # verify $ormp    46    $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP

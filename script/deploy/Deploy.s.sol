@@ -9,7 +9,7 @@ import {ScriptTools} from "create3-deploy/script/ScriptTools.sol";
 
 import {ORMP} from "../../src/ORMP.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
-import {Oracle} from "../../src/eco/Oracle.sol";
+import {OracleV2} from "../../src/eco/OracleV2.sol";
 
 interface III {
     function PROTOCOL() external view returns (address);
@@ -35,7 +35,6 @@ contract Deploy is Common {
     bytes32 ORACLE_SALT;
     address RELAYER_ADDR;
     bytes32 RELAYER_SALT;
-    address SUBAPI_ADDR;
 
     string c3;
     string config;
@@ -62,11 +61,10 @@ contract Deploy is Common {
 
         ORMP_ADDR = c3.readAddress(".ORMP_ADDR");
         ORMP_SALT = c3.readBytes32(".ORMP_SALT");
-        ORACLE_ADDR = c3.readAddress(".ORACLE_ADDR");
-        ORACLE_SALT = c3.readBytes32(".ORACLE_SALT");
+        ORACLE_ADDR = c3.readAddress(".ORACLEV2_ADDR");
+        ORACLE_SALT = c3.readBytes32(".ORACLEV2_SALT");
         RELAYER_ADDR = c3.readAddress(".RELAYER_ADDR");
         RELAYER_SALT = c3.readBytes32(".RELAYER_SALT");
-        SUBAPI_ADDR = c3.readAddress(".SUBAPI_ADDR");
 
         deployer = config.readAddress(".DEPLOYER");
         dao = config.readAddress(".DAO");
@@ -78,9 +76,9 @@ contract Deploy is Common {
     function run() public {
         require(deployer == msg.sender, "!deployer");
 
-        deployProtocol();
+        // deployProtocol();
         deployOralce();
-        deployRelayer();
+        // deployRelayer();
 
         setConfig();
 
@@ -103,8 +101,8 @@ contract Deploy is Common {
 
     /// @notice Deploy the Oracle
     function deployOralce() public broadcast returns (address) {
-        bytes memory byteCode = type(Oracle).creationCode;
-        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ORMP_ADDR, SUBAPI_ADDR));
+        bytes memory byteCode = type(OracleV2).creationCode;
+        bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ORMP_ADDR));
         address oracle = _deploy3(ORACLE_SALT, initCode);
         require(oracle == ORACLE_ADDR, "!oracle");
 
@@ -136,8 +134,8 @@ contract Deploy is Common {
 
         III(ORACLE_ADDR).setApproved(oracleOperator, true);
         require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");
-        III(RELAYER_ADDR).setApproved(relayerOperator, true);
-        require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
+        // III(RELAYER_ADDR).setApproved(relayerOperator, true);
+        // require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
 
         // III(ORMP_ADDR).changeSetter(dao);
         // require(III(ORMP_ADDR).setter() == dao, "!dao");
