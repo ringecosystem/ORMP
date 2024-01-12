@@ -24,7 +24,7 @@ contract OracleV2 is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
-    event ImporedMessageRoot(uint256 indexed chaindId, uint256 indexed blockNumber, bytes32 messageRoot);
+    event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed blockNumber, bytes32 messageRoot);
 
     address public immutable PROTOCOL;
 
@@ -55,7 +55,7 @@ contract OracleV2 is Verifier {
 
     function importMessageRoot(uint256 chainId, uint256 blockNumber, bytes32 messageRoot) external onlyOwner {
         rootOf[chainId][blockNumber] = messageRoot;
-        emit ImporedMessageRoot(chainId, blockNumber, messageRoot);
+        emit ImportedMessageRoot(chainId, blockNumber, messageRoot);
     }
 
     function withdraw(address to, uint256 amount) external onlyApproved {
