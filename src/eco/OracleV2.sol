@@ -24,7 +24,7 @@ contract OracleV2 is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
-    event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed blockNumber, bytes32 messageRoot);
+    event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed blockHeight, bytes32 messageRoot);
 
     address public immutable PROTOCOL;
 
