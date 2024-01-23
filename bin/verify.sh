@@ -27,8 +27,9 @@ verify() {
     $path > script/output/$chain_id/$name.v.json)
 }
 
-# verify $oracle  44    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
+verify $oracle  44    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
 verify $oracle  11155111    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
+verify $oracle  421614    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
 
 # verify $ormp    42161 $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
 # verify $ormp    46    $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP

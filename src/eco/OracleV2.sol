@@ -58,22 +58,22 @@ contract OracleV2 is Verifier {
         emit ImportedMessageRoot(chainId, blockNumber, messageRoot);
     }
 
-    function withdraw(address to, uint256 amount) external onlyApproved {
-        (bool success,) = to.call{value: amount}("");
-        require(success, "!withdraw");
-    }
-
     function changeOwner(address owner_) external onlyOwner {
         owner = owner_;
+    }
+
+    function setApproved(address operator, bool approve) external onlyOwner {
+        approvedOf[operator] = approve;
+        emit SetApproved(operator, approve);
     }
 
     function isApproved(address operator) public view returns (bool) {
         return approvedOf[operator];
     }
 
-    function setApproved(address operator, bool approve) external onlyOwner {
-        approvedOf[operator] = approve;
-        emit SetApproved(operator, approve);
+    function withdraw(address to, uint256 amount) external onlyApproved {
+        (bool success,) = to.call{value: amount}("");
+        require(success, "!withdraw");
     }
 
     function setFee(uint256 chainId, uint256 fee_) external onlyApproved {
@@ -82,7 +82,9 @@ contract OracleV2 is Verifier {
     }
 
     function fee(uint256 toChainId, address /*ua*/ ) public view returns (uint256) {
-        return feeOf[toChainId];
+        uint256 f = feeOf[toChainId];
+        require(f != 0, "!fee");
+        return f;
     }
 
     function assign(bytes32 msgHash) external payable {
