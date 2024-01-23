@@ -82,7 +82,9 @@ contract OracleV2 is Verifier {
     }
 
     function fee(uint256 toChainId, address /*ua*/ ) public view returns (uint256) {
-        return feeOf[toChainId];
+        uint256 f = feeOf[toChainId];
+        require(f != 0, "!fee");
+        return f;
     }
 
     function assign(bytes32 msgHash) external payable {
