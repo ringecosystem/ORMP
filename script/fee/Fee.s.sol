@@ -42,8 +42,8 @@ contract Fee is Common {
 
     function run(uint256 chainId) public {
         require(dao == msg.sender, "!dao");
-        setOracleFee(chainId);
-        // setRelayerFee(chainId);
+        // setOracleFee(chainId);
+        setRelayerFee(chainId);
     }
 
     function setOracleFee(uint256 chainId) public broadcast {
