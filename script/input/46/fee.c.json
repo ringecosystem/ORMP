@@ -13,7 +13,7 @@
   "RELAYER": {
     "1": {
       "dstPriceRatio": 9000000000000000,
-      "dstGasPriceInWei": 50000000000,
+      "dstGasPriceInWei": 40000000000,
       "baseGas": 100000,
       "gasPerByte": 16
     },
