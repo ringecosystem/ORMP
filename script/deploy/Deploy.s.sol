@@ -127,10 +127,10 @@ contract Deploy is Common {
 
     /// @notice Set the protocol config
     function setConfig() public broadcast {
-        ORMP(ORMP_ADDR).setDefaultConfig(ORACLE_ADDR, RELAYER_ADDR);
-        (address o, address r) = ORMP(ORMP_ADDR).defaultUC();
-        require(o == ORACLE_ADDR, "!oracle");
-        require(r == RELAYER_ADDR, "!relayer");
+        // ORMP(ORMP_ADDR).setDefaultConfig(ORACLE_ADDR, RELAYER_ADDR);
+        // (address o, address r) = ORMP(ORMP_ADDR).defaultUC();
+        // require(o == ORACLE_ADDR, "!oracle");
+        // require(r == RELAYER_ADDR, "!relayer");
 
         III(ORACLE_ADDR).setApproved(oracleOperator, true);
         require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");

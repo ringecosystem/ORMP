@@ -68,7 +68,7 @@ contract ChannelTest is Test, Verifier {
             encoded: ""
         });
         assertEq(msgHash, hash(message));
-        Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: channel.prove()});
+        Proof memory proof = Proof({messageIndex: 0, messageProof: channel.prove()});
         vm.chainId(2);
         channel.recvMessage(message, abi.encode(proof));
     }
@@ -89,7 +89,7 @@ contract ChannelTest is Test, Verifier {
                 encoded: ""
             });
             assertEq(msgHash, hash(message));
-            Proof memory proof = Proof({blockNumber: block.number, messageIndex: index, messageProof: channel.prove()});
+            Proof memory proof = Proof({messageIndex: index, messageProof: channel.prove()});
             vm.chainId(2);
             channel.recvMessage(message, abi.encode(proof));
         }

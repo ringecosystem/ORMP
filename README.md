@@ -7,7 +7,7 @@ Oracle and Relayer based Message Protocol.
 |------------|--------------------------------------------|
 | ORMP       | 0x00000000001523057a05d6293C1e5171eE33eE0A |
 | Oracle     | 0x00000000046bc530804d66B6b64f7aF69B4E4E81 |
-| OracleV2   | 0x0000000005Be70A35b6534bFBd21eC0c98B27b1f |
+| OracleV2   | 0x0000000004A34ac73374b65a55C93CF9D4Bc3d17 |
 | Relayer    | 0x0000000000808fE9bDCc1d180EfbF5C53552a6b1 |
 | MsgDAO     | 0x000000000879926D12aF396788C0785B7e581e53 |
 
