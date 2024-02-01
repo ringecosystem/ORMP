@@ -25,6 +25,7 @@ set -x
 # seth send -F $deployer $relayer "changeOwner(address)" $dao --chain arbitrum
 # seth send -F $deployer $relayer "changeOwner(address)" $dao --chain ethereum
 
+seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain pangolin
 seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain crab
 seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain sepolia
 seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain arbitrum-sepolia
