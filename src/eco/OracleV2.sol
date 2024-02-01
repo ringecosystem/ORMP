@@ -18,7 +18,6 @@
 pragma solidity 0.8.17;
 
 import "../Verifier.sol";
-import "../interfaces/IFeedOracle.sol";
 
 contract OracleV2 is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
