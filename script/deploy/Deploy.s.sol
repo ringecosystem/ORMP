@@ -77,7 +77,7 @@ contract Deploy is Common {
         require(deployer == msg.sender, "!deployer");
 
         // deployProtocol();
-        deployOralce();
+        // deployOralce();
         // deployRelayer();
 
         setConfig();
@@ -132,8 +132,8 @@ contract Deploy is Common {
         // require(o == ORACLE_ADDR, "!oracle");
         // require(r == RELAYER_ADDR, "!relayer");
 
-        III(ORACLE_ADDR).setApproved(oracleOperator, true);
-        require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");
+        // III(ORACLE_ADDR).setApproved(oracleOperator, true);
+        // require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");
         // III(RELAYER_ADDR).setApproved(relayerOperator, true);
         // require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
 

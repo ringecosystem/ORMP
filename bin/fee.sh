@@ -12,9 +12,14 @@ set -x
 # forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 46     --chain-id 44 --broadcast --slow --legacy
 # forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 44     --chain-id 46 --broadcast --slow --legacy
 
-forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 11155111 --chain-id 44       --broadcast --slow
-forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 421614   --chain-id 44       --broadcast --slow
-forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 421614   --chain-id 11155111 --broadcast --slow
-forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 44       --chain-id 11155111 --broadcast --slow
-forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 44       --chain-id 421614   --broadcast --skip-simulation --legacy --slow
-forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 11155111 --chain-id 421614   --broadcast --skip-simulation --legacy --slow
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 11155111 --chain-id 44       --broadcast --slow
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 421614   --chain-id 44       --broadcast --slow
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 421614   --chain-id 11155111 --broadcast --slow
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 44       --chain-id 11155111 --broadcast --slow
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 44       --chain-id 421614   --broadcast --skip-simulation --legacy --slow
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 11155111 --chain-id 421614   --broadcast --skip-simulation --legacy --slow
+
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 11155111 --chain-id 43       --broadcast
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 421614   --chain-id 43       --broadcast
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 43       --chain-id 11155111 --broadcast --slow
+# forge script script/fee/Fee.s.sol:Fee --sig "run(uint256)" 43       --chain-id 421614   --broadcast --skip-simulation --legacy --slow
