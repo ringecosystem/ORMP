@@ -24,6 +24,8 @@ contract OracleV2 is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
+    event Withdrawal(address indexed to, uint256 amt);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed messageIndex, bytes32 messageRoot);
 
     address public immutable PROTOCOL;
@@ -58,8 +60,10 @@ contract OracleV2 is Verifier {
         emit ImportedMessageRoot(chainId, messageIndex, messageRoot);
     }
 
-    function changeOwner(address owner_) external onlyOwner {
-        owner = owner_;
+    function changeOwner(address newOwner) external onlyOwner {
+        address oldOwner = owner;
+        owner = newOwner;
+        emit OwnershipTransferred(oldOwner, newOwner);
     }
 
     function setApproved(address operator, bool approve) external onlyOwner {
@@ -74,6 +78,7 @@ contract OracleV2 is Verifier {
     function withdraw(address to, uint256 amount) external onlyApproved {
         (bool success,) = to.call{value: amount}("");
         require(success, "!withdraw");
+        emit Withdrawal(to, amount);
     }
 
     function setFee(uint256 chainId, uint256 fee_) external onlyApproved {
