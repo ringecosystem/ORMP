@@ -24,14 +24,14 @@ contract OracleV2 is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
-    event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed blockHeight, bytes32 messageRoot);
+    event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed messageIndex, bytes32 messageRoot);
 
     address public immutable PROTOCOL;
 
     address public owner;
     // chainId => price
     mapping(uint256 => uint256) public feeOf;
-    // chainId => blockNumber => messageRoot
+    // chainId => messageIndex => messageRoot
     mapping(uint256 => mapping(uint256 => bytes32)) rootOf;
     // operator => isApproved
     mapping(address => bool) public approvedOf;
@@ -53,9 +53,9 @@ contract OracleV2 is Verifier {
 
     receive() external payable {}
 
-    function importMessageRoot(uint256 chainId, uint256 blockNumber, bytes32 messageRoot) external onlyOwner {
-        rootOf[chainId][blockNumber] = messageRoot;
-        emit ImportedMessageRoot(chainId, blockNumber, messageRoot);
+    function importMessageRoot(uint256 chainId, uint256 messageIndex, bytes32 messageRoot) external onlyOwner {
+        rootOf[chainId][messageIndex] = messageRoot;
+        emit ImportedMessageRoot(chainId, messageIndex, messageRoot);
     }
 
     function changeOwner(address owner_) external onlyOwner {
@@ -92,7 +92,7 @@ contract OracleV2 is Verifier {
         emit Assigned(msgHash, msg.value);
     }
 
-    function merkleRoot(uint256 chainId, uint256 blockNumber) public view override returns (bytes32) {
-        return rootOf[chainId][blockNumber];
+    function merkleRoot(uint256 chainId, uint256 messageIndex) public view override returns (bytes32) {
+        return rootOf[chainId][messageIndex];
     }
 }
