@@ -6,7 +6,7 @@ c3=$PWD/script/input/c3.json
 
 deployer=$(jq -r ".DEPLOYER" $c3)
 ormp=$(jq -r ".ORMP_ADDR" $c3)
-oracle=$(jq -r ".ORACLEV2_ADDR" $c3)
+oracle=$(jq -r ".ORMPORACLE_ADDR" $c3)
 relayer=$(jq -r ".RELAYER_ADDR" $c3)
 
 verify() {
@@ -31,9 +31,9 @@ verify() {
 # verify $oracle  46    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
 # verify $oracle  42161 $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
 
-verify $oracle  44       $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
-verify $oracle  421614   $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
-verify $oracle  11155111 $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
+verify $oracle  44       $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
+verify $oracle  421614   $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
+verify $oracle  11155111 $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 
 # verify $ormp    42161 $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
 # verify $ormp    46    $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
