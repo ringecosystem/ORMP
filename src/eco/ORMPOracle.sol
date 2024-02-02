@@ -19,7 +19,7 @@ pragma solidity 0.8.17;
 
 import "../Verifier.sol";
 
-contract OracleV2 is Verifier {
+contract ORMPOracle is Verifier {
     event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
@@ -54,6 +54,11 @@ contract OracleV2 is Verifier {
 
     receive() external payable {}
 
+    /// @dev Only could be called by owner.
+    /// @notice Each channel has a corresponding oracle, and the message root should match with it.
+    /// @param chainId The source chain id.
+    /// @param messageIndex The source chain message index corresponds to the respective channel.
+    /// @param messageRoot The source chain message root corresponding to the channel.
     function importMessageRoot(uint256 chainId, uint256 messageIndex, bytes32 messageRoot) external onlyOwner {
         rootOf[chainId][messageIndex] = messageRoot;
         emit ImportedMessageRoot(chainId, messageIndex, messageRoot);

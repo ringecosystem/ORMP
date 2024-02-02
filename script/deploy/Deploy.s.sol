@@ -9,7 +9,7 @@ import {ScriptTools} from "create3-deploy/script/ScriptTools.sol";
 
 import {ORMP} from "../../src/ORMP.sol";
 import {Relayer} from "../../src/eco/Relayer.sol";
-import {OracleV2} from "../../src/eco/OracleV2.sol";
+import {ORMPOracle} from "../../src/eco/ORMPOracle.sol";
 
 interface III {
     function PROTOCOL() external view returns (address);
@@ -61,8 +61,8 @@ contract Deploy is Common {
 
         ORMP_ADDR = c3.readAddress(".ORMP_ADDR");
         ORMP_SALT = c3.readBytes32(".ORMP_SALT");
-        ORACLE_ADDR = c3.readAddress(".ORACLEV2_ADDR");
-        ORACLE_SALT = c3.readBytes32(".ORACLEV2_SALT");
+        ORACLE_ADDR = c3.readAddress(".ORMPORACLE_ADDR");
+        ORACLE_SALT = c3.readBytes32(".ORMPORACLE_SALT");
         RELAYER_ADDR = c3.readAddress(".RELAYER_ADDR");
         RELAYER_SALT = c3.readBytes32(".RELAYER_SALT");
 
@@ -77,7 +77,7 @@ contract Deploy is Common {
         require(deployer == msg.sender, "!deployer");
 
         // deployProtocol();
-        // deployOralce();
+        deployOralce();
         // deployRelayer();
 
         setConfig();
@@ -101,7 +101,7 @@ contract Deploy is Common {
 
     /// @notice Deploy the Oracle
     function deployOralce() public broadcast returns (address) {
-        bytes memory byteCode = type(OracleV2).creationCode;
+        bytes memory byteCode = type(ORMPOracle).creationCode;
         bytes memory initCode = bytes.concat(byteCode, abi.encode(deployer, ORMP_ADDR));
         address oracle = _deploy3(ORACLE_SALT, initCode);
         require(oracle == ORACLE_ADDR, "!oracle");
@@ -127,13 +127,13 @@ contract Deploy is Common {
 
     /// @notice Set the protocol config
     function setConfig() public broadcast {
-        // ORMP(ORMP_ADDR).setDefaultConfig(ORACLE_ADDR, RELAYER_ADDR);
-        // (address o, address r) = ORMP(ORMP_ADDR).defaultUC();
-        // require(o == ORACLE_ADDR, "!oracle");
-        // require(r == RELAYER_ADDR, "!relayer");
+        ORMP(ORMP_ADDR).setDefaultConfig(ORACLE_ADDR, RELAYER_ADDR);
+        (address o, address r) = ORMP(ORMP_ADDR).defaultUC();
+        require(o == ORACLE_ADDR, "!oracle");
+        require(r == RELAYER_ADDR, "!relayer");
 
-        // III(ORACLE_ADDR).setApproved(oracleOperator, true);
-        // require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");
+        III(ORACLE_ADDR).setApproved(oracleOperator, true);
+        require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");
         // III(RELAYER_ADDR).setApproved(relayerOperator, true);
         // require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
 

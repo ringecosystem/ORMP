@@ -8,7 +8,7 @@ deployer=$(jq -r ".DEPLOYER" $c3)
 dao=$(jq -r ".MSGDAO" $c3)
 subapi_multisig=$(jq -r ".SUBAPIMULTISIG" $c3)
 ormp=$(jq -r ".ORMP_ADDR" $c3)
-oracle=$(jq -r ".ORACLEV2_ADDR" $c3)
+oracle=$(jq -r ".ORMPORACLE_ADDR" $c3)
 relayer=$(jq -r ".RELAYER_ADDR" $c3)
 
 set -x
@@ -26,6 +26,6 @@ set -x
 # seth send -F $deployer $relayer "changeOwner(address)" $dao --chain ethereum
 
 seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain pangolin
-seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain crab
+# seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain crab
 seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain sepolia
 seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain arbitrum-sepolia
