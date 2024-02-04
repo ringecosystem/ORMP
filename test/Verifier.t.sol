@@ -36,7 +36,7 @@ contract VerifierTest is Test, Verifier {
     function test_verifyMessageProof() public {
         bytes32 msgHash = bytes32(uint256(1));
         imt.insert(msgHash);
-        Proof memory proof = Proof({messageIndex: 0, messageProof: zeroHashes});
+        Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: zeroHashes});
         bool r = this.verifyMessageProof(1, msgHash, abi.encode(proof));
         assertEq(r, true);
     }

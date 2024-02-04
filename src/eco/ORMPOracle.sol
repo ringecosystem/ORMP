@@ -25,14 +25,14 @@ contract ORMPOracle is Verifier {
     event SetApproved(address operator, bool approve);
     event Withdrawal(address indexed to, uint256 amt);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed messageIndex, bytes32 messageRoot);
+    event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed blockHeight, bytes32 messageRoot);
 
     address public immutable PROTOCOL;
 
     address public owner;
     // chainId => price
     mapping(uint256 => uint256) public feeOf;
-    // chainId => messageIndex => messageRoot
+    // chainId => blockNumber => messageRoot
     mapping(uint256 => mapping(uint256 => bytes32)) rootOf;
     // operator => isApproved
     mapping(address => bool) public approvedOf;
@@ -57,11 +57,11 @@ contract ORMPOracle is Verifier {
     /// @dev Only could be called by owner.
     /// @notice Each channel has a corresponding oracle, and the message root should match with it.
     /// @param chainId The source chain id.
-    /// @param messageIndex The source chain message index corresponds to the respective channel.
+    /// @param blockNumber The source chain block number.
     /// @param messageRoot The source chain message root corresponding to the channel.
-    function importMessageRoot(uint256 chainId, uint256 messageIndex, bytes32 messageRoot) external onlyOwner {
-        rootOf[chainId][messageIndex] = messageRoot;
-        emit ImportedMessageRoot(chainId, messageIndex, messageRoot);
+    function importMessageRoot(uint256 chainId, uint256 blockNumber, bytes32 messageRoot) external onlyOwner {
+        rootOf[chainId][blockNumber] = messageRoot;
+        emit ImportedMessageRoot(chainId, blockNumber, messageRoot);
     }
 
     function changeOwner(address newOwner) external onlyOwner {
@@ -101,7 +101,7 @@ contract ORMPOracle is Verifier {
         emit Assigned(msgHash, msg.value);
     }
 
-    function merkleRoot(uint256 chainId, uint256 messageIndex) public view override returns (bytes32) {
-        return rootOf[chainId][messageIndex];
+    function merkleRoot(uint256 chainId, uint256 blockNumber) public view override returns (bytes32) {
+        return rootOf[chainId][blockNumber];
     }
 }
