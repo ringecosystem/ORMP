@@ -31,7 +31,7 @@ verify() {
 # verify $oracle  46    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
 # verify $oracle  42161 $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/OracleV2.sol:OracleV2
 
-verify $oracle  44       $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
+# verify $oracle  44       $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 verify $oracle  421614   $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 verify $oracle  11155111 $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 
