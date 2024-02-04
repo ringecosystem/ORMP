@@ -57,7 +57,7 @@ contract ORMPOracle is Verifier {
     /// @dev Only could be called by owner.
     /// @notice Each channel has a corresponding oracle, and the message root should match with it.
     /// @param chainId The source chain id.
-    /// @param blockNumber The source chain message accepted block number.
+    /// @param blockNumber The source chain block number.
     /// @param messageRoot The source chain message root corresponding to the channel.
     function importMessageRoot(uint256 chainId, uint256 blockNumber, bytes32 messageRoot) external onlyOwner {
         rootOf[chainId][blockNumber] = messageRoot;
