@@ -70,7 +70,8 @@ contract ORMPBenchmarkTest is Test {
 
     function perform_recv(Message memory message) public {
         root = ormp.root();
-        Verifier.Proof memory proof = Verifier.Proof({messageIndex: message.index, messageProof: ormp.prove()});
+        Verifier.Proof memory proof =
+            Verifier.Proof({blockNumber: block.number, messageIndex: message.index, messageProof: ormp.prove()});
 
         vm.createSelectFork(message.toChainId.toChainName());
         // TODO: setDefaltOracle
