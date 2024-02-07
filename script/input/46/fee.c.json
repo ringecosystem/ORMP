@@ -14,7 +14,7 @@
     "1": {
       "dstPriceRatio": 9000000000000000,
       "dstGasPriceInWei": 40000000000,
-      "baseGas": 100000,
+      "baseGas": 120000,
       "gasPerByte": 16
     },
     "44": {
