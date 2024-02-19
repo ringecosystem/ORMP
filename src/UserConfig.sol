@@ -40,6 +40,10 @@ contract UserConfig {
     /// @param oracle Oracle which the user application choose.
     /// @param relayer Relayer which the user application choose.
     event AppConfigUpdated(address indexed ua, address oracle, address relayer);
+    /// @dev Notifies an observer that the setter is changed.
+    /// @param oldSetter Old setter address.
+    /// @param newSetter New setter address.
+    event SetterChanged(address indexed oldSetter, address indexed newSetter);
 
     modifier onlySetter() {
         require(msg.sender == setter, "!auth");
@@ -52,9 +56,11 @@ contract UserConfig {
 
     /// @dev Change setter.
     /// @notice Only current setter could call.
-    /// @param setter_ New setter.
-    function changeSetter(address setter_) external onlySetter {
-        setter = setter_;
+    /// @param newSetter New setter.
+    function changeSetter(address newSetter) external onlySetter {
+        address oldSetter = setter;
+        setter = newSetter;
+        emit SetterChanged(oldSetter, newSetter);
     }
 
     /// @dev Set default user config for all user application.

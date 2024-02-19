@@ -24,6 +24,7 @@ contract Relayer {
     event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
     event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address operator, bool approve);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     struct DstPrice {
         uint128 dstPriceRatio; // dstPrice / localPrice * 10^10
@@ -69,8 +70,10 @@ contract Relayer {
         return approvedOf[operator];
     }
 
-    function changeOwner(address owner_) external onlyOwner {
-        owner = owner_;
+    function changeOwner(address newOwner) external onlyOwner {
+        address oldOwner = owner;
+        owner = newOwner;
+        emit OwnershipTransferred(oldOwner, newOwner);
     }
 
     function setApproved(address operator, bool approve) public onlyOwner {
