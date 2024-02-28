@@ -29,7 +29,8 @@ set -x
 # seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain sepolia
 # seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain arbitrum-sepolia
 
-seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain crab
-seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain darwinia
-seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain ethereum 
-seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain arbitrum
+# seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain crab
+# seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain darwinia
+# seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain ethereum 
+# seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain arbitrum
+seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain polygon
