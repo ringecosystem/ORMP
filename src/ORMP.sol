@@ -30,6 +30,10 @@ import "./security/ExcessivelySafeCall.sol";
 contract ORMP is ReentrancyGuard, Channel {
     using ExcessivelySafeCall for address;
 
+    event Assigned(
+        bytes32 indexed msgHash, address indexed oracle, address indexed relayer, uint256 oracleFee, uint256 relayerFee
+    );
+
     constructor(address dao) Channel(dao) {}
 
     /// @dev Send a cross-chain message over the endpoint.
