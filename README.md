@@ -16,6 +16,7 @@ Oracle and Relayer based Message Protocol.
 - Crab
 - Darwinia
 - Ethereum
+- Polygon
 
 ### Testnet
 - Arbitrum Sepolia
