@@ -77,7 +77,7 @@ contract Deploy is Common {
         require(deployer == msg.sender, "!deployer");
 
         // deployProtocol();
-        deployOralce();
+        // deployOralce();
         // deployRelayer();
 
         setConfig();
@@ -127,15 +127,15 @@ contract Deploy is Common {
 
     /// @notice Set the protocol config
     function setConfig() public broadcast {
-        // ORMP(ORMP_ADDR).setDefaultConfig(ORACLE_ADDR, RELAYER_ADDR);
-        // (address o, address r) = ORMP(ORMP_ADDR).defaultUC();
-        // require(o == ORACLE_ADDR, "!oracle");
-        // require(r == RELAYER_ADDR, "!relayer");
+        ORMP(ORMP_ADDR).setDefaultConfig(ORACLE_ADDR, RELAYER_ADDR);
+        (address o, address r) = ORMP(ORMP_ADDR).defaultUC();
+        require(o == ORACLE_ADDR, "!oracle");
+        require(r == RELAYER_ADDR, "!relayer");
 
         III(ORACLE_ADDR).setApproved(oracleOperator, true);
         require(III(ORACLE_ADDR).isApproved(oracleOperator), "!o-operator");
-        // III(RELAYER_ADDR).setApproved(relayerOperator, true);
-        // require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
+        III(RELAYER_ADDR).setApproved(relayerOperator, true);
+        require(III(RELAYER_ADDR).isApproved(relayerOperator), "!r-operator");
 
         // III(ORMP_ADDR).changeSetter(dao);
         // require(III(ORMP_ADDR).setter() == dao, "!dao");
