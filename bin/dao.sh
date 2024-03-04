@@ -34,5 +34,7 @@ set -x
 # seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain ethereum 
 # seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain arbitrum
 # seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain polygon
-seth send -F $deployer $relayer "changeOwner(address)" $dao --chain polygon
-seth send -F $deployer $ormp "changeSetter(address)" $dao --chain polygon
+seth send -F $deployer $oracle "changeOwner(address)" $subapi_multisig --chain blast
+
+# seth send -F $deployer $relayer "changeOwner(address)" $dao --chain polygon
+# seth send -F $deployer $ormp "changeSetter(address)" $dao --chain polygon
