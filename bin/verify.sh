@@ -34,19 +34,22 @@ verify() {
 # verify $oracle  1     $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 # verify $oracle  44    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 # verify $oracle  46    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
-verify $oracle  137   $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
+# verify $oracle  137   $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
+verify $oracle  81457   $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 # verify $oracle  42161 $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 # verify $oracle  421614   $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 # verify $oracle  11155111 $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/ORMPOracle.sol:ORMPOracle
 
 # verify $ormp    42161 $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
 # verify $ormp    46    $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
-verify $ormp    137   $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
+# verify $ormp    137   $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
+verify $ormp    81457   $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
 # verify $oracle  42161 $(cast abi-encode "constructor(address,address,address)" $deployer $ormp $subapi) src/eco/Oracle.sol:Oracle
 # verify $oracle  46    $(cast abi-encode "constructor(address,address,address)" $deployer $ormp $subapi) src/eco/Oracle.sol:Oracle
 # verify $relayer 42161 $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/Relayer.sol:Relayer
 # verify $relayer 46    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/Relayer.sol:Relayer
-verify $relayer 137    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/Relayer.sol:Relayer
+# verify $relayer 137    $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/Relayer.sol:Relayer
+verify $relayer 81457   $(cast abi-encode "constructor(address,address)" $deployer $ormp) src/eco/Relayer.sol:Relayer
 
 # verify $ormp    1    $(cast abi-encode "constructor(address)" $deployer)               src/ORMP.sol:ORMP
 # verify $oracle  1    $(cast abi-encode "constructor(address,address,address)" $deployer $ormp $subapi) src/eco/Oracle.sol:Oracle

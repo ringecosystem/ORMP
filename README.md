@@ -13,6 +13,7 @@ Oracle and Relayer based Message Protocol.
 ## Supported Chains
 ### Mainnet
 - Arbitrum
+- Blast
 - Crab
 - Darwinia
 - Ethereum
