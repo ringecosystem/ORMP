@@ -76,9 +76,9 @@ contract Deploy is Common {
     function run() public {
         require(deployer == msg.sender, "!deployer");
 
-        // deployProtocol();
-        // deployOralce();
-        // deployRelayer();
+        deployProtocol();
+        deployOralce();
+        deployRelayer();
 
         setConfig();
 
