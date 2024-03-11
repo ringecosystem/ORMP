@@ -48,8 +48,8 @@ contract ORMPTest is Test, Verifier {
     }
 
     function perform_send() public {
-        uint256 f = ormp.fee(2, self, 0, "", "");
-        ormp.send{value: f}(2, self, 0, "", self, "");
+        uint256 f = ormp.fee(2, self, 0, "");
+        ormp.send{value: f}(2, self, 0, "", self);
         proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
         vm.chainId(2);
     }
@@ -64,10 +64,7 @@ contract ORMPTest is Test, Verifier {
         return 2;
     }
 
-    function assign(bytes32) external payable {}
-    function assign(bytes32, bytes calldata) external payable {}
-
-    function fee(uint256, address, uint256, bytes calldata, bytes calldata) external pure returns (uint256) {
+    function fee(uint256, address, uint256, bytes calldata) external pure returns (uint256) {
         return 1;
     }
 

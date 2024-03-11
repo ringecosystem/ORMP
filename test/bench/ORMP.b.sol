@@ -85,7 +85,7 @@ contract ORMPBenchmarkTest is Test {
 
     function perform_send(uint256 fromChainId, uint256 toChainId, bytes calldata encoded) public {
         vm.createSelectFork(fromChainId.toChainName());
-        uint256 f = ormp.fee(toChainId, self, 0, encoded, abi.encode(uint256(0)));
-        ormp.send{value: f}(toChainId, self, 0, encoded, self, abi.encode(uint256(0)));
+        uint256 f = ormp.fee(toChainId, self, 0, encoded);
+        ormp.send{value: f}(toChainId, self, 0, encoded, self);
     }
 }
