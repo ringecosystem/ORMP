@@ -29,9 +29,4 @@ interface IRelayer {
         external
         view
         returns (uint256);
-
-    /// @notice Assign the relay message task to relayer maintainer.
-    /// @param msgHash Hash of the message.
-    /// @param params General extensibility for relayer to custom functionality.
-    function assign(bytes32 msgHash, bytes calldata params) external payable;
 }

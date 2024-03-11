@@ -75,15 +75,16 @@ contract ORMP is ReentrancyGuard, Channel {
         // fetch user application's config.
         UC memory uc = getAppConfig(ua);
         // handle relayer fee
-        uint256 relayerFee = _handleRelayer(uc.relayer, msgHash, toChainId, ua, gasLimit, encoded, params);
+        uint256 relayerFee = _handleRelayer(uc.relayer, toChainId, ua, gasLimit, encoded, params);
         // handle oracle fee
-        uint256 oracleFee = _handleOracle(uc.oracle, msgHash, toChainId, ua);
+        uint256 oracleFee = _handleOracle(uc.oracle, toChainId, ua);
+
+        emit Assigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee);
 
         // refund
         if (msg.value > relayerFee + oracleFee) {
             uint256 refundFee = msg.value - (relayerFee + oracleFee);
-            (bool success,) = refund.call{value: refundFee}("");
-            require(success, "!refund");
+            _sendValue(refund, refundFee);
         }
     }
 
@@ -106,7 +107,6 @@ contract ORMP is ReentrancyGuard, Channel {
 
     function _handleRelayer(
         address relayer,
-        bytes32 msgHash,
         uint256 toChainId,
         address ua,
         uint256 gasLimit,
@@ -114,13 +114,13 @@ contract ORMP is ReentrancyGuard, Channel {
         bytes calldata params
     ) internal returns (uint256) {
         uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, gasLimit, encoded, params);
-        IRelayer(relayer).assign{value: relayerFee}(msgHash, params);
+        _sendValue(relayer, relayerFee);
         return relayerFee;
     }
 
-    function _handleOracle(address oracle, bytes32 msgHash, uint256 toChainId, address ua) internal returns (uint256) {
+    function _handleOracle(address oracle, uint256 toChainId, address ua) internal returns (uint256) {
         uint256 oracleFee = IOracle(oracle).fee(toChainId, ua);
-        IOracle(oracle).assign{value: oracleFee}(msgHash);
+        _sendValue(oracle, oracleFee);
         return oracleFee;
     }
 
@@ -150,5 +150,12 @@ contract ORMP is ReentrancyGuard, Channel {
             0,
             abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
         );
+    }
+
+    /// @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+    /// `recipient`, forwarding all available gas and reverting on errors.
+    function _sendValue(address recipient, uint256 amount) internal {
+        (bool success,) = recipient.call{value: amount}("");
+        require(success, "!send");
     }
 }

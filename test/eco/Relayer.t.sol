@@ -82,14 +82,6 @@ contract RelayerTest is Test {
         assertEq(f, 3);
     }
 
-    function test_assign() public {
-        relayer.setDstPrice(1, 10 ** 10, 1);
-        relayer.setDstConfig(1, 1, 1);
-        uint256 v = relayer.fee(1, address(1), 1, hex"00", abi.encode(uint256(1)));
-        relayer.assign{value: v}(bytes32(0), abi.encode(uint256(1)));
-        assertEq(v, 3);
-    }
-
     function test_relay() public {
         Message memory message = Message({
             channel: address(0xc),
