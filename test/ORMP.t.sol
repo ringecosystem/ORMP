@@ -56,14 +56,14 @@ contract ORMPTest is Test, Verifier {
 
     function test_Refunds() public {
         uint256 f = ormp.fee(2, self, 0, "", "");
-        ormp.send{value: f+5}(2, self, 0, "", address(5), "");
+        ormp.send{value: f + 5}(2, self, 0, "", address(5), "");
         assertEq(address(5).balance, 5);
     }
 
     function testFail_sendSameMsg() public {
         uint256 f1 = ormp.fee(2, self, 0, "", "");
         bytes32 msgHash1 = ormp.send{value: f1}(2, self, 0, "", self, "");
-        
+
         uint256 f2 = ormp.fee(2, self, 0, "", "");
         bytes32 msgHash2 = ormp.send{value: f2}(2, self, 0, "", self, "");
         vm.chainId(2);
@@ -94,12 +94,14 @@ contract ORMPTest is Test, Verifier {
         uint256 f = ormp.fee(2, self, 0, "", "");
         ormp.send{value: f}(2, self, 0, "", self, "");
         proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
-        
+
         vm.chainId(2);
 
         bool returnValue = ormp.recv(message, abi.encode(proof));
-        assertEq(returnValue, false);                /// msg delivery failed
-        assertEq(ormp.dones(hash(message)), true);   /// but marked dispatched
+        /// msg delivery failed
+        assertEq(returnValue, false);
+        /// but marked dispatched
+        assertEq(ormp.dones(hash(message)), true);
     }
 
     function fee(uint256, address) external pure returns (uint256) {

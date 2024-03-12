@@ -20,19 +20,38 @@ pragma solidity ^0.8.17;
 import "../interfaces/IORMP.sol";
 
 // https://eips.ethereum.org/EIPS/eip-5164
-abstract contract Application {
-    address public immutable TRUSTED_ORMP;
+abstract contract UpgradeableApplication {
+    address public sender;
+    address public recver;
+
+    event SetSender(address ormp);
+    event SetRecver(address ormp);
 
     constructor(address ormp) {
-        TRUSTED_ORMP = ormp;
+        sender = ormp;
+        recver = ormp;
     }
 
-    function _setAppConfig(address oracle, address relayer) internal virtual {
-        IORMP(TRUSTED_ORMP).setAppConfig(oracle, relayer);
+    function _setSender(address ormp) internal virtual {
+        sender = ormp;
+        emit SetSender(ormp);
+    }
+
+    function _setRecver(address ormp) internal virtual {
+        recver = ormp;
+        emit SetRecver(ormp);
+    }
+
+    function _setSenderConfig(address oracle, address relayer) internal virtual {
+        IORMP(sender).setAppConfig(oracle, relayer);
+    }
+
+    function _setRecverConfig(address oracle, address relayer) internal virtual {
+        IORMP(recver).setAppConfig(oracle, relayer);
     }
 
     modifier onlyORMP() {
-        require(TRUSTED_ORMP == msg.sender, "!ormp");
+        require(recver == msg.sender, "!ormp");
         _;
     }
 
