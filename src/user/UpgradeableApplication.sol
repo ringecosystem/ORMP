@@ -32,11 +32,11 @@ abstract contract UpgradeableApplication is AppBase {
         recver = ormp;
     }
 
-    function ormpSender() public view override returns (address) {
+    function ormpSender() public view virtual override returns (address) {
         return sender;
     }
 
-    function ormpRecver() public view override returns (address) {
+    function ormpRecver() public view virtual override returns (address) {
         return recver;
     }
 
