@@ -21,40 +21,40 @@ import "../interfaces/IORMP.sol";
 import "./AppBase.sol";
 
 abstract contract UpgradeableApplication is AppBase {
-    address public sender;
-    address public recver;
+    address private sender;
+    address private recver;
 
     event SetSender(address ormp);
     event SetRecver(address ormp);
 
     constructor(address ormp) {
-        sender = ormp;
-        recver = ormp;
+        _sender = ormp;
+        _recver = ormp;
     }
 
     function ormpSender() public view virtual override returns (address) {
-        return sender;
+        return _sender;
     }
 
     function ormpRecver() public view virtual override returns (address) {
-        return recver;
+        return _recver;
     }
 
     function _setSender(address ormp) internal virtual {
-        sender = ormp;
+        _sender = ormp;
         emit SetSender(ormp);
     }
 
     function _setRecver(address ormp) internal virtual {
-        recver = ormp;
+        _recver = ormp;
         emit SetRecver(ormp);
     }
 
     function _setSenderConfig(address oracle, address relayer) internal virtual {
-        IORMP(sender).setAppConfig(oracle, relayer);
+        IORMP(ormpSender()).setAppConfig(oracle, relayer);
     }
 
     function _setRecverConfig(address oracle, address relayer) internal virtual {
-        IORMP(recver).setAppConfig(oracle, relayer);
+        IORMP(ormpRecver()).setAppConfig(oracle, relayer);
     }
 }
