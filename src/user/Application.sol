@@ -27,11 +27,11 @@ abstract contract Application is AppBase {
         ORMP = ormp;
     }
 
-    function _ormpSender() internal override returns (address) {
+    function ormpSender() public view override returns (address) {
         return ORMP;
     }
 
-    function _ormpRecver() internal override returns (address) {
+    function ormpRecver() public view override returns (address) {
         return ORMP;
     }
 
