@@ -21,14 +21,14 @@ import "../interfaces/IORMP.sol";
 import "./AppBase.sol";
 
 abstract contract Application is AppBase {
-    address public immutable ORMP;
+    address private immutable _ORMP;
 
     constructor(address ormp) {
-        ORMP = ormp;
+        _ORMP = ormp;
     }
 
     function ormpSender() public view virtual override returns (address) {
-        return ORMP;
+        return _ORMP;
     }
 
     function ormpRecver() public view virtual override returns (address) {
@@ -36,6 +36,6 @@ abstract contract Application is AppBase {
     }
 
     function _setAppConfig(address oracle, address relayer) internal virtual {
-        IORMP(ORMP).setAppConfig(oracle, relayer);
+        IORMP(_ORMP).setAppConfig(oracle, relayer);
     }
 }
