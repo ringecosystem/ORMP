@@ -21,8 +21,8 @@ import "../interfaces/IORMP.sol";
 import "./AppBase.sol";
 
 abstract contract UpgradeableApplication is AppBase {
-    address private sender;
-    address private recver;
+    address private _sender;
+    address private _recver;
 
     event SetSender(address ormp);
     event SetRecver(address ormp);

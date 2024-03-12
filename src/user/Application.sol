@@ -32,7 +32,7 @@ abstract contract Application is AppBase {
     }
 
     function ormpRecver() public view virtual override returns (address) {
-        return ORMP;
+        return _ORMP;
     }
 
     function _setAppConfig(address oracle, address relayer) internal virtual {
