@@ -30,7 +30,7 @@ import "./security/ExcessivelySafeCall.sol";
 contract ORMP is ReentrancyGuard, Channel {
     using ExcessivelySafeCall for address;
 
-    event Assigned(
+    event MessageAssigned(
         bytes32 indexed msgHash, address indexed oracle, address indexed relayer, uint256 oracleFee, uint256 relayerFee
     );
 
@@ -77,7 +77,7 @@ contract ORMP is ReentrancyGuard, Channel {
         // handle oracle fee
         uint256 oracleFee = _handleOracle(uc.oracle, toChainId, ua);
 
-        emit Assigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee);
+        emit MessageAssigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee);
 
         // refund
         if (msg.value > relayerFee + oracleFee) {
