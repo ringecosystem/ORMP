@@ -10,6 +10,11 @@ Oracle and Relayer based Message Protocol.
 | Relayer    | 0x0000000000808fE9bDCc1d180EfbF5C53552a6b1 |
 | MsgDAO     | 0x000000000879926D12aF396788C0785B7e581e53 |
 
+### Tron Shasta
+```
+ORMP:
+```
+
 ## Supported Chains
 ### Mainnet
 - Arbitrum
