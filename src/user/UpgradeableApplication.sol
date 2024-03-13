@@ -19,14 +19,21 @@ pragma solidity ^0.8.17;
 
 import "./AppBase.sol";
 
-abstract contract Application is AppBase {
-    address private immutable _ORMP;
+abstract contract UpgradeableApplication is AppBase {
+    address private _ormp;
+
+    event SetORMP(address ormp);
 
     constructor(address ormp) {
-        _ORMP = ormp;
+        _ormp = ormp;
     }
 
     function protocol() public view virtual override returns (address) {
-        return _ORMP;
+        return _ormp;
+    }
+
+    function _setORMP(address ormp) internal virtual {
+        _ormp = ormp;
+        emit SetORMP(ormp);
     }
 }

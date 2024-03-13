@@ -54,10 +54,54 @@ contract ORMPTest is Test, Verifier {
         vm.chainId(2);
     }
 
+    function test_Refunds() public {
+        uint256 f = ormp.fee(2, self, 0, "", "");
+        ormp.send{value: f + 5}(2, self, 0, "", address(5), "");
+        assertEq(address(5).balance, 5);
+    }
+
+    function testFail_sendSameMsg() public {
+        uint256 f1 = ormp.fee(2, self, 0, "", "");
+        bytes32 msgHash1 = ormp.send{value: f1}(2, self, 0, "", self, "");
+
+        uint256 f2 = ormp.fee(2, self, 0, "", "");
+        bytes32 msgHash2 = ormp.send{value: f2}(2, self, 0, "", self, "");
+        vm.chainId(2);
+
+        assertEq(msgHash1, msgHash2);
+    }
+
+    function testFail_SendWithZeroNativeFee() public {
+        ormp.send{value: 0}(2, self, 0, "", address(5), "");
+        proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
+        vm.chainId(2);
+    }
+
     function test_recv() public {
         perform_send();
         bool r = ormp.recv(message, abi.encode(proof));
         assertEq(r, false);
+    }
+
+    function testFail_recvTwice() public {
+        perform_send();
+        bool r = ormp.recv(message, abi.encode(proof));
+        assertEq(r, false);
+        ormp.recv(message, abi.encode(proof));
+    }
+
+    function test_failedMsgDispactedSuccess_PoC() public {
+        uint256 f = ormp.fee(2, self, 0, "", "");
+        ormp.send{value: f}(2, self, 0, "", self, "");
+        proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
+
+        vm.chainId(2);
+
+        bool returnValue = ormp.recv(message, abi.encode(proof));
+        /// msg delivery failed
+        assertEq(returnValue, false);
+        /// but marked dispatched
+        assertEq(ormp.dones(hash(message)), true);
     }
 
     function fee(uint256, address) external pure returns (uint256) {
