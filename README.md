@@ -12,7 +12,9 @@ Oracle and Relayer based Message Protocol.
 
 ### Tron Shasta
 ```
-ORMP:
+ORMP: TGm4AeM42R9ocbbN3ibrDtf5kkQVTTFMYS
+ORMPOracle: TGHKGoioM3vhvARxd8DHsbeHvMM52yj4sk
+Relayer: TGaTz6SB14R3XX4EzW86YnpMf46WAxuD8w
 ```
 
 ## Supported Chains
