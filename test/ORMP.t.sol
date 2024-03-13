@@ -48,8 +48,8 @@ contract ORMPTest is Test, Verifier {
     }
 
     function perform_send() public {
-        uint256 f = ormp.fee(2, self, 0, "");
-        ormp.send{value: f}(2, self, 0, "", self);
+        uint256 f = ormp.fee(2, self, 0, "", "");
+        ormp.send{value: f}(2, self, 0, "", self, "");
         proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
         vm.chainId(2);
     }

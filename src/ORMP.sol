@@ -43,12 +43,14 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param refund Return extra fee to refund address.
-    function send(uint256 toChainId, address to, uint256 gasLimit, bytes calldata encoded, address refund)
-        external
-        payable
-        sendNonReentrant
-        returns (bytes32)
-    {
+    function send(
+        uint256 toChainId,
+        address to,
+        uint256 gasLimit,
+        bytes calldata encoded,
+        address refund,
+        bytes calldata
+    ) external payable sendNonReentrant returns (bytes32) {
         // user application address.
         address ua = msg.sender;
         // send message by channel, return the hash of the message as id.
@@ -89,7 +91,7 @@ contract ORMP is ReentrancyGuard, Channel {
     //  @param ua User application contract address which send the message.
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
-    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded)
+    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata)
         external
         view
         returns (uint256)
