@@ -27,15 +27,11 @@ abstract contract Application is AppBase {
         _ORMP = ormp;
     }
 
-    function ormpSender() public view virtual override returns (address) {
-        return _ORMP;
-    }
-
-    function ormpRecver() public view virtual override returns (address) {
+    function protocol() public view virtual override returns (address) {
         return _ORMP;
     }
 
     function _setAppConfig(address oracle, address relayer) internal virtual {
-        IORMP(_ORMP).setAppConfig(oracle, relayer);
+        IORMP(protocol()).setAppConfig(oracle, relayer);
     }
 }

@@ -19,11 +19,10 @@ pragma solidity ^0.8.17;
 
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract AppBase {
-    function ormpSender() public view virtual returns (address);
-    function ormpRecver() public view virtual returns (address);
+    function protocol() public view virtual returns (address);
 
-    modifier onlyORMPRecver() {
-        require(ormpRecver() == msg.sender, "!ormp-recver");
+    modifier onlyORMP() {
+        require(protocol() == msg.sender, "!ormp-recver");
         _;
     }
 
