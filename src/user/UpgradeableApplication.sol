@@ -17,7 +17,6 @@
 
 pragma solidity ^0.8.17;
 
-import "../interfaces/IORMP.sol";
 import "./AppBase.sol";
 
 abstract contract UpgradeableApplication is AppBase {
@@ -36,9 +35,5 @@ abstract contract UpgradeableApplication is AppBase {
     function _setORMP(address ormp) internal virtual {
         _ormp = ormp;
         emit SetORMP(ormp);
-    }
-
-    function _setAppConfig(address oracle, address relayer) internal virtual {
-        IORMP(protocol()).setAppConfig(oracle, relayer);
     }
 }

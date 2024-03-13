@@ -17,7 +17,6 @@
 
 pragma solidity ^0.8.17;
 
-import "../interfaces/IORMP.sol";
 import "./AppBase.sol";
 
 abstract contract Application is AppBase {
@@ -29,9 +28,5 @@ abstract contract Application is AppBase {
 
     function protocol() public view virtual override returns (address) {
         return _ORMP;
-    }
-
-    function _setAppConfig(address oracle, address relayer) internal virtual {
-        IORMP(protocol()).setAppConfig(oracle, relayer);
     }
 }
