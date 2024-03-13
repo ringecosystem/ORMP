@@ -27,6 +27,8 @@ contract ORMPTest is Test, Verifier {
     Proof proof;
     address immutable self = address(this);
 
+    receive() external payable {}
+
     function setUp() public {
         vm.chainId(1);
         ormp = new ORMP(self);
