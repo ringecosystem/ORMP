@@ -69,4 +69,9 @@ interface IORMP {
     function setAppConfig(address oracle, address relayer) external;
 
     function defaultUC() external view returns (UC memory);
+
+    /// @dev Check the msg if it is dispatched.
+    /// @param msgHash Hash of the checked message.
+    /// @return Return the dispatched result of the checked message.
+    function dones(bytes32 msgHash) external view returns (bool);
 }
