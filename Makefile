@@ -11,7 +11,7 @@ bench  :; @forge test --mc Benchmark
 
 tools  :  foundry create3
 foundry:; curl -L https://foundry.paradigm.xyz | bash
-create3:; @cargo install --git https://github.com/darwinia-network/create3-deploy -f
+create3:; @cargo install --git https://github.com/darwinia-network/create3-deploy -f --locked
 sync   :; @git submodule update --recursive
 
 doc    :; @bash ./bin/doc.sh
