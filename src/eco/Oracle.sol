@@ -21,7 +21,6 @@ import "../Verifier.sol";
 import "../interfaces/IFeedOracle.sol";
 
 contract Oracle is Verifier {
-    event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
 
@@ -77,11 +76,6 @@ contract Oracle is Verifier {
 
     function fee(uint256 toChainId, address /*ua*/ ) public view returns (uint256) {
         return feeOf[toChainId];
-    }
-
-    function assign(bytes32 msgHash) external payable {
-        require(msg.sender == PROTOCOL, "!auth");
-        emit Assigned(msgHash, msg.value);
     }
 
     function merkleRoot(uint256 chainId, uint256 /*blockNumber*/ ) public view override returns (bytes32) {

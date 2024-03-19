@@ -20,7 +20,6 @@ pragma solidity 0.8.17;
 import "../Verifier.sol";
 
 contract ORMPOracle is Verifier {
-    event Assigned(bytes32 indexed msgHash, uint256 fee);
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
     event Withdrawal(address indexed to, uint256 amt);
@@ -94,11 +93,6 @@ contract ORMPOracle is Verifier {
         uint256 f = feeOf[toChainId];
         require(f != 0, "!fee");
         return f;
-    }
-
-    function assign(bytes32 msgHash) external payable {
-        require(msg.sender == PROTOCOL, "!auth");
-        emit Assigned(msgHash, msg.value);
     }
 
     function merkleRoot(uint256 chainId, uint256 blockNumber) public view override returns (bytes32) {

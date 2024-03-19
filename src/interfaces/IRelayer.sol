@@ -23,15 +23,9 @@ interface IRelayer {
     /// @param ua The user application which send the message.
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
-    /// @param params General extensibility for relayer to custom functionality.
     /// @return Relayer price in source native gas.
-    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata params)
+    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded)
         external
         view
         returns (uint256);
-
-    /// @notice Assign the relay message task to relayer maintainer.
-    /// @param msgHash Hash of the message.
-    /// @param params General extensibility for relayer to custom functionality.
-    function assign(bytes32 msgHash, bytes calldata params) external payable;
 }

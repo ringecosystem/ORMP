@@ -25,8 +25,4 @@ interface IOracle is IVerifier {
     /// @param ua The user application which send the message.
     /// @return Oracle price in source native gas.
     function fee(uint256 toChainId, address ua) external view returns (uint256);
-
-    /// @notice Assign the relay message root task to oracle maintainer.
-    /// @param msgHash Hash of the message.
-    function assign(bytes32 msgHash) external payable;
 }

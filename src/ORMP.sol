@@ -30,6 +30,10 @@ import "./security/ExcessivelySafeCall.sol";
 contract ORMP is ReentrancyGuard, Channel {
     using ExcessivelySafeCall for address;
 
+    event MessageAssigned(
+        bytes32 indexed msgHash, address indexed oracle, address indexed relayer, uint256 oracleFee, uint256 relayerFee
+    );
+
     constructor(address dao) Channel(dao) {}
 
     /// @dev Send a cross-chain message over the endpoint.
@@ -39,14 +43,13 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param refund Return extra fee to refund address.
-    /// @param params General extensibility for relayer to custom functionality.
     function send(
         uint256 toChainId,
         address to,
         uint256 gasLimit,
         bytes calldata encoded,
         address refund,
-        bytes calldata params
+        bytes calldata
     ) external payable sendNonReentrant returns (bytes32) {
         // user application address.
         address ua = msg.sender;
@@ -54,7 +57,7 @@ contract ORMP is ReentrancyGuard, Channel {
         bytes32 msgHash = _send(ua, toChainId, to, gasLimit, encoded);
 
         // handle fee
-        _handleFee(ua, refund, msgHash, toChainId, gasLimit, encoded, params);
+        _handleFee(ua, refund, msgHash, toChainId, gasLimit, encoded);
 
         return msgHash;
     }
@@ -65,21 +68,21 @@ contract ORMP is ReentrancyGuard, Channel {
         bytes32 msgHash,
         uint256 toChainId,
         uint256 gasLimit,
-        bytes calldata encoded,
-        bytes calldata params
+        bytes calldata encoded
     ) internal {
         // fetch user application's config.
         UC memory uc = getAppConfig(ua);
         // handle relayer fee
-        uint256 relayerFee = _handleRelayer(uc.relayer, msgHash, toChainId, ua, gasLimit, encoded, params);
+        uint256 relayerFee = _handleRelayer(uc.relayer, toChainId, ua, gasLimit, encoded);
         // handle oracle fee
-        uint256 oracleFee = _handleOracle(uc.oracle, msgHash, toChainId, ua);
+        uint256 oracleFee = _handleOracle(uc.oracle, toChainId, ua);
+
+        emit MessageAssigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee);
 
         // refund
         if (msg.value > relayerFee + oracleFee) {
             uint256 refundFee = msg.value - (relayerFee + oracleFee);
-            (bool success,) = refund.call{value: refundFee}("");
-            require(success, "!refund");
+            _sendValue(refund, refundFee);
         }
     }
 
@@ -88,35 +91,29 @@ contract ORMP is ReentrancyGuard, Channel {
     //  @param ua User application contract address which send the message.
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
-    /// @param params General extensibility for relayer to custom functionality.
-    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata params)
+    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata)
         external
         view
         returns (uint256)
     {
         UC memory uc = getAppConfig(ua);
-        uint256 relayerFee = IRelayer(uc.relayer).fee(toChainId, ua, gasLimit, encoded, params);
+        uint256 relayerFee = IRelayer(uc.relayer).fee(toChainId, ua, gasLimit, encoded);
         uint256 oracleFee = IOracle(uc.oracle).fee(toChainId, ua);
         return relayerFee + oracleFee;
     }
 
-    function _handleRelayer(
-        address relayer,
-        bytes32 msgHash,
-        uint256 toChainId,
-        address ua,
-        uint256 gasLimit,
-        bytes calldata encoded,
-        bytes calldata params
-    ) internal returns (uint256) {
-        uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, gasLimit, encoded, params);
-        IRelayer(relayer).assign{value: relayerFee}(msgHash, params);
+    function _handleRelayer(address relayer, uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded)
+        internal
+        returns (uint256)
+    {
+        uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, gasLimit, encoded);
+        _sendValue(relayer, relayerFee);
         return relayerFee;
     }
 
-    function _handleOracle(address oracle, bytes32 msgHash, uint256 toChainId, address ua) internal returns (uint256) {
+    function _handleOracle(address oracle, uint256 toChainId, address ua) internal returns (uint256) {
         uint256 oracleFee = IOracle(oracle).fee(toChainId, ua);
-        IOracle(oracle).assign{value: oracleFee}(msgHash);
+        _sendValue(oracle, oracleFee);
         return oracleFee;
     }
 
@@ -146,5 +143,12 @@ contract ORMP is ReentrancyGuard, Channel {
             0,
             abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
         );
+    }
+
+    /// @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+    /// `recipient`, forwarding all available gas and reverting on errors.
+    function _sendValue(address recipient, uint256 amount) internal {
+        (bool success,) = recipient.call{value: amount}("");
+        require(success, "!send");
     }
 }

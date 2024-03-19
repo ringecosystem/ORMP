@@ -27,8 +27,8 @@ interface IORMP {
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param refund Return extra fee to refund address.
-    /// @param params General extensibility for relayer to custom functionality.
     /// @return Return the hash of the message as message id.
+    /// @param params General extensibility for relayer to custom functionality.
     function send(
         uint256 toChainId,
         address to,

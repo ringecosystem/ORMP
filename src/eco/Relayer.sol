@@ -20,10 +20,10 @@ pragma solidity 0.8.17;
 import "../interfaces/IORMP.sol";
 
 contract Relayer {
-    event Assigned(bytes32 indexed msgHash, uint256 fee, bytes params, bytes32[32] proof);
     event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
     event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
     event SetApproved(address operator, bool approve);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     struct DstPrice {
         uint128 dstPriceRatio; // dstPrice / localPrice * 10^10
@@ -69,8 +69,10 @@ contract Relayer {
         return approvedOf[operator];
     }
 
-    function changeOwner(address owner_) external onlyOwner {
-        owner = owner_;
+    function changeOwner(address newOwner) external onlyOwner {
+        address oldOwner = owner;
+        owner = newOwner;
+        emit OwnershipTransferred(oldOwner, newOwner);
     }
 
     function setApproved(address operator, bool approve) public onlyOwner {
@@ -89,13 +91,11 @@ contract Relayer {
     }
 
     // extraGas = gasLimit
-    function fee(
-        uint256 toChainId,
-        address, /*ua*/
-        uint256 gasLimit,
-        bytes calldata encoded,
-        bytes calldata /*params*/
-    ) public view returns (uint256) {
+    function fee(uint256 toChainId, address, /*ua*/ uint256 gasLimit, bytes calldata encoded)
+        public
+        view
+        returns (uint256)
+    {
         uint256 size = encoded.length;
         uint256 extraGas = gasLimit;
         DstPrice memory p = priceOf[toChainId];
@@ -109,11 +109,6 @@ contract Relayer {
         uint256 sourceToken = remoteToken * p.dstPriceRatio / (10 ** 10);
         uint256 payloadToken = c.gasPerByte * size * p.dstGasPriceInWei * p.dstPriceRatio / (10 ** 10);
         return sourceToken + payloadToken;
-    }
-
-    function assign(bytes32 msgHash, bytes calldata params) external payable {
-        require(msg.sender == PROTOCOL, "!ormp");
-        emit Assigned(msgHash, msg.value, params, IORMP(PROTOCOL).prove());
     }
 
     function relay(Message calldata message, bytes calldata proof) external onlyApproved {
