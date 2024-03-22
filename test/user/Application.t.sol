@@ -57,6 +57,6 @@ contract UserApplication is Application {
         address xmsgSender = _xmsgSender();
         require(msgHash == bytes32(uint256(1)));
         require(fromChainid == 1);
-        require(xmsgSender == protocol());
+        require(xmsgSender == ORMP);
     }
 }
