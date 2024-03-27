@@ -26,8 +26,6 @@ contract Oracle is Verifier {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed blockHeight, bytes32 messageRoot);
 
-    address public immutable PROTOCOL;
-
     address public owner;
     // chainId => price
     mapping(uint256 => uint256) public feeOf;
@@ -46,8 +44,7 @@ contract Oracle is Verifier {
         _;
     }
 
-    constructor(address dao, address ormp) {
-        PROTOCOL = ormp;
+    constructor(address dao) {
         owner = dao;
     }
 
