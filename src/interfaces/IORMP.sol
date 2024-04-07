@@ -74,4 +74,19 @@ interface IORMP {
     /// @param msgHash Hash of the checked message.
     /// @return Return the dispatched result of the checked message.
     function dones(bytes32 msgHash) external view returns (bool);
+
+    /// @dev Import hash by any oracle address.
+    /// @notice Hash is an abstract of the proof system, it can be a block hash or a message root hash,
+    ///  		specifically provided by oracles.
+    /// @param srcChainId The source chain Id.
+    /// @param lookupKey The key for loop up hash.
+    /// @param hash_ The hash to import.
+    function importHash(uint256 srcChainId, bytes32 lookupKey, bytes32 hash_) external;
+
+    /// @dev Fetch hash.
+    /// @param oracle The oracle address.
+    /// @param srcChainId The source chain Id.
+    /// @param lookupKey The key for loop up hash.
+    /// @return Return the hash imported by the oracle.
+    function hashLookup(address oracle, uint256 srcChainId, bytes32 lookupKey) external view returns (bytes32);
 }

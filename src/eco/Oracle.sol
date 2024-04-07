@@ -18,19 +18,19 @@
 pragma solidity 0.8.17;
 
 import "../Verifier.sol";
+import "../interfaces/IORMP.sol";
 
 contract Oracle is Verifier {
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
     event Withdrawal(address indexed to, uint256 amt);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    event ImportedMessageRoot(uint256 indexed chainId, uint256 indexed blockHeight, bytes32 messageRoot);
+
+    address public immutable PROTOCOL;
 
     address public owner;
     // chainId => price
     mapping(uint256 => uint256) public feeOf;
-    // chainId => blockNumber => messageRoot
-    mapping(uint256 => mapping(uint256 => bytes32)) rootOf;
     // operator => isApproved
     mapping(address => bool) public approvedOf;
 
@@ -44,7 +44,8 @@ contract Oracle is Verifier {
         _;
     }
 
-    constructor(address dao) {
+    constructor(address dao, address ormp) {
+        PROTOCOL = ormp;
         owner = dao;
     }
 
@@ -60,8 +61,7 @@ contract Oracle is Verifier {
     /// @param blockNumber The source chain block number.
     /// @param messageRoot The source chain message root corresponding to the channel.
     function importMessageRoot(uint256 chainId, uint256 blockNumber, bytes32 messageRoot) external onlyOwner {
-        rootOf[chainId][blockNumber] = messageRoot;
-        emit ImportedMessageRoot(chainId, blockNumber, messageRoot);
+        IORMP(PROTOCOL).importHash(chainId, bytes32(blockNumber), messageRoot);
     }
 
     function changeOwner(address newOwner) external onlyOwner {
@@ -97,6 +97,6 @@ contract Oracle is Verifier {
     }
 
     function merkleRoot(uint256 chainId, uint256 blockNumber) public view override returns (bytes32) {
-        return rootOf[chainId][blockNumber];
+        return IORMP(PROTOCOL).hashLookup(address(this), chainId, bytes32(blockNumber));
     }
 }
