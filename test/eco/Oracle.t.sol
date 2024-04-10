@@ -71,7 +71,7 @@ contract OracleTest is Test {
         assertEq(r, bytes32(uint256(1)));
     }
 
-    function merkleRoot(uint256, uint256) external pure returns (bytes32) {
+    function hashLookup(address, uint256, bytes32) external pure returns (bytes32) {
         return bytes32(uint256(1));
     }
 }
