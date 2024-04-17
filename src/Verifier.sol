@@ -20,12 +20,15 @@ pragma solidity 0.8.17;
 import "./interfaces/IVerifier.sol";
 
 abstract contract Verifier is IVerifier {
-    /// @inheritdoc IVerifier
-    function merkleRoot(uint256 chainId, uint256 msgIndex) public view virtual returns (bytes32);
+    /// @notice Fetch message hash.
+    /// @param chainId The source chain id.
+    /// @param msgIndex The Message index.
+    /// @return Message hash in source chain.
+    function hashOf(uint256 chainId, uint256 msgIndex) public view virtual returns (bytes32);
 
     /// @inheritdoc IVerifier
     function verifyMessageProof(Message calldata message, bytes calldata) external view returns (bool) {
         // check oracle's message hash equal relayer's message hash
-        return merkleRoot(message.fromChainId, message.index) == hash(message);
+        return hashOf(message.fromChainId, message.index) == hash(message);
     }
 }

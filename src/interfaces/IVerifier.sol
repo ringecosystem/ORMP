@@ -20,12 +20,6 @@ pragma solidity 0.8.17;
 import "../Common.sol";
 
 interface IVerifier {
-    /// @notice Fetch message root oracle.
-    /// @param chainId The destination chain id.
-    /// @param msgIndex The Message index.
-    /// @return Message hash in destination chain.
-    function merkleRoot(uint256 chainId, uint256 msgIndex) external view returns (bytes32);
-
     /// @notice Verify message proof
     /// @dev Message proof provided by relayer. Oracle should provide message root of
     ///      source chain, and verify the merkle proof of the message hash.

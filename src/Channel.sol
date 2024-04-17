@@ -50,10 +50,8 @@ contract Channel is UserConfig {
 
     /// @dev Fetch local chain id.
     /// @return chainId Local chain id.
-    function LOCAL_CHAINID() public view returns (uint256 chainId) {
-        assembly {
-            chainId := chainid()
-        }
+    function LOCAL_CHAINID() public view returns (uint256) {
+        return block.chainid;
     }
 
     /// @dev Send message.

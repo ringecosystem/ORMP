@@ -66,8 +66,8 @@ contract OracleTest is Test {
         oracle.setFee(1, 1);
     }
 
-    function test_merkleRoot() public {
-        bytes32 r = oracle.merkleRoot(1, 1);
+    function test_hashOf() public {
+        bytes32 r = oracle.hashOf(1, 1);
         assertEq(r, bytes32(uint256(1)));
     }
 

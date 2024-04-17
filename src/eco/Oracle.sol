@@ -96,7 +96,7 @@ contract Oracle is Verifier {
         return f;
     }
 
-    function merkleRoot(uint256 chainId, uint256 msgIndex) public view override returns (bytes32) {
+    function hashOf(uint256 chainId, uint256 msgIndex) public view override returns (bytes32) {
         return IORMP(PROTOCOL).hashLookup(address(this), chainId, bytes32(msgIndex));
     }
 }
