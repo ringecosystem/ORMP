@@ -38,7 +38,7 @@ contract ChannelTest is Test, Verifier {
 
     function test_constructorArgs() public {
         assertEq(channel.LOCAL_CHAINID(), 1);
-        assertEq(channel.messageCount(), 0);
+        assertEq(channel.count(), 0);
     }
 
     function test_sendMessage() public {
@@ -70,7 +70,7 @@ contract ChannelTest is Test, Verifier {
     function test_recvMessage_fuzz() public {
         for (uint256 i = 0; i < 100; i++) {
             vm.chainId(1);
-            uint256 index = channel.messageCount();
+            uint256 index = channel.count();
             bytes32 msgHash = channel.sendMessage(self, 2, self, 0, "");
             Message memory message = Message({
                 channel: address(channel),

@@ -56,7 +56,7 @@ contract ORMPBenchmarkTest is Test {
 
         Message memory message = Message({
             channel: address(ormp),
-            index: ormp.messageCount() - 1,
+            index: ormp.count() - 1,
             fromChainId: fromChainId,
             from: self,
             toChainId: toChainId,

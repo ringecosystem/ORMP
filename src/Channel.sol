@@ -30,8 +30,8 @@ contract Channel is UserConfig {
     /// @dev msgHash => isDispathed.
     mapping(bytes32 => bool) public dones;
 
-    /// @dev message index.
-    uint256 public index;
+    /// @dev message count.
+    uint256 public count;
 
     /// @dev Self contract address cache.
     address private immutable __self = address(this);
@@ -71,7 +71,7 @@ contract Channel is UserConfig {
         // constuct message object.
         Message memory message = Message({
             channel: __self,
-            index: index,
+            index: count,
             fromChainId: LOCAL_CHAINID(),
             from: from,
             toChainId: toChainId,
@@ -85,8 +85,8 @@ contract Channel is UserConfig {
         // emit accepted message event.
         emit MessageAccepted(msgHash, message);
 
-        // increase index
-        index = index + 1;
+        // increase message count
+        count = count + 1;
 
         // return this message hash.
         return msgHash;
@@ -114,10 +114,5 @@ contract Channel is UserConfig {
         dones[msgHash] = true;
 
         return msgHash;
-    }
-
-    /// @dev Fetch the messages count of incremental merkle tree.
-    function messageCount() public view returns (uint256) {
-        return index;
     }
 }
