@@ -85,6 +85,7 @@ contract Channel is UserConfig {
         // emit accepted message event.
         emit MessageAccepted(msgHash, message);
 
+        // increase index
         index = index + 1;
 
         // return this message hash.
@@ -100,16 +101,15 @@ contract Channel is UserConfig {
         UC memory uc = getAppConfig(message.to);
         // only the config relayer could relay this message.
         require(uc.relayer == msg.sender, "!auth");
-
-        // hash the message.
-        bytes32 msgHash = hash(message);
         // verify message by the config oracle.
-        require(IVerifier(uc.oracle).verifyMessageProof(message.fromChainId, msgHash, proof), "!proof");
-
+        require(IVerifier(uc.oracle).verifyMessageProof(message, proof), "!proof");
         // check destination chain id is correct.
         require(LOCAL_CHAINID() == message.toChainId, "!toChainId");
+        // hash the message.
+        bytes32 msgHash = hash(message);
         // check the message is not dispatched.
         require(dones[msgHash] == false, "done");
+
         // set the message is dispatched.
         dones[msgHash] = true;
 

@@ -63,9 +63,8 @@ contract ChannelTest is Test, Verifier {
             encoded: ""
         });
         assertEq(msgHash, hash(message));
-        Proof memory proof = Proof(0);
         vm.chainId(2);
-        channel.recvMessage(message, abi.encode(proof));
+        channel.recvMessage(message, "");
     }
 
     function test_recvMessage_fuzz() public {
@@ -84,9 +83,8 @@ contract ChannelTest is Test, Verifier {
                 encoded: ""
             });
             assertEq(msgHash, hash(message));
-            Proof memory proof = Proof(index);
             vm.chainId(2);
-            channel.recvMessage(message, abi.encode(proof));
+            channel.recvMessage(message, "");
         }
     }
 
