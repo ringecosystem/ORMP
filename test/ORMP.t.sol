@@ -110,7 +110,7 @@ contract ORMPTest is Test, Verifier {
         return 1;
     }
 
-    function hashOf(uint256, uint256) public view override returns (bytes32) {
+    function hashOf(uint256, address, uint256) public view override returns (bytes32) {
         return bytes32(0);
     }
 }

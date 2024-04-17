@@ -56,12 +56,23 @@ contract Oracle is Verifier {
     }
 
     /// @dev Only could be called by owner.
-    /// @notice Each channel has a corresponding oracle, and the message root should match with it.
     /// @param chainId The source chain id.
+    /// @param channel The message channel.
     /// @param msgIndex The source chain message index.
     /// @param msgHash The source chain message hash corresponding to the channel.
-    function importMessageRoot(uint256 chainId, uint256 msgIndex, bytes32 msgHash) external onlyOwner {
-        IORMP(PROTOCOL).importHash(chainId, bytes32(msgIndex), msgHash);
+    function importMessageHash(uint256 chainId, address channel, uint256 msgIndex, bytes32 msgHash)
+        external
+        onlyOwner
+    {
+        IORMP(PROTOCOL).importHash(_lookupkey(chainId, channel, msgIndex), msgHash);
+    }
+
+    function hashOf(uint256 chainId, address channel, uint256 msgIndex) public view override returns (bytes32) {
+        return IORMP(PROTOCOL).hashLookup(address(this), _lookupkey(chainId, channel, msgIndex));
+    }
+
+    function _lookupkey(uint256 chainId, address channel, uint256 msgIndex) internal pure returns (bytes32) {
+        return keccak256(abi.encode(chainId, channel, msgIndex));
     }
 
     function changeOwner(address newOwner) external onlyOwner {
@@ -94,9 +105,5 @@ contract Oracle is Verifier {
         uint256 f = feeOf[toChainId];
         require(f != 0, "!fee");
         return f;
-    }
-
-    function hashOf(uint256 chainId, uint256 msgIndex) public view override returns (bytes32) {
-        return IORMP(PROTOCOL).hashLookup(address(this), chainId, bytes32(msgIndex));
     }
 }

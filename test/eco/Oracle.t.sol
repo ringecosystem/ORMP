@@ -67,7 +67,7 @@ contract OracleTest is Test {
     }
 
     function test_hashOf() public {
-        bytes32 r = oracle.hashOf(1, 1);
+        bytes32 r = oracle.hashOf(1, self, 1);
         assertEq(r, bytes32(uint256(1)));
     }
 

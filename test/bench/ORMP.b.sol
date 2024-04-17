@@ -75,7 +75,7 @@ contract ORMPBenchmarkTest is Test {
         vm.store(address(oracle), bytes32(uint256(0)), bytes32(uint256(uint160(self))));
         assertEq(oracle.owner(), self);
         vm.prank(address(oracle.owner()));
-        oracle.importMessageRoot(message.fromChainId, blockNumber, root);
+        oracle.importMessageHash(message.fromChainId, self, blockNumber, root);
 
         vm.prank(address(relayer));
         ormp.recv(message, "");

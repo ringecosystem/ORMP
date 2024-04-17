@@ -56,12 +56,12 @@ contract ORMPMock is Verifier {
 
     function dryrun_recv(bytes memory input) public {
         require(caller == msg.sender, "!auth");
-        Verifier(oracle).hashOf(46, 0);
+        Verifier(oracle).hashOf(46, self, 0);
         P memory p = abi.decode(input, (P));
         ormp.recv(p.message, p.proof);
     }
 
-    function hashOf(uint256, uint256) public pure override returns (bytes32) {
+    function hashOf(uint256, address, uint256) public pure override returns (bytes32) {
         return 0x3871fec397ebd8b84e7780742d8c7a0649097aa54870c8b7e1d5cb027480aad2;
     }
 }
