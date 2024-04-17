@@ -68,10 +68,9 @@ contract ORMPBenchmarkTest is Test {
     }
 
     function perform_recv(Message memory message) public {
-        bytes32 root = ormp.root();
+        bytes32 root = bytes32(0);
         uint256 blockNumber = block.number;
-        Verifier.Proof memory proof =
-            Verifier.Proof({blockNumber: block.number, messageIndex: message.index, messageProof: ormp.prove()});
+        Verifier.Proof memory proof = Verifier.Proof(message.index);
 
         vm.createSelectFork(message.toChainId.toChainName());
         vm.store(address(oracle), bytes32(uint256(0)), bytes32(uint256(uint160(self))));

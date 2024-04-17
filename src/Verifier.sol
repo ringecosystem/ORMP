@@ -18,7 +18,6 @@
 pragma solidity 0.8.17;
 
 import "./interfaces/IVerifier.sol";
-import "./imt/IncrementalMerkleTree.sol";
 
 abstract contract Verifier is IVerifier {
     /// @notice Message proof.

@@ -38,12 +38,7 @@ contract ChannelTest is Test, Verifier {
 
     function test_constructorArgs() public {
         assertEq(channel.LOCAL_CHAINID(), 1);
-        assertEq(channel.root(), keccak256(abi.encodePacked(zeroHashes[31], zeroHashes[31])));
         assertEq(channel.messageCount(), 0);
-        bytes32[32] memory branch = channel.imtBranch();
-        for (uint256 height = 0; height < 32; height++) {
-            assertEq(branch[height], bytes32(0));
-        }
     }
 
     function test_sendMessage() public {
@@ -68,7 +63,7 @@ contract ChannelTest is Test, Verifier {
             encoded: ""
         });
         assertEq(msgHash, hash(message));
-        Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: channel.prove()});
+        Proof memory proof = Proof(0);
         vm.chainId(2);
         channel.recvMessage(message, abi.encode(proof));
     }
@@ -89,14 +84,14 @@ contract ChannelTest is Test, Verifier {
                 encoded: ""
             });
             assertEq(msgHash, hash(message));
-            Proof memory proof = Proof({blockNumber: block.number, messageIndex: index, messageProof: channel.prove()});
+            Proof memory proof = Proof(index);
             vm.chainId(2);
             channel.recvMessage(message, abi.encode(proof));
         }
     }
 
     function merkleRoot(uint256, uint256) public view override returns (bytes32) {
-        return channel.root();
+        return bytes32(0);
     }
 }
 

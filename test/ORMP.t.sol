@@ -52,7 +52,7 @@ contract ORMPTest is Test, Verifier {
     function perform_send() public {
         uint256 f = ormp.fee(2, self, 0, "", "");
         ormp.send{value: f}(2, self, 0, "", self, "");
-        proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
+        proof = Proof(ormp.messageCount() - 1);
         vm.chainId(2);
     }
 
@@ -75,7 +75,7 @@ contract ORMPTest is Test, Verifier {
 
     function testFail_SendWithZeroNativeFee() public {
         ormp.send{value: 0}(2, self, 0, "", address(5), "");
-        proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
+        proof = Proof(ormp.messageCount() - 1);
         vm.chainId(2);
     }
 
@@ -95,7 +95,7 @@ contract ORMPTest is Test, Verifier {
     function test_failedMsgDispactedSuccess_PoC() public {
         uint256 f = ormp.fee(2, self, 0, "", "");
         ormp.send{value: f}(2, self, 0, "", self, "");
-        proof = Proof({blockNumber: block.number, messageIndex: ormp.messageCount() - 1, messageProof: ormp.prove()});
+        proof = Proof(ormp.messageCount() - 1);
 
         vm.chainId(2);
 
@@ -115,6 +115,6 @@ contract ORMPTest is Test, Verifier {
     }
 
     function merkleRoot(uint256, uint256) public view override returns (bytes32) {
-        return ormp.root();
+        return bytes32(0);
     }
 }

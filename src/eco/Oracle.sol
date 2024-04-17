@@ -58,10 +58,10 @@ contract Oracle is Verifier {
     /// @dev Only could be called by owner.
     /// @notice Each channel has a corresponding oracle, and the message root should match with it.
     /// @param chainId The source chain id.
-    /// @param blockNumber The source chain block number.
-    /// @param messageRoot The source chain message root corresponding to the channel.
-    function importMessageRoot(uint256 chainId, uint256 blockNumber, bytes32 messageRoot) external onlyOwner {
-        IORMP(PROTOCOL).importHash(chainId, bytes32(blockNumber), messageRoot);
+    /// @param msgIndex The source chain message index.
+    /// @param msgHash The source chain message hash corresponding to the channel.
+    function importMessageRoot(uint256 chainId, uint256 msgIndex, bytes32 msgHash) external onlyOwner {
+        IORMP(PROTOCOL).importHash(chainId, bytes32(msgIndex), msgHash);
     }
 
     function changeOwner(address newOwner) external onlyOwner {
@@ -96,7 +96,7 @@ contract Oracle is Verifier {
         return f;
     }
 
-    function merkleRoot(uint256 chainId, uint256 blockNumber) public view override returns (bytes32) {
-        return IORMP(PROTOCOL).hashLookup(address(this), chainId, bytes32(blockNumber));
+    function merkleRoot(uint256 chainId, uint256 msgIndex) public view override returns (bytes32) {
+        return IORMP(PROTOCOL).hashLookup(address(this), chainId, bytes32(msgIndex));
     }
 }

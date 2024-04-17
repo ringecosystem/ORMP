@@ -31,7 +31,7 @@ contract Channel is UserConfig {
     mapping(bytes32 => bool) public dones;
 
     /// @dev message index.
-    uint256 index;
+    uint256 public index;
 
     /// @dev Self contract address cache.
     address private immutable __self = address(this);
@@ -46,10 +46,7 @@ contract Channel is UserConfig {
     event MessageDispatched(bytes32 indexed msgHash, bool dispatchResult);
 
     /// @dev Init code.
-    constructor(address dao) UserConfig(dao) {
-        // init with empty tree
-        root = 0x27ae5ba08d7291c96c8cbddcc148bf48a6d68c7974b94356f53754ef6171d757;
-    }
+    constructor(address dao) UserConfig(dao) {}
 
     /// @dev Fetch local chain id.
     /// @return chainId Local chain id.
@@ -121,16 +118,6 @@ contract Channel is UserConfig {
 
     /// @dev Fetch the messages count of incremental merkle tree.
     function messageCount() public view returns (uint256) {
-        return _imt.count;
-    }
-
-    /// @dev Fetch the branch of incremental merkle tree.
-    function imtBranch() public view returns (bytes32[32] memory) {
-        return _imt.branch;
-    }
-
-    /// @dev Fetch the latest message proof
-    function prove() public view returns (bytes32[32] memory) {
-        return _imt.prove();
+        return index;
     }
 }
