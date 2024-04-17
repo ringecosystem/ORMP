@@ -22,20 +22,16 @@ import "./imt/IncrementalMerkleTree.sol";
 
 abstract contract Verifier is IVerifier {
     /// @notice Message proof.
-    /// @param blockNumber The block number corresponding to the proof.
-    /// @param messageIndex Leaf index of the message hash in incremental merkle tree.
-    /// @param messageProof Merkle proof of the message hash.
+    /// @param msgIndex The index of the message hash.
     struct Proof {
-        uint256 blockNumber;
-        uint256 messageIndex;
-        bytes32[32] messageProof;
+        uint256 msgIndex;
     }
 
     /// @inheritdoc IVerifier
-    function merkleRoot(uint256 chainId, uint256 blockNumber) public view virtual returns (bytes32);
+    function merkleRoot(uint256 chainId, uint256 msgIndex) public view virtual returns (bytes32);
 
     /// @inheritdoc IVerifier
-    function verifyMessageProof(uint256 fromChainId, bytes32 msgHash, bytes calldata proof)
+    function verifyMessageProof(uint256 fromChainId, bytes32 msgHashRelayer, bytes calldata proof)
         external
         view
         returns (bool)
@@ -43,12 +39,10 @@ abstract contract Verifier is IVerifier {
         // decode proof
         Proof memory p = abi.decode(proof, (Proof));
 
-        // fetch message root in block number from chain
-        bytes32 imtRootOracle = merkleRoot(fromChainId, p.blockNumber);
-        // calculate the expected root based on the proof
-        bytes32 imtRootProof = IncrementalMerkleTree.branchRoot(msgHash, p.messageProof, p.messageIndex);
+        // fetch message hash from chain
+        bytes32 msgHashOracle = merkleRoot(fromChainId, p.msgIndex);
 
-        // check oracle's merkle root equal relayer's merkle root
-        return imtRootOracle == imtRootProof;
+        // check oracle's message hash equal relayer's message hash
+        return msgHashOracle == msgHashRelayer;
     }
 }

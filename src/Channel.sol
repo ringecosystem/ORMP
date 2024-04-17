@@ -19,7 +19,6 @@ pragma solidity 0.8.17;
 
 import "./UserConfig.sol";
 import "./interfaces/IVerifier.sol";
-import "./imt/IncrementalMerkleTree.sol";
 
 /// @title Channel
 /// @notice A channel is a logical connection over cross-chain network.
@@ -27,27 +26,20 @@ import "./imt/IncrementalMerkleTree.sol";
 /// - Accepts messages to be dispatched to destination chains,
 ///   constructs a Merkle tree of the messages.
 /// - Dispatches verified messages from source chains.
-/// @dev Messages live in an incremental merkle tree (imt)
-/// > A Merkle tree is a binary and complete tree decorated with
-/// > the Merkle (hash) attribute.
 contract Channel is UserConfig {
-    using IncrementalMerkleTree for IncrementalMerkleTree.Tree;
-
-    /// @dev Incremental merkle tree root which all message hashes live in leafs.
-    bytes32 public root;
-    /// @dev Incremental merkle tree.
-    IncrementalMerkleTree.Tree private _imt;
     /// @dev msgHash => isDispathed.
     mapping(bytes32 => bool) public dones;
+
+    /// @dev message index.
+    uint256 index;
 
     /// @dev Self contract address cache.
     address private immutable __self = address(this);
 
     /// @dev Notifies an observer that the message has been accepted.
     /// @param msgHash Hash of the message.
-    /// @param root New incremental merkle tree root after a new message inserted.
     /// @param message Accepted message info.
-    event MessageAccepted(bytes32 indexed msgHash, bytes32 root, Message message);
+    event MessageAccepted(bytes32 indexed msgHash, Message message);
     /// @dev Notifies an observer that the message has been dispatched.
     /// @param msgHash Hash of the message.
     /// @param dispatchResult The message dispatch result.
@@ -79,8 +71,6 @@ contract Channel is UserConfig {
     {
         // only cross-chain message
         require(toChainId != LOCAL_CHAINID(), "!cross-chain");
-        // get this message leaf index.
-        uint256 index = messageCount();
         // constuct message object.
         Message memory message = Message({
             channel: __self,
@@ -94,13 +84,11 @@ contract Channel is UserConfig {
         });
         // hash the message.
         bytes32 msgHash = hash(message);
-        // insert msg hash to imt.
-        _imt.insert(msgHash);
-        // update new imt.root to root storage.
-        root = _imt.root();
 
         // emit accepted message event.
-        emit MessageAccepted(msgHash, root, message);
+        emit MessageAccepted(msgHash, message);
+
+        index = index + 1;
 
         // return this message hash.
         return msgHash;
