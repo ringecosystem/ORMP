@@ -17,7 +17,13 @@
 
 pragma solidity 0.8.17;
 
-import "./Common.sol";
+/// @dev User application custom configuration.
+/// @param oracle Oracle contract address.
+/// @param relayer Relayer contract address.
+struct UC {
+    address oracle;
+    address relayer;
+}
 
 /// @title UserConfig
 /// @notice User config could select their own relayer and oracle.

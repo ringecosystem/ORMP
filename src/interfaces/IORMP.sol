@@ -60,15 +60,14 @@ interface IORMP {
     /// @dev Fetch user application config.
     /// @notice If user application has not configured, then the default config is used.
     /// @param ua User application contract address.
-    /// @return user application config.
-    function getAppConfig(address ua) external view returns (UC memory);
+    function getAppConfig(address ua) external view returns (address oracle, address relayer);
 
     /// @notice Set user application config.
     /// @param oracle Oracle which user application choose.
     /// @param relayer Relayer which user application choose.
     function setAppConfig(address oracle, address relayer) external;
 
-    function defaultUC() external view returns (UC memory);
+    function defaultUC() external view returns (address oracle, address relayer);
 
     /// @dev Check the msg if it is dispatched.
     /// @param msgHash Hash of the checked message.
@@ -78,15 +77,13 @@ interface IORMP {
     /// @dev Import hash by any oracle address.
     /// @notice Hash is an abstract of the proof system, it can be a block hash or a message root hash,
     ///  		specifically provided by oracles.
-    /// @param srcChainId The source chain Id.
     /// @param lookupKey The key for loop up hash.
     /// @param hash_ The hash to import.
-    function importHash(uint256 srcChainId, bytes32 lookupKey, bytes32 hash_) external;
+    function importHash(bytes32 lookupKey, bytes32 hash_) external;
 
     /// @dev Fetch hash.
     /// @param oracle The oracle address.
-    /// @param srcChainId The source chain Id.
     /// @param lookupKey The key for loop up hash.
     /// @return Return the hash imported by the oracle.
-    function hashLookup(address oracle, uint256 srcChainId, bytes32 lookupKey) external view returns (bytes32);
+    function hashLookup(address oracle, bytes32 lookupKey) external view returns (bytes32);
 }

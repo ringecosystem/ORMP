@@ -18,37 +18,18 @@
 pragma solidity 0.8.17;
 
 import "./interfaces/IVerifier.sol";
-import "./imt/IncrementalMerkleTree.sol";
 
 abstract contract Verifier is IVerifier {
-    /// @notice Message proof.
-    /// @param blockNumber The block number corresponding to the proof.
-    /// @param messageIndex Leaf index of the message hash in incremental merkle tree.
-    /// @param messageProof Merkle proof of the message hash.
-    struct Proof {
-        uint256 blockNumber;
-        uint256 messageIndex;
-        bytes32[32] messageProof;
-    }
+    /// @notice Fetch message hash.
+    /// @param chainId The source chain id.
+    /// @param channel The message channel.
+    /// @param msgIndex The Message index.
+    /// @return Message hash in source chain.
+    function hashOf(uint256 chainId, address channel, uint256 msgIndex) public view virtual returns (bytes32);
 
     /// @inheritdoc IVerifier
-    function merkleRoot(uint256 chainId, uint256 blockNumber) public view virtual returns (bytes32);
-
-    /// @inheritdoc IVerifier
-    function verifyMessageProof(uint256 fromChainId, bytes32 msgHash, bytes calldata proof)
-        external
-        view
-        returns (bool)
-    {
-        // decode proof
-        Proof memory p = abi.decode(proof, (Proof));
-
-        // fetch message root in block number from chain
-        bytes32 imtRootOracle = merkleRoot(fromChainId, p.blockNumber);
-        // calculate the expected root based on the proof
-        bytes32 imtRootProof = IncrementalMerkleTree.branchRoot(msgHash, p.messageProof, p.messageIndex);
-
-        // check oracle's merkle root equal relayer's merkle root
-        return imtRootOracle == imtRootProof;
+    function verifyMessageProof(Message calldata message, bytes calldata) external view returns (bool) {
+        // check oracle's message hash equal relayer's message hash
+        return hashOf(message.fromChainId, message.channel, message.index) == hash(message);
     }
 }

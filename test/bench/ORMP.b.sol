@@ -56,7 +56,7 @@ contract ORMPBenchmarkTest is Test {
 
         Message memory message = Message({
             channel: address(ormp),
-            index: ormp.messageCount() - 1,
+            index: ormp.count() - 1,
             fromChainId: fromChainId,
             from: self,
             toChainId: toChainId,
@@ -68,19 +68,17 @@ contract ORMPBenchmarkTest is Test {
     }
 
     function perform_recv(Message memory message) public {
-        bytes32 root = ormp.root();
+        bytes32 root = bytes32(0);
         uint256 blockNumber = block.number;
-        Verifier.Proof memory proof =
-            Verifier.Proof({blockNumber: block.number, messageIndex: message.index, messageProof: ormp.prove()});
 
         vm.createSelectFork(message.toChainId.toChainName());
         vm.store(address(oracle), bytes32(uint256(0)), bytes32(uint256(uint160(self))));
         assertEq(oracle.owner(), self);
         vm.prank(address(oracle.owner()));
-        oracle.importMessageRoot(message.fromChainId, blockNumber, root);
+        oracle.importMessageHash(message.fromChainId, self, blockNumber, root);
 
         vm.prank(address(relayer));
-        ormp.recv(message, abi.encode(proof));
+        ormp.recv(message, "");
     }
 
     function perform_send(uint256 fromChainId, uint256 toChainId, bytes calldata encoded) public {
