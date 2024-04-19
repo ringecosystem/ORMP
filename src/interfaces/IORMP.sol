@@ -77,9 +77,11 @@ interface IORMP {
     /// @dev Import hash by any oracle address.
     /// @notice Hash is an abstract of the proof system, it can be a block hash or a message root hash,
     ///  		specifically provided by oracles.
-    /// @param lookupKey The key for loop up hash.
+    /// @param chainId The source chain id.
+    /// @param channel The message channel.
+    /// @param msgIndex The source chain message index.
     /// @param hash_ The hash to import.
-    function importHash(bytes32 lookupKey, bytes32 hash_) external;
+    function importHash(uint256 chainId, address channel, uint256 msgIndex, bytes32 hash_) external;
 
     /// @dev Fetch hash.
     /// @param oracle The oracle address.
