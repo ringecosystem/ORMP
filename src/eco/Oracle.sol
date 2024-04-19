@@ -64,15 +64,11 @@ contract Oracle is Verifier {
         external
         onlyOwner
     {
-        IORMP(PROTOCOL).importHash(_lookupkey(chainId, channel, msgIndex), msgHash);
+        IORMP(PROTOCOL).importHash(chainId, channel, msgIndex, msgHash);
     }
 
     function hashOf(uint256 chainId, address channel, uint256 msgIndex) public view override returns (bytes32) {
-        return IORMP(PROTOCOL).hashLookup(address(this), _lookupkey(chainId, channel, msgIndex));
-    }
-
-    function _lookupkey(uint256 chainId, address channel, uint256 msgIndex) internal pure returns (bytes32) {
-        return keccak256(abi.encode(chainId, channel, msgIndex));
+        return IORMP(PROTOCOL).hashLookup(address(this), keccak256(abi.encode(chainId, channel, msgIndex)));
     }
 
     function changeOwner(address newOwner) external onlyOwner {

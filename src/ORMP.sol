@@ -33,7 +33,7 @@ contract ORMP is ReentrancyGuard, Channel {
     event MessageAssigned(
         bytes32 indexed msgHash, address indexed oracle, address indexed relayer, uint256 oracleFee, uint256 relayerFee
     );
-    event HashImported(address indexed oracle, bytes32 indexed lookupKey, bytes32 indexed hash);
+    event HashImported(address indexed oracle, uint256 chainId, address channel, uint256 msgIndex, bytes32 hash);
 
     /// oracle => lookupKey => hash
     mapping(address => mapping(bytes32 => bytes32)) public hashLookup;
@@ -73,11 +73,14 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @dev Import hash by any oracle address.
     /// @notice Hash is an abstract of the proof system, it can be a block hash or a message root hash,
     ///  		specifically provided by oracles.
-    /// @param lookupKey The key for loop up hash.
+    /// @param chainId The source chain id.
+    /// @param channel The message channel.
+    /// @param msgIndex The source chain message index.
     /// @param hash_ The hash to import.
-    function importHash(bytes32 lookupKey, bytes32 hash_) external {
+    function importHash(uint256 chainId, address channel, uint256 msgIndex, bytes32 hash_) external {
+        bytes32 lookupKey = keccak256(abi.encode(chainId, channel, msgIndex));
         hashLookup[msg.sender][lookupKey] = hash_;
-        emit HashImported(msg.sender, lookupKey, hash_);
+        emit HashImported(msg.sender, chainId, channel, msgIndex, hash_);
     }
 
     function _handleFee(

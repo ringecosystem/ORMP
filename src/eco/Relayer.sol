@@ -115,7 +115,7 @@ contract Relayer {
         return sourceToken + payloadToken;
     }
 
-    function relay(Message calldata message, bytes calldata proof) external onlyApproved {
-        IORMP(PROTOCOL).recv(message, proof);
+    function relay(Message calldata message) external onlyApproved {
+        IORMP(PROTOCOL).recv(message, "");
     }
 }
