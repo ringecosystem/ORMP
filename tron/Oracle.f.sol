@@ -135,7 +135,7 @@ interface IORMP {
     function hashLookup(address oracle, bytes32 lookupKey) external view returns (bytes32);
 }
 
-// src/eco/Relayer.sol
+// src/interfaces/IVerifier.sol
 // This file is part of Darwinia.
 // Copyright (C) 2018-2023 Darwinia Network
 
@@ -153,28 +153,79 @@ interface IORMP {
 // You should have received a copy of the GNU General Public License
 // along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
-contract Relayer {
-    event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
-    event SetDstConfig(uint256 indexed chainId, uint64 baseGas, uint64 gasPerByte);
+interface IVerifier {
+    /// @notice Verify message proof
+    /// @dev Message proof provided by relayer. Oracle should provide message root of
+    ///      source chain, and verify the merkle proof of the message hash.
+    /// @param message The message info.
+    /// @param proof Proof of the message
+    /// @return Result of the message verify.
+    function verifyMessageProof(Message calldata message, bytes calldata proof) external view returns (bool);
+}
+
+// src/Verifier.sol
+// This file is part of Darwinia.
+// Copyright (C) 2018-2023 Darwinia Network
+
+//
+// Darwinia is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Darwinia is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
+
+abstract contract Verifier is IVerifier {
+    /// @notice Fetch message hash.
+    /// @param chainId The source chain id.
+    /// @param channel The message channel.
+    /// @param msgIndex The Message index.
+    /// @return Message hash in source chain.
+    function hashOf(uint256 chainId, address channel, uint256 msgIndex) public view virtual returns (bytes32);
+
+    /// @inheritdoc IVerifier
+    function verifyMessageProof(Message calldata message, bytes calldata) external view returns (bool) {
+        // check oracle's message hash equal relayer's message hash
+        return hashOf(message.fromChainId, message.channel, message.index) == hash(message);
+    }
+}
+
+// src/eco/Oracle.sol
+// This file is part of Darwinia.
+// Copyright (C) 2018-2023 Darwinia Network
+
+//
+// Darwinia is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Darwinia is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
+
+contract Oracle is Verifier {
+    event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
+    event Withdrawal(address indexed to, uint256 amt);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    struct DstPrice {
-        uint128 dstPriceRatio; // dstPrice / localPrice * 10^10
-        uint128 dstGasPriceInWei;
-    }
-
-    struct DstConfig {
-        uint64 baseGas;
-        uint64 gasPerByte;
-    }
 
     address public immutable PROTOCOL;
 
     address public owner;
     // chainId => price
-    mapping(uint256 => DstPrice) public priceOf;
-    mapping(uint256 => DstConfig) public configOf;
+    mapping(uint256 => uint256) public feeOf;
+    // operator => isApproved
     mapping(address => bool) public approvedOf;
 
     modifier onlyOwner() {
@@ -192,19 +243,26 @@ contract Relayer {
         owner = dao;
     }
 
+    receive() external payable {}
+
     function version() public pure returns (string memory) {
         return "2.0.0";
     }
 
-    receive() external payable {}
-
-    function withdraw(address to, uint256 amount) external onlyApproved {
-        (bool success,) = to.call{value: amount}("");
-        require(success, "!withdraw");
+    /// @dev Only could be called by owner.
+    /// @param chainId The source chain id.
+    /// @param channel The message channel.
+    /// @param msgIndex The source chain message index.
+    /// @param msgHash The source chain message hash corresponding to the channel.
+    function importMessageHash(uint256 chainId, address channel, uint256 msgIndex, bytes32 msgHash)
+        external
+        onlyOwner
+    {
+        IORMP(PROTOCOL).importHash(chainId, channel, msgIndex, msgHash);
     }
 
-    function isApproved(address operator) public view returns (bool) {
-        return approvedOf[operator];
+    function hashOf(uint256 chainId, address channel, uint256 msgIndex) public view override returns (bytes32) {
+        return IORMP(PROTOCOL).hashLookup(address(this), keccak256(abi.encode(chainId, channel, msgIndex)));
     }
 
     function changeOwner(address newOwner) external onlyOwner {
@@ -213,44 +271,30 @@ contract Relayer {
         emit OwnershipTransferred(oldOwner, newOwner);
     }
 
-    function setApproved(address operator, bool approve) public onlyOwner {
+    function setApproved(address operator, bool approve) external onlyOwner {
         approvedOf[operator] = approve;
         emit SetApproved(operator, approve);
     }
 
-    function setDstPrice(uint256 chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei) external onlyApproved {
-        priceOf[chainId] = DstPrice(dstPriceRatio, dstGasPriceInWei);
-        emit SetDstPrice(chainId, dstPriceRatio, dstGasPriceInWei);
+    function isApproved(address operator) public view returns (bool) {
+        return approvedOf[operator];
     }
 
-    function setDstConfig(uint256 chainId, uint64 baseGas, uint64 gasPerByte) external onlyApproved {
-        configOf[chainId] = DstConfig(baseGas, gasPerByte);
-        emit SetDstConfig(chainId, baseGas, gasPerByte);
+    function withdraw(address to, uint256 amount) external onlyApproved {
+        (bool success,) = to.call{value: amount}("");
+        require(success, "!withdraw");
+        emit Withdrawal(to, amount);
     }
 
-    // extraGas = gasLimit
-    function fee(uint256 toChainId, address, /*ua*/ uint256 gasLimit, bytes calldata encoded)
-        public
-        view
-        returns (uint256)
-    {
-        uint256 size = encoded.length;
-        uint256 extraGas = gasLimit;
-        DstPrice memory p = priceOf[toChainId];
-        DstConfig memory c = configOf[toChainId];
-
-        require(c.baseGas != 0, "!baseGas");
-        // remoteToken = dstGasPriceInWei * (baseGas + extraGas)
-        uint256 remoteToken = p.dstGasPriceInWei * (c.baseGas + extraGas);
-        // dstPriceRatio = dstPrice / localPrice * 10^10
-        // sourceToken = RemoteToken * dstPriceRatio
-        uint256 sourceToken = remoteToken * p.dstPriceRatio / (10 ** 10);
-        uint256 payloadToken = c.gasPerByte * size * p.dstGasPriceInWei * p.dstPriceRatio / (10 ** 10);
-        return sourceToken + payloadToken;
+    function setFee(uint256 chainId, uint256 fee_) external onlyApproved {
+        feeOf[chainId] = fee_;
+        emit SetFee(chainId, fee_);
     }
 
-    function relay(Message calldata message) external onlyApproved {
-        IORMP(PROTOCOL).recv(message, "");
+    function fee(uint256 toChainId, address /*ua*/ ) public view returns (uint256) {
+        uint256 f = feeOf[toChainId];
+        require(f != 0, "!fee");
+        return f;
     }
 }
 
