@@ -19,7 +19,6 @@ pragma solidity 0.8.17;
 
 import "./UserConfig.sol";
 import "./interfaces/IVerifier.sol";
-import "./imt/IncrementalMerkleTree.sol";
 
 /// @title Channel
 /// @notice A channel is a logical connection over cross-chain network.
@@ -27,44 +26,32 @@ import "./imt/IncrementalMerkleTree.sol";
 /// - Accepts messages to be dispatched to destination chains,
 ///   constructs a Merkle tree of the messages.
 /// - Dispatches verified messages from source chains.
-/// @dev Messages live in an incremental merkle tree (imt)
-/// > A Merkle tree is a binary and complete tree decorated with
-/// > the Merkle (hash) attribute.
 contract Channel is UserConfig {
-    using IncrementalMerkleTree for IncrementalMerkleTree.Tree;
-
-    /// @dev Incremental merkle tree root which all message hashes live in leafs.
-    bytes32 public root;
-    /// @dev Incremental merkle tree.
-    IncrementalMerkleTree.Tree private _imt;
     /// @dev msgHash => isDispathed.
     mapping(bytes32 => bool) public dones;
+
+    /// @dev message count.
+    uint256 public count;
 
     /// @dev Self contract address cache.
     address private immutable __self = address(this);
 
     /// @dev Notifies an observer that the message has been accepted.
     /// @param msgHash Hash of the message.
-    /// @param root New incremental merkle tree root after a new message inserted.
     /// @param message Accepted message info.
-    event MessageAccepted(bytes32 indexed msgHash, bytes32 root, Message message);
+    event MessageAccepted(bytes32 indexed msgHash, Message message);
     /// @dev Notifies an observer that the message has been dispatched.
     /// @param msgHash Hash of the message.
     /// @param dispatchResult The message dispatch result.
     event MessageDispatched(bytes32 indexed msgHash, bool dispatchResult);
 
     /// @dev Init code.
-    constructor(address dao) UserConfig(dao) {
-        // init with empty tree
-        root = 0x27ae5ba08d7291c96c8cbddcc148bf48a6d68c7974b94356f53754ef6171d757;
-    }
+    constructor(address dao) UserConfig(dao) {}
 
     /// @dev Fetch local chain id.
     /// @return chainId Local chain id.
-    function LOCAL_CHAINID() public view returns (uint256 chainId) {
-        assembly {
-            chainId := chainid()
-        }
+    function LOCAL_CHAINID() public view returns (uint256) {
+        return block.chainid;
     }
 
     /// @dev Send message.
@@ -79,12 +66,10 @@ contract Channel is UserConfig {
     {
         // only cross-chain message
         require(toChainId != LOCAL_CHAINID(), "!cross-chain");
-        // get this message leaf index.
-        uint256 index = messageCount();
         // constuct message object.
         Message memory message = Message({
             channel: __self,
-            index: index,
+            index: count,
             fromChainId: LOCAL_CHAINID(),
             from: from,
             toChainId: toChainId,
@@ -94,13 +79,12 @@ contract Channel is UserConfig {
         });
         // hash the message.
         bytes32 msgHash = hash(message);
-        // insert msg hash to imt.
-        _imt.insert(msgHash);
-        // update new imt.root to root storage.
-        root = _imt.root();
 
         // emit accepted message event.
-        emit MessageAccepted(msgHash, root, message);
+        emit MessageAccepted(msgHash, message);
+
+        // increase message count
+        count = count + 1;
 
         // return this message hash.
         return msgHash;
@@ -115,34 +99,18 @@ contract Channel is UserConfig {
         UC memory uc = getAppConfig(message.to);
         // only the config relayer could relay this message.
         require(uc.relayer == msg.sender, "!auth");
-
-        // hash the message.
-        bytes32 msgHash = hash(message);
         // verify message by the config oracle.
-        require(IVerifier(uc.oracle).verifyMessageProof(message.fromChainId, msgHash, proof), "!proof");
-
+        require(IVerifier(uc.oracle).verifyMessageProof(message, proof), "!proof");
         // check destination chain id is correct.
         require(LOCAL_CHAINID() == message.toChainId, "!toChainId");
+        // hash the message.
+        bytes32 msgHash = hash(message);
         // check the message is not dispatched.
         require(dones[msgHash] == false, "done");
+
         // set the message is dispatched.
         dones[msgHash] = true;
 
         return msgHash;
-    }
-
-    /// @dev Fetch the messages count of incremental merkle tree.
-    function messageCount() public view returns (uint256) {
-        return _imt.count;
-    }
-
-    /// @dev Fetch the branch of incremental merkle tree.
-    function imtBranch() public view returns (bytes32[32] memory) {
-        return _imt.branch;
-    }
-
-    /// @dev Fetch the latest message proof
-    function prove() public view returns (bytes32[32] memory) {
-        return _imt.prove();
     }
 }

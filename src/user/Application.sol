@@ -20,13 +20,18 @@ pragma solidity ^0.8.17;
 import "./AppBase.sol";
 
 abstract contract Application is AppBase {
-    address private immutable _ORMP;
+    address public immutable ORMP;
 
-    constructor(address ormp) {
-        _ORMP = ormp;
+    modifier onlyORMP() override {
+        require(ORMP == msg.sender, "!ormp");
+        _;
     }
 
-    function protocol() public view virtual override returns (address) {
-        return _ORMP;
+    constructor(address ormp) {
+        ORMP = ormp;
+    }
+
+    function _setAppConfig(address oracle, address relayer) internal virtual {
+        IORMP(ORMP).setAppConfig(oracle, relayer);
     }
 }

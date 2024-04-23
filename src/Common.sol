@@ -39,14 +39,6 @@ struct Message {
     bytes encoded; /*(abi.encodePacked(SELECTOR, PARAMS))*/
 }
 
-/// @dev User application custom configuration.
-/// @param oracle Oracle contract address.
-/// @param relayer Relayer contract address.
-struct UC {
-    address oracle;
-    address relayer;
-}
-
 /// @dev Hash of the message.
 function hash(Message memory message) pure returns (bytes32) {
     return keccak256(abi.encode(message));

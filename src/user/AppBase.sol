@@ -21,14 +21,7 @@ import "../interfaces/IORMP.sol";
 
 // https://eips.ethereum.org/EIPS/eip-5164
 abstract contract AppBase {
-    function protocol() public view virtual returns (address);
-
-    function _setAppConfig(address oracle, address relayer) internal virtual {
-        IORMP(protocol()).setAppConfig(oracle, relayer);
-    }
-
-    modifier onlyORMP() {
-        require(protocol() == msg.sender, "!ormp-recver");
+    modifier onlyORMP() virtual {
         _;
     }
 

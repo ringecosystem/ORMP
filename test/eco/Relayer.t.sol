@@ -93,7 +93,7 @@ contract RelayerTest is Test {
             gasLimit: 0,
             encoded: ""
         });
-        relayer.relay(message, "");
+        relayer.relay(message);
     }
 
     function recv(Message calldata message, bytes calldata proof) external returns (bool) {}

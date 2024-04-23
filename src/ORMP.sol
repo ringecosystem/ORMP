@@ -33,8 +33,16 @@ contract ORMP is ReentrancyGuard, Channel {
     event MessageAssigned(
         bytes32 indexed msgHash, address indexed oracle, address indexed relayer, uint256 oracleFee, uint256 relayerFee
     );
+    event HashImported(address indexed oracle, uint256 chainId, address channel, uint256 msgIndex, bytes32 hash);
+
+    /// oracle => lookupKey => hash
+    mapping(address => mapping(bytes32 => bytes32)) public hashLookup;
 
     constructor(address dao) Channel(dao) {}
+
+    function version() public pure returns (string memory) {
+        return "2.0.0";
+    }
 
     /// @dev Send a cross-chain message over the endpoint.
     /// @notice follow https://eips.ethereum.org/EIPS/eip-5750
@@ -60,6 +68,19 @@ contract ORMP is ReentrancyGuard, Channel {
         _handleFee(ua, refund, msgHash, toChainId, gasLimit, encoded);
 
         return msgHash;
+    }
+
+    /// @dev Import hash by any oracle address.
+    /// @notice Hash is an abstract of the proof system, it can be a block hash or a message root hash,
+    ///  		specifically provided by oracles.
+    /// @param chainId The source chain id.
+    /// @param channel The message channel.
+    /// @param msgIndex The source chain message index.
+    /// @param hash_ The hash to import.
+    function importHash(uint256 chainId, address channel, uint256 msgIndex, bytes32 hash_) external {
+        bytes32 lookupKey = keccak256(abi.encode(chainId, channel, msgIndex));
+        hashLookup[msg.sender][lookupKey] = hash_;
+        emit HashImported(msg.sender, chainId, channel, msgIndex, hash_);
     }
 
     function _handleFee(

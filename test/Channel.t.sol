@@ -38,12 +38,7 @@ contract ChannelTest is Test, Verifier {
 
     function test_constructorArgs() public {
         assertEq(channel.LOCAL_CHAINID(), 1);
-        assertEq(channel.root(), keccak256(abi.encodePacked(zeroHashes[31], zeroHashes[31])));
-        assertEq(channel.messageCount(), 0);
-        bytes32[32] memory branch = channel.imtBranch();
-        for (uint256 height = 0; height < 32; height++) {
-            assertEq(branch[height], bytes32(0));
-        }
+        assertEq(channel.count(), 0);
     }
 
     function test_sendMessage() public {
@@ -68,15 +63,14 @@ contract ChannelTest is Test, Verifier {
             encoded: ""
         });
         assertEq(msgHash, hash(message));
-        Proof memory proof = Proof({blockNumber: block.number, messageIndex: 0, messageProof: channel.prove()});
         vm.chainId(2);
-        channel.recvMessage(message, abi.encode(proof));
+        channel.recvMessage(message, "");
     }
 
     function test_recvMessage_fuzz() public {
         for (uint256 i = 0; i < 100; i++) {
             vm.chainId(1);
-            uint256 index = channel.messageCount();
+            uint256 index = channel.count();
             bytes32 msgHash = channel.sendMessage(self, 2, self, 0, "");
             Message memory message = Message({
                 channel: address(channel),
@@ -89,14 +83,13 @@ contract ChannelTest is Test, Verifier {
                 encoded: ""
             });
             assertEq(msgHash, hash(message));
-            Proof memory proof = Proof({blockNumber: block.number, messageIndex: index, messageProof: channel.prove()});
             vm.chainId(2);
-            channel.recvMessage(message, abi.encode(proof));
+            channel.recvMessage(message, "");
         }
     }
 
-    function merkleRoot(uint256, uint256) public view override returns (bytes32) {
-        return channel.root();
+    function hashOf(uint256, address, uint256) public view override returns (bytes32) {
+        return bytes32(0);
     }
 }
 
