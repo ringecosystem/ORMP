@@ -95,11 +95,13 @@ contract Relayer {
     }
 
     // extraGas = gasLimit
-    function fee(uint256 toChainId, address, /*ua*/ uint256 gasLimit, bytes calldata encoded)
-        public
-        view
-        returns (uint256)
-    {
+    function fee(
+        uint256 toChainId,
+        address, /*ua*/
+        uint256 gasLimit,
+        bytes calldata encoded,
+        bytes calldata /*params*/
+    ) public view returns (uint256) {
         uint256 size = encoded.length;
         uint256 extraGas = gasLimit;
         DstPrice memory p = priceOf[toChainId];

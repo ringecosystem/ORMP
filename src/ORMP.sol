@@ -31,7 +31,12 @@ contract ORMP is ReentrancyGuard, Channel {
     using ExcessivelySafeCall for address;
 
     event MessageAssigned(
-        bytes32 indexed msgHash, address indexed oracle, address indexed relayer, uint256 oracleFee, uint256 relayerFee
+        bytes32 indexed msgHash,
+        address indexed oracle,
+        address indexed relayer,
+        uint256 oracleFee,
+        uint256 relayerFee,
+        bytes params
     );
     event HashImported(address indexed oracle, uint256 chainId, address channel, uint256 msgIndex, bytes32 hash);
 
@@ -51,13 +56,14 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param refund Return extra fee to refund address.
+    /// @param params General extensibility for relayer to custom functionality.
     function send(
         uint256 toChainId,
         address to,
         uint256 gasLimit,
         bytes calldata encoded,
         address refund,
-        bytes calldata
+        bytes calldata params
     ) external payable sendNonReentrant returns (bytes32) {
         // user application address.
         address ua = msg.sender;
@@ -65,7 +71,7 @@ contract ORMP is ReentrancyGuard, Channel {
         bytes32 msgHash = _send(ua, toChainId, to, gasLimit, encoded);
 
         // handle fee
-        _handleFee(ua, refund, msgHash, toChainId, gasLimit, encoded);
+        _handleFee(ua, refund, msgHash, toChainId, gasLimit, encoded, params);
 
         return msgHash;
     }
@@ -89,16 +95,17 @@ contract ORMP is ReentrancyGuard, Channel {
         bytes32 msgHash,
         uint256 toChainId,
         uint256 gasLimit,
-        bytes calldata encoded
+        bytes calldata encoded,
+        bytes calldata params
     ) internal {
         // fetch user application's config.
         UC memory uc = getAppConfig(ua);
         // handle relayer fee
-        uint256 relayerFee = _handleRelayer(uc.relayer, toChainId, ua, gasLimit, encoded);
+        uint256 relayerFee = _handleRelayer(uc.relayer, toChainId, ua, gasLimit, encoded, params);
         // handle oracle fee
         uint256 oracleFee = _handleOracle(uc.oracle, toChainId, ua);
 
-        emit MessageAssigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee);
+        emit MessageAssigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee, params);
 
         // refund
         if (msg.value > relayerFee + oracleFee) {
@@ -112,22 +119,27 @@ contract ORMP is ReentrancyGuard, Channel {
     //  @param ua User application contract address which send the message.
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
-    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata)
+    /// @param params General extensibility for relayer to custom functionality.
+    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata params)
         external
         view
         returns (uint256)
     {
         UC memory uc = getAppConfig(ua);
-        uint256 relayerFee = IRelayer(uc.relayer).fee(toChainId, ua, gasLimit, encoded);
+        uint256 relayerFee = IRelayer(uc.relayer).fee(toChainId, ua, gasLimit, encoded, params);
         uint256 oracleFee = IOracle(uc.oracle).fee(toChainId, ua);
         return relayerFee + oracleFee;
     }
 
-    function _handleRelayer(address relayer, uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded)
-        internal
-        returns (uint256)
-    {
-        uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, gasLimit, encoded);
+    function _handleRelayer(
+        address relayer,
+        uint256 toChainId,
+        address ua,
+        uint256 gasLimit,
+        bytes calldata encoded,
+        bytes calldata params
+    ) internal returns (uint256) {
+        uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, gasLimit, encoded, params);
         _sendValue(relayer, relayerFee);
         return relayerFee;
     }
