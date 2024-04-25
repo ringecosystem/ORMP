@@ -157,6 +157,7 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @return dispatchResult Result of the message dispatch.
     function recv(Message calldata message, bytes calldata proof)
         external
+        payable
         recvNonReentrant
         returns (bool dispatchResult)
     {
@@ -170,7 +171,10 @@ contract ORMP is ReentrancyGuard, Channel {
     function _dispatch(Message memory message, bytes32 msgHash) private returns (bool dispatchResult) {
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
-            message.gasLimit, 0, 0, abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
+            message.gasLimit,
+            msg.value,
+            0,
+            abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
         );
     }
 
