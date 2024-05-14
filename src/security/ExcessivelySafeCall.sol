@@ -4,8 +4,6 @@ pragma solidity 0.8.17;
 // Inspired: https://github.com/LayerZero-Labs/solidity-examples/blob/main/contracts/util/ExcessivelySafeCall.sol
 
 library ExcessivelySafeCall {
-    uint256 private constant LOW_28_MASK = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
-
     /// @notice Use when you _really_ really _really_ don't trust the called
     /// contract. This prevents the called contract from causing reversion of
     /// the caller in as many ways as we can.
@@ -103,26 +101,5 @@ library ExcessivelySafeCall {
             returndatacopy(add(_returnData, 0x20), 0, _toCopy)
         }
         return (_success, _returnData);
-    }
-
-    /// @notice Swaps function selectors in encoded contract calls
-    /// @dev Allows reuse of encoded calldata for functions with identical
-    /// argument types but different names. It simply swaps out the first 4 bytes
-    /// for the new selector. This function modifies memory in place, and should
-    /// only be used with caution.
-    /// @param _newSelector The new 4-byte selector
-    /// @param _buf The encoded contract args
-    function swapSelector(bytes4 _newSelector, bytes memory _buf) internal pure {
-        require(_buf.length >= 4);
-        uint256 _mask = LOW_28_MASK;
-        assembly ("memory-safe") {
-            // load the first word of
-            let _word := mload(add(_buf, 0x20))
-            // mask out the top 4 bytes
-            // /x
-            _word := and(_word, _mask)
-            _word := or(_newSelector, _word)
-            mstore(add(_buf, 0x20), _word)
-        }
     }
 }
