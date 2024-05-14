@@ -53,9 +53,7 @@ interface IORMP {
     /// @param message Verified receive message info.
     /// @param proof Message proof of this message.
     /// @return dispatchResult Result of the message dispatch.
-    function recv(Message calldata message, bytes calldata proof) external returns (bool dispatchResult);
-
-    function prove() external view returns (bytes32[32] memory);
+    function recv(Message calldata message, bytes calldata proof) external payable returns (bool dispatchResult);
 
     /// @dev Fetch user application config.
     /// @notice If user application has not configured, then the default config is used.
