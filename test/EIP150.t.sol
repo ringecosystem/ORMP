@@ -30,18 +30,18 @@ contract EIP150Test is Test, Verifier {
             from: self,
             toChainId: 2,
             to: self,
-            gasLimit: 63000,
+            gasLimit: 0,
             encoded: ""
         });
         uint256 f = ormp.fee(m.toChainId, m.from, m.gasLimit, m.encoded, "");
         ormp.send{value: f}(m.toChainId, m.to, m.gasLimit, m.encoded, self, "");
         vm.chainId(m.toChainId);
 
-        bool r = ormp.recv{gas: 64000}(m, "");
+        bool r = ormp.recv{gas: 50000}(m, "");
         assertEq(r, false);
     }
 
-    function test_eip150() public {
+    function testFail_eip150() public {
         m = Message({
             channel: address(ormp),
             index: 0,
@@ -57,6 +57,25 @@ contract EIP150Test is Test, Verifier {
         vm.chainId(m.toChainId);
 
         bool r = ormp.recv{gas: 290000}(m, "");
+        assertEq(r, false);
+    }
+
+    function test_eip150() public {
+        m = Message({
+            channel: address(ormp),
+            index: 0,
+            fromChainId: 1,
+            from: self,
+            toChainId: 2,
+            to: self,
+            gasLimit: 100,
+            encoded: abi.encodeWithSelector(this.loop.selector)
+        });
+        uint256 f = ormp.fee(m.toChainId, m.from, m.gasLimit, m.encoded, "");
+        ormp.send{value: f}(m.toChainId, m.to, m.gasLimit, m.encoded, self, "");
+        vm.chainId(m.toChainId);
+
+        bool r = ormp.recv{gas: 50000}(m, "");
         assertEq(r, false);
     }
 
