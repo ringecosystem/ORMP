@@ -9,15 +9,12 @@ contract ChannelTest is Test, Verifier {
     ChannelWrapper channel;
     address immutable self = address(this);
 
-    bytes32[32] zeroHashes;
+    bytes32 msgHash;
 
     function setUp() public {
         vm.chainId(1);
         channel = new ChannelWrapper(self);
         channel.setDefaultConfig(self, self);
-        for (uint256 height = 0; height < 31; height++) {
-            zeroHashes[height + 1] = keccak256(abi.encodePacked(zeroHashes[height], zeroHashes[height]));
-        }
     }
 
     function test_constructorArgs() public {
@@ -34,7 +31,7 @@ contract ChannelTest is Test, Verifier {
     }
 
     function test_recvMessage() public {
-        bytes32 msgHash = channel.sendMessage(self, 2, self, 0, "");
+        msgHash = channel.sendMessage(self, 2, self, 0, "");
 
         Message memory message = Message({
             channel: address(channel),
@@ -55,7 +52,7 @@ contract ChannelTest is Test, Verifier {
         for (uint256 i = 0; i < 100; i++) {
             vm.chainId(1);
             uint256 index = channel.count();
-            bytes32 msgHash = channel.sendMessage(self, 2, self, 0, "");
+            msgHash = channel.sendMessage(self, 2, self, 0, "");
             Message memory message = Message({
                 channel: address(channel),
                 index: index,
@@ -73,7 +70,7 @@ contract ChannelTest is Test, Verifier {
     }
 
     function hashOf(uint256, address, uint256) public view override returns (bytes32) {
-        return bytes32(0);
+        return msgHash;
     }
 }
 

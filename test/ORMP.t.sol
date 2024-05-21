@@ -38,7 +38,7 @@ contract ORMPTest is Test, Verifier {
         vm.chainId(2);
     }
 
-    function test_Refunds() public {
+    function test_refunds() public {
         uint256 f = ormp.fee(2, self, 0, "", "");
         ormp.send{value: f + 5}(2, self, 0, "", address(5), "");
         assertEq(address(5).balance, 5);
@@ -55,7 +55,7 @@ contract ORMPTest is Test, Verifier {
         assertEq(msgHash1, msgHash2);
     }
 
-    function testFail_SendWithZeroNativeFee() public {
+    function testFail_sendWithZeroNativeFee() public {
         ormp.send{value: 0}(2, self, 0, "", address(5), "");
         vm.chainId(2);
     }
@@ -90,11 +90,11 @@ contract ORMPTest is Test, Verifier {
         return 2;
     }
 
-    function fee(uint256, address, uint256, bytes calldata) external pure returns (uint256) {
+    function fee(uint256, address, uint256, bytes calldata, bytes calldata) external pure returns (uint256) {
         return 1;
     }
 
     function hashOf(uint256, address, uint256) public view override returns (bytes32) {
-        return bytes32(0);
+        return hash(message);
     }
 }
