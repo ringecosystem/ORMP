@@ -153,6 +153,9 @@ contract ORMP is ReentrancyGuard, Channel {
 
     /// @dev Dispatch the cross chain message.
     function _dispatch(Message memory message, bytes32 msgHash) private returns (bool dispatchResult) {
+        // where 5000 is the gas required for the operation between the call to gasleft()
+        uint256 gasAvailable = gasleft() - 5000;
+        require(gasAvailable - gasAvailable / 64 > message.gasLimit, "!gas");
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
             message.gasLimit,
