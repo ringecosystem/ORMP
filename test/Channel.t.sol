@@ -1,20 +1,4 @@
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-// SPDX-License-Identifier: GPL-3.0
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
-
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
@@ -25,15 +9,12 @@ contract ChannelTest is Test, Verifier {
     ChannelWrapper channel;
     address immutable self = address(this);
 
-    bytes32[32] zeroHashes;
+    bytes32 msgHash;
 
     function setUp() public {
         vm.chainId(1);
         channel = new ChannelWrapper(self);
         channel.setDefaultConfig(self, self);
-        for (uint256 height = 0; height < 31; height++) {
-            zeroHashes[height + 1] = keccak256(abi.encodePacked(zeroHashes[height], zeroHashes[height]));
-        }
     }
 
     function test_constructorArgs() public {
@@ -50,7 +31,7 @@ contract ChannelTest is Test, Verifier {
     }
 
     function test_recvMessage() public {
-        bytes32 msgHash = channel.sendMessage(self, 2, self, 0, "");
+        msgHash = channel.sendMessage(self, 2, self, 0, "");
 
         Message memory message = Message({
             channel: address(channel),
@@ -71,7 +52,7 @@ contract ChannelTest is Test, Verifier {
         for (uint256 i = 0; i < 100; i++) {
             vm.chainId(1);
             uint256 index = channel.count();
-            bytes32 msgHash = channel.sendMessage(self, 2, self, 0, "");
+            msgHash = channel.sendMessage(self, 2, self, 0, "");
             Message memory message = Message({
                 channel: address(channel),
                 index: index,
@@ -89,7 +70,7 @@ contract ChannelTest is Test, Verifier {
     }
 
     function hashOf(uint256, address, uint256) public view override returns (bytes32) {
-        return bytes32(0);
+        return msgHash;
     }
 }
 
