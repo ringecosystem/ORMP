@@ -1,23 +1,7 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
 // src/Common.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 /// @dev The block of control information and data for comminicate
 /// between user applications. Messages are the exchange medium
@@ -47,22 +31,6 @@ function hash(Message memory message) pure returns (bytes32) {
 }
 
 // src/UserConfig.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 /// @dev User application custom configuration.
 /// @param oracle Oracle contract address.
@@ -153,22 +121,6 @@ contract UserConfig {
 }
 
 // src/interfaces/IRelayer.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 interface IRelayer {
     /// @notice Fetch relayer price to relay message to the destination chain.
@@ -176,8 +128,9 @@ interface IRelayer {
     /// @param ua The user application which send the message.
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
+    /// @param params General extensibility for relayer to custom functionality.
     /// @return Relayer price in source native gas.
-    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded)
+    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata params)
         external
         view
         returns (uint256);
@@ -188,8 +141,6 @@ interface IRelayer {
 // Inspired: https://github.com/LayerZero-Labs/solidity-examples/blob/main/contracts/util/ExcessivelySafeCall.sol
 
 library ExcessivelySafeCall {
-    uint256 private constant LOW_28_MASK = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
-
     /// @notice Use when you _really_ really _really_ don't trust the called
     /// contract. This prevents the called contract from causing reversion of
     /// the caller in as many ways as we can.
@@ -288,27 +239,6 @@ library ExcessivelySafeCall {
         }
         return (_success, _returnData);
     }
-
-    /// @notice Swaps function selectors in encoded contract calls
-    /// @dev Allows reuse of encoded calldata for functions with identical
-    /// argument types but different names. It simply swaps out the first 4 bytes
-    /// for the new selector. This function modifies memory in place, and should
-    /// only be used with caution.
-    /// @param _newSelector The new 4-byte selector
-    /// @param _buf The encoded contract args
-    function swapSelector(bytes4 _newSelector, bytes memory _buf) internal pure {
-        require(_buf.length >= 4);
-        uint256 _mask = LOW_28_MASK;
-        assembly ("memory-safe") {
-            // load the first word of
-            let _word := mload(add(_buf, 0x20))
-            // mask out the top 4 bytes
-            // /x
-            _word := and(_word, _mask)
-            _word := or(_newSelector, _word)
-            mstore(add(_buf, 0x20), _word)
-        }
-    }
 }
 
 // src/security/ReentrancyGuard.sol
@@ -336,22 +266,6 @@ abstract contract ReentrancyGuard {
 }
 
 // src/interfaces/IVerifier.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 interface IVerifier {
     /// @notice Verify message proof
@@ -364,22 +278,6 @@ interface IVerifier {
 }
 
 // src/interfaces/IOracle.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 interface IOracle is IVerifier {
     /// @notice Fetch oracle price to relay message root to the destination chain.
@@ -390,22 +288,6 @@ interface IOracle is IVerifier {
 }
 
 // src/Channel.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 /// @title Channel
 /// @notice A channel is a logical connection over cross-chain network.
@@ -503,22 +385,6 @@ contract Channel is UserConfig {
 }
 
 // src/ORMP.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 /// @title ORMP
 /// @notice An endpoint is a type of network node for cross-chain communication.
@@ -528,7 +394,12 @@ contract ORMP is ReentrancyGuard, Channel {
     using ExcessivelySafeCall for address;
 
     event MessageAssigned(
-        bytes32 indexed msgHash, address indexed oracle, address indexed relayer, uint256 oracleFee, uint256 relayerFee
+        bytes32 indexed msgHash,
+        address indexed oracle,
+        address indexed relayer,
+        uint256 oracleFee,
+        uint256 relayerFee,
+        bytes params
     );
     event HashImported(address indexed oracle, uint256 chainId, address channel, uint256 msgIndex, bytes32 hash);
 
@@ -548,13 +419,14 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
     /// @param refund Return extra fee to refund address.
+    /// @param params General extensibility for relayer to custom functionality.
     function send(
         uint256 toChainId,
         address to,
         uint256 gasLimit,
         bytes calldata encoded,
         address refund,
-        bytes calldata
+        bytes calldata params
     ) external payable sendNonReentrant returns (bytes32) {
         // user application address.
         address ua = msg.sender;
@@ -562,7 +434,7 @@ contract ORMP is ReentrancyGuard, Channel {
         bytes32 msgHash = _send(ua, toChainId, to, gasLimit, encoded);
 
         // handle fee
-        _handleFee(ua, refund, msgHash, toChainId, gasLimit, encoded);
+        _handleFee(ua, refund, msgHash, toChainId, gasLimit, encoded, params);
 
         return msgHash;
     }
@@ -586,16 +458,17 @@ contract ORMP is ReentrancyGuard, Channel {
         bytes32 msgHash,
         uint256 toChainId,
         uint256 gasLimit,
-        bytes calldata encoded
+        bytes calldata encoded,
+        bytes calldata params
     ) internal {
         // fetch user application's config.
         UC memory uc = getAppConfig(ua);
         // handle relayer fee
-        uint256 relayerFee = _handleRelayer(uc.relayer, toChainId, ua, gasLimit, encoded);
+        uint256 relayerFee = _handleRelayer(uc.relayer, toChainId, ua, gasLimit, encoded, params);
         // handle oracle fee
         uint256 oracleFee = _handleOracle(uc.oracle, toChainId, ua);
 
-        emit MessageAssigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee);
+        emit MessageAssigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee, params);
 
         // refund
         if (msg.value > relayerFee + oracleFee) {
@@ -609,22 +482,27 @@ contract ORMP is ReentrancyGuard, Channel {
     //  @param ua User application contract address which send the message.
     /// @param gasLimit Gas limit for destination user application used.
     /// @param encoded The calldata which encoded by ABI Encoding.
-    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata)
+    /// @param params General extensibility for relayer to custom functionality.
+    function fee(uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded, bytes calldata params)
         external
         view
         returns (uint256)
     {
         UC memory uc = getAppConfig(ua);
-        uint256 relayerFee = IRelayer(uc.relayer).fee(toChainId, ua, gasLimit, encoded);
+        uint256 relayerFee = IRelayer(uc.relayer).fee(toChainId, ua, gasLimit, encoded, params);
         uint256 oracleFee = IOracle(uc.oracle).fee(toChainId, ua);
         return relayerFee + oracleFee;
     }
 
-    function _handleRelayer(address relayer, uint256 toChainId, address ua, uint256 gasLimit, bytes calldata encoded)
-        internal
-        returns (uint256)
-    {
-        uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, gasLimit, encoded);
+    function _handleRelayer(
+        address relayer,
+        uint256 toChainId,
+        address ua,
+        uint256 gasLimit,
+        bytes calldata encoded,
+        bytes calldata params
+    ) internal returns (uint256) {
+        uint256 relayerFee = IRelayer(relayer).fee(toChainId, ua, gasLimit, encoded, params);
         _sendValue(relayer, relayerFee);
         return relayerFee;
     }
@@ -654,6 +532,9 @@ contract ORMP is ReentrancyGuard, Channel {
 
     /// @dev Dispatch the cross chain message.
     function _dispatch(Message memory message, bytes32 msgHash) private returns (bool dispatchResult) {
+        // where 5000 is the gas required for the operation between the call to gasleft()
+        uint256 gasAvailable = gasleft() - 5000;
+        require(gasAvailable - gasAvailable / 64 > message.gasLimit, "!gas");
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
             message.gasLimit,

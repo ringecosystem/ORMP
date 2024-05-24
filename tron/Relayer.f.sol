@@ -1,23 +1,7 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
 // src/Common.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 /// @dev The block of control information and data for comminicate
 /// between user applications. Messages are the exchange medium
@@ -47,22 +31,6 @@ function hash(Message memory message) pure returns (bytes32) {
 }
 
 // src/interfaces/IORMP.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 interface IORMP {
     /// @dev Send a cross-chain message over the endpoint.
@@ -98,9 +66,7 @@ interface IORMP {
     /// @param message Verified receive message info.
     /// @param proof Message proof of this message.
     /// @return dispatchResult Result of the message dispatch.
-    function recv(Message calldata message, bytes calldata proof) external returns (bool dispatchResult);
-
-    function prove() external view returns (bytes32[32] memory);
+    function recv(Message calldata message, bytes calldata proof) external payable returns (bool dispatchResult);
 
     /// @dev Fetch user application config.
     /// @notice If user application has not configured, then the default config is used.
@@ -136,22 +102,6 @@ interface IORMP {
 }
 
 // src/eco/Relayer.sol
-// This file is part of Darwinia.
-// Copyright (C) 2018-2023 Darwinia Network
-
-//
-// Darwinia is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Darwinia is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Darwinia. If not, see <https://www.gnu.org/licenses/>.
 
 contract Relayer {
     event SetDstPrice(uint256 indexed chainId, uint128 dstPriceRatio, uint128 dstGasPriceInWei);
@@ -229,11 +179,13 @@ contract Relayer {
     }
 
     // extraGas = gasLimit
-    function fee(uint256 toChainId, address, /*ua*/ uint256 gasLimit, bytes calldata encoded)
-        public
-        view
-        returns (uint256)
-    {
+    function fee(
+        uint256 toChainId,
+        address, /*ua*/
+        uint256 gasLimit,
+        bytes calldata encoded,
+        bytes calldata /*params*/
+    ) public view returns (uint256) {
         uint256 size = encoded.length;
         uint256 extraGas = gasLimit;
         DstPrice memory p = priceOf[toChainId];
