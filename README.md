@@ -17,6 +17,13 @@ Oracle: TGaaHxjof9QcfKwggnFVM3QwjGKzbuNzNk
 Relayer: TRediXQ8qcTqorMQqJ2jQgqnjUojWZo2qc
 ```
 
+### Tron
+```
+ORMP: TBuAR5bP2KoJ6Thx4zFqGChSARNRYrknTD
+Oracle: TYYcXSzzc8r4Q17xrYUtqWEMtKUNwNictu
+Relayer: TWArBv4oRtVE4MAkqaEVHHiBQX1Wc7xDg6
+```
+
 ## Supported Chains
 ### Mainnet
 - Arbitrum
