@@ -1,47 +1,14 @@
 # ORMP
 Oracle and Relayer based Message Protocol.
 
-## V1 Deployments
-### Canonical Cross-chain Deployment Addresses
-|  Contract  |  Canonical Cross-chain Deployment Address  |
-|------------|--------------------------------------------|
-| ORMP       | 0x00000000001523057a05d6293C1e5171eE33eE0A |
-| ORMPOracle | 0x0000000003ebeF32D8f0ED406a5CA8805c80AFba |
-| Relayer    | 0x0000000000808fE9bDCc1d180EfbF5C53552a6b1 |
-| MsgDAO     | 0x000000000879926D12aF396788C0785B7e581e53 |
+## Deployments
 
-### Tron Shasta
-```
-ORMP: TN1j3Ttt1c1mB3X2zdKkdMsUK6pZyLCxSr
-Oracle: TGaaHxjof9QcfKwggnFVM3QwjGKzbuNzNk
-Relayer: TRediXQ8qcTqorMQqJ2jQgqnjUojWZo2qc
-```
-
-### Tron
-```
-ORMP: TBuAR5bP2KoJ6Thx4zFqGChSARNRYrknTD
-Oracle: TYYcXSzzc8r4Q17xrYUtqWEMtKUNwNictu
-Relayer: TWArBv4oRtVE4MAkqaEVHHiBQX1Wc7xDg6
-```
-
-## Supported Chains
-### Mainnet
-- Arbitrum
-- Blast
-- Crab
-- Darwinia
-- Ethereum
-- Polygon
-
-### Testnet
-- Arbitrum Sepolia
-- Pangolin
-- Sepolia
+See https://github.com/darwinia-network/contracts-deploy
 
 ## Usage
 To install with [**Foundry**](https://github.com/gakonst/foundry):
 ```sh
-forge install darwinia-network/ORMP
+forge install msgport/ORMP
 ```
 
 To install with [**Hardhat**](https://github.com/nomiclabs/hardhat) or [**Truffle**](https://github.com/trufflesuite/truffle):

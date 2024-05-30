@@ -11,9 +11,9 @@ import "../../src/eco/Relayer.sol";
 contract ORMPBenchmarkTest is Test {
     using Chains for uint256;
 
-    ORMP ormp = ORMP(0x00000000001523057a05d6293C1e5171eE33eE0A);
-    Oracle oracle = Oracle(payable(0x0000000003ebeF32D8f0ED406a5CA8805c80AFba));
-    Relayer relayer = Relayer(payable(0x0000000000808fE9bDCc1d180EfbF5C53552a6b1));
+    ORMP ormp = ORMP(0xA72d283015c01807bc0788Bf22C1A774bDbFC8fA);
+    Oracle oracle = Oracle(payable(0x3f938756ceFa33665719Eb528E581FF3f460b7C6));
+    Relayer relayer = Relayer(payable(0xaC2b224c2E1eD2E8663097a361A05a72d6671C7D));
 
     address immutable self = address(this);
     uint256 chain1 = Chains.Darwinia;
@@ -52,14 +52,11 @@ contract ORMPBenchmarkTest is Test {
     }
 
     function perform_recv(Message memory message) public {
-        bytes32 root = bytes32(0);
-        uint256 blockNumber = block.number;
-
         vm.createSelectFork(message.toChainId.toChainName());
         vm.store(address(oracle), bytes32(uint256(0)), bytes32(uint256(uint160(self))));
         assertEq(oracle.owner(), self);
         vm.prank(address(oracle.owner()));
-        oracle.importMessageHash(message.fromChainId, self, blockNumber, root);
+        oracle.importMessageHash(message.fromChainId, address(ormp), message.index, hash(message));
 
         vm.prank(address(relayer));
         ormp.recv(message, "");
