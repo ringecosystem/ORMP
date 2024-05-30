@@ -9,7 +9,7 @@ fmt    :; @forge fmt
 test   :; @forge test --nmc Benchmark
 bench  :; @forge test --mc Benchmark
 
-tools  :  foundry create3
+tools  :  foundry
 foundry:; curl -L https://foundry.paradigm.xyz | bash
 create3:; @cargo install --git https://github.com/darwinia-network/create3-deploy -f --locked
 sync   :; @git submodule update --recursive

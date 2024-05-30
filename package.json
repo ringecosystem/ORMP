@@ -1,9 +1,9 @@
 {
-  "name": "@darwinia/ormp",
-  "version": "1.0.0",
+  "name": "@msgport/ormp",
+  "version": "2.1.0",
   "description": "Oracle and Relayer based Message Protocol",
-  "repository": "https://github.com/darwinia-network/ORMP",
-  "author": "Darwinia dev",
+  "repository": "https://github.com/msgport/ORMP",
+  "author": "Msgport dev",
   "license": "MIT",
   "files": [
     "src/**/*.sol",
