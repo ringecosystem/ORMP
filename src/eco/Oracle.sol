@@ -36,7 +36,7 @@ contract Oracle is Verifier {
     receive() external payable {}
 
     function version() public pure returns (string memory) {
-        return "2.0.0";
+        return "2.1.0";
     }
 
     /// @dev Only could be called by owner.
