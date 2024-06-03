@@ -43,7 +43,7 @@ contract Relayer {
     }
 
     function version() public pure returns (string memory) {
-        return "2.0.0";
+        return "2.1.0";
     }
 
     receive() external payable {}

@@ -409,7 +409,7 @@ contract ORMP is ReentrancyGuard, Channel {
     constructor(address dao) Channel(dao) {}
 
     function version() public pure returns (string memory) {
-        return "2.0.0";
+        return "2.1.0";
     }
 
     /// @dev Send a cross-chain message over the endpoint.
@@ -471,6 +471,7 @@ contract ORMP is ReentrancyGuard, Channel {
         emit MessageAssigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee, params);
 
         // refund
+        require(msg.value >= relayerFee + oracleFee, "!fee");
         if (msg.value > relayerFee + oracleFee) {
             uint256 refundFee = msg.value - (relayerFee + oracleFee);
             _sendValue(refund, refundFee);
@@ -520,7 +521,6 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @return dispatchResult Result of the message dispatch.
     function recv(Message calldata message, bytes calldata proof)
         external
-        payable
         recvNonReentrant
         returns (bool dispatchResult)
     {
@@ -537,10 +537,7 @@ contract ORMP is ReentrancyGuard, Channel {
         require(gasAvailable - gasAvailable / 64 > message.gasLimit, "!gas");
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
-            message.gasLimit,
-            msg.value,
-            0,
-            abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
+            message.gasLimit, 0, 0, abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
         );
     }
 

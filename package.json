@@ -1,6 +1,6 @@
 {
   "name": "@msgport/ormp",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Oracle and Relayer based Message Protocol",
   "repository": "https://github.com/msgport/ORMP",
   "author": "Msgport dev",
