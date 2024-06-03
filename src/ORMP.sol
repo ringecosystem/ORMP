@@ -92,6 +92,7 @@ contract ORMP is ReentrancyGuard, Channel {
         emit MessageAssigned(msgHash, uc.oracle, uc.relayer, oracleFee, relayerFee, params);
 
         // refund
+        require(msg.value >= relayerFee + oracleFee, "!fee");
         if (msg.value > relayerFee + oracleFee) {
             uint256 refundFee = msg.value - (relayerFee + oracleFee);
             _sendValue(refund, refundFee);
@@ -158,10 +159,7 @@ contract ORMP is ReentrancyGuard, Channel {
         require(gasAvailable - gasAvailable / 64 > message.gasLimit, "!gas");
         // Deliver the message to user application contract address.
         (dispatchResult,) = message.to.excessivelySafeCall(
-            message.gasLimit,
-            msg.value,
-            0,
-            abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
+            message.gasLimit, 0, 0, abi.encodePacked(message.encoded, msgHash, message.fromChainId, message.from)
         );
     }
 
