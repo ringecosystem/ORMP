@@ -521,7 +521,6 @@ contract ORMP is ReentrancyGuard, Channel {
     /// @return dispatchResult Result of the message dispatch.
     function recv(Message calldata message, bytes calldata proof)
         external
-        payable
         recvNonReentrant
         returns (bool dispatchResult)
     {
