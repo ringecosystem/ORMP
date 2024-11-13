@@ -7,3 +7,6 @@
 [submodule "lib/xapi-contracts"]
 	path = lib/xapi-contracts
 	url = https://github.com/ringecosystem/xapi-contracts
+[submodule "lib/chainlink"]
+	path = lib/chainlink
+	url = https://github.com/smartcontractkit/chainlink
