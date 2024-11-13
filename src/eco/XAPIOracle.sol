@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.0;
 
 import "../Verifier.sol";
 import "../interfaces/IORMP.sol";
-import {IXAPI, IXAPIConsumer, ResponseData} from "./interfaces/IXAPIConsumer.sol";
+import {IXAPIConsumer} from "xapi-consumer/interfaces/IXAPIConsumer.sol";
 
 contract XAPIOracle is Verifier, IXAPIConsumer {
     event SetFee(uint256 indexed chainId, uint256 fee);
@@ -70,22 +70,22 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
 		payable
 		onlyApproved
 	{
-		uint256 fee = IXAPI(XAPI).fee(exAggregator);	
-		require(msg.value >= fee, "!fee");
-        uint requestId = IXAPI(XAPI).makeRequest{value: fee}(exAggregator, request, this.xapiCallback.selector);
-		requires = XAPIRequst({
-			chainId;
-			msgIndex;
-			channel;
-			flag;
-		});
-
-        emit RequestSent(requestedId, exAggregator, request);
+		// uint256 fee = IXAPI(XAPI).fee(exAggregator);	
+		// require(msg.value >= fee, "!fee");
+  //       uint requestId = IXAPI(XAPI).makeRequest{value: fee}(exAggregator, request, this.xapiCallback.selector);
+		// requires = XAPIRequst({
+		// 	chainId;
+		// 	msgIndex;
+		// 	channel;
+		// 	flag;
+		// });
+		//
+  //       emit RequestSent(requestedId, exAggregator, request);
 	}
 
 
-    function xapiCallback(uint256 requestId, ResponseData memory response) external {
-    function importMessageHash(uint256 chainId, address channel, uint256 msgIndex, bytes32 msgHash)
+    function xapiCallback(uint256 requestId, ResponseData memory response)
+    // function importMessageHash(uint256 chainId, address channel, uint256 msgIndex, bytes32 msgHash)
         external
         onlyXAPI
     {
