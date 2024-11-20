@@ -4,3 +4,9 @@
 [submodule "lib/create3-deploy"]
 	path = lib/create3-deploy
 	url = https://github.com/darwinia-network/create3-deploy
+[submodule "lib/xapi-contracts"]
+	path = lib/xapi-contracts
+	url = https://github.com/ringecosystem/xapi-contracts
+[submodule "lib/chainlink"]
+	path = lib/chainlink
+	url = https://github.com/smartcontractkit/chainlink
