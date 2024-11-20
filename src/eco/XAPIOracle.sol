@@ -61,7 +61,7 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
     receive() external payable {}
 
     function version() public pure returns (string memory) {
-        return "2.1.0";
+        return "1.0.0";
     }
 
     function _buildRequest(uint256 chainId, address channel, uint256 msgIndex)
