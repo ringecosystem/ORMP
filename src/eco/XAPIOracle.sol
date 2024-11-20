@@ -97,14 +97,13 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
     {
         XAPIBuilder.Request memory requestData = _buildRequest(chainId, channel, msgIndex);
         uint256 fee_ = IXAPI(XAPI).fee(EXAGGREGATOR);
-        require(msg.value >= fee_, "!fee");
+        require(msg.value == fee_, "!fee");
         requestId = IXAPI(XAPI).makeRequest{value: fee_}(requestData);
         emit XAPIRequestMade(requestId, requestData);
-        payable(msg.sender).transfer(msg.value - fee_);
     }
 
     function xapiCallback(uint256 requestId_, ResponseData memory response) external onlyXAPI {
-        require(requestId_ == requestId, "requestId");
+        require(requestId_ == requestId, "!requestId");
         if (response.errorCode != 0) {
             (uint256 chainId, address channel, uint256 msgIndex, bytes32 msgHash) =
                 abi.decode(response.result, (uint256, address, uint256, bytes32));
