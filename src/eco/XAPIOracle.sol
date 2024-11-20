@@ -3,19 +3,23 @@ pragma solidity ^0.8.0;
 
 import "../Verifier.sol";
 import "../interfaces/IORMP.sol";
-import {IXAPIConsumer} from "xapi-consumer/interfaces/IXAPIConsumer.sol";
+import "xapi-consumer/interfaces/IXAPIConsumer.sol";
+import "xapi/contracts/lib/XAPIBuilder.sol";
 
 contract XAPIOracle is Verifier, IXAPIConsumer {
+    using XAPIBuilder for XAPIBuilder.Request;
+
     event SetFee(uint256 indexed chainId, uint256 fee);
     event SetApproved(address operator, bool approve);
     event Withdrawal(address indexed to, uint256 amt);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-	event XAPIRequestMade(uint256 indexed requestId, address exAggregator, string requestData);
-    event XAPIConsumeResult(uint256 indexed requestId, bytes responseData, uint16 errorCode);
-    event XAPIConsumeError(uint256 indexed requestId, uint16 errorCode);
+    event RequestMade(uint256 indexed requestId, XAPIBuilder.Request requestData);
+    event ConsumeResult(uint256 indexed requestId, bytes responseData, uint16 errorCode);
+    event ConsumeError(uint256 indexed requestId, uint16 errorCode);
 
     address public immutable PROTOCOL;
-	address public immutable XAPI;
+    address public immutable XAPI;
+    address public immutable EXAGGREGATOR;
 
     address public owner;
     // chainId => price
@@ -23,14 +27,14 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
     // operator => isApproved
     mapping(address => bool) public approvedOf;
 
-	struct XAPIRequst {
-		uint256 chainId;
-		uint256 msgIndex;
-		address channel;
-		bool flag;
-	}
-	mapping(uint => XAPIRequst) public requests;
-	uint requestedId;
+    struct DataSource {
+        string name;
+        string url;
+        string method;
+        string resultPath;
+    }
+
+    uint256 requestId;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "!owner");
@@ -47,10 +51,11 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
         _;
     }
 
-    constructor(address dao, address ormp, address xapi) {
+    constructor(address dao, address ormp, address xapi, address exagg) {
         PROTOCOL = ormp;
         owner = dao;
-		XAPI = xapi;
+        XAPI = xapi;
+        EXAGGREGATOR = exagg;
     }
 
     receive() external payable {}
@@ -59,40 +64,51 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
         return "2.1.0";
     }
 
-    /// @dev Only could be called by approved address.
-	/// @param exAggregator The aggregator extend address on evm.
-	/// @param request The XAPI request for specific message.
-    /// 1. chainId The source chain id.
-    /// 2. channel The message channel.
-    /// 3. msgIndex The source chain message index.
-	function makeRequestForMessageHash(address exAggregator, string calldata request)
-		external
-		payable
-		onlyApproved
-	{
-		// uint256 fee = IXAPI(XAPI).fee(exAggregator);	
-		// require(msg.value >= fee, "!fee");
-  //       uint requestId = IXAPI(XAPI).makeRequest{value: fee}(exAggregator, request, this.xapiCallback.selector);
-		// requires = XAPIRequst({
-		// 	chainId;
-		// 	msgIndex;
-		// 	channel;
-		// 	flag;
-		// });
-		//
-  //       emit RequestSent(requestedId, exAggregator, request);
-	}
-
-
-    function xapiCallback(uint256 requestId, ResponseData memory response)
-    // function importMessageHash(uint256 chainId, address channel, uint256 msgIndex, bytes32 msgHash)
-        external
-        onlyXAPI
+    function _buildRequest(uint256 chainId, address channel, uint256 msgIndex)
+        internal
+        view
+        returns (XAPIBuilder.Request memory)
     {
-		require(requestedId == requestId, "requestId");
+        XAPIBuilder.Request memory requestData;
+        requestData._initialize(EXAGGREGATOR, this.xapiCallback.selector);
+        requestData._addParamUint("_dataSources", chainId);
+        requestData._startNestedParam("*");
+        {
+            requestData._startNestedParam("variables");
+            {
+                requestData._addParamUint("chainId", chainId);
+                requestData._addParamBytes("channel", abi.encodePacked(channel));
+                requestData._addParamUint("msgIndex", msgIndex);
+            }
+            requestData._endNestedParam();
+        }
+        requestData._endNestedParam();
+        return requestData;
+    }
+
+    /// @dev Only could be called by approved address.
+    /// @param chainId The request source chain id.
+    /// @param channel The request message channel.
+    /// @param msgIndex The request message index.
+    function makeRequestForMessageHash(uint256 chainId, address channel, uint256 msgIndex)
+        external
+        payable
+        onlyApproved
+    {
+        XAPIBuilder.Request memory requestData = _buildRequest(chainId, channel, msgIndex);
+        uint256 fee_ = IXAPI(XAPI).fee(EXAGGREGATOR);
+        require(msg.value >= fee_, "!fee");
+        requestId = IXAPI(XAPI).makeRequest{value: fee_}(requestData);
+        emit RequestMade(requestId, requestData);
+        payable(msg.sender).transfer(msg.value - fee_);
+    }
+
+    function xapiCallback(uint256 requestId_, ResponseData memory response) external onlyXAPI {
+        require(requestId_ == requestId, "requestId");
         if (response.errorCode != 0) {
-			
-        	IORMP(PROTOCOL).importHash(chainId, channel, msgIndex, msgHash);
+            (uint256 chainId, address channel, uint256 msgIndex, bytes32 msgHash) =
+                abi.decode(response.result, (uint256, address, uint256, bytes32));
+            IORMP(PROTOCOL).importHash(chainId, channel, msgIndex, msgHash);
             emit ConsumeResult(requestId, response.result, response.errorCode);
         } else {
             emit ConsumeError(requestId, response.errorCode);

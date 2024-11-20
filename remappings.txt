@@ -3,3 +3,4 @@ ds-test/=lib/forge-std/lib/ds-test/src/
 create3-deploy/=lib/create3-deploy/
 xapi/=lib/xapi-contracts/xapi/
 xapi-consumer/=lib/xapi-contracts/xapi-consumer/contracts/
+@chainlink/=lib/chainlink/
