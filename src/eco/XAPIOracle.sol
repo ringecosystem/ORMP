@@ -13,9 +13,9 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
     event SetApproved(address operator, bool approve);
     event Withdrawal(address indexed to, uint256 amt);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    event RequestMade(uint256 indexed requestId, XAPIBuilder.Request requestData);
-    event ConsumeResult(uint256 indexed requestId, bytes responseData, uint16 errorCode);
-    event ConsumeError(uint256 indexed requestId, uint16 errorCode);
+    event XAPIRequestMade(uint256 indexed requestId, XAPIBuilder.Request requestData);
+    event XAPIConsumeResult(uint256 indexed requestId, bytes responseData, uint16 errorCode);
+    event XAPIConsumeError(uint256 indexed requestId, uint16 errorCode);
 
     address public immutable PROTOCOL;
     address public immutable XAPI;
@@ -99,7 +99,7 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
         uint256 fee_ = IXAPI(XAPI).fee(EXAGGREGATOR);
         require(msg.value >= fee_, "!fee");
         requestId = IXAPI(XAPI).makeRequest{value: fee_}(requestData);
-        emit RequestMade(requestId, requestData);
+        emit XAPIRequestMade(requestId, requestData);
         payable(msg.sender).transfer(msg.value - fee_);
     }
 
@@ -109,9 +109,9 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
             (uint256 chainId, address channel, uint256 msgIndex, bytes32 msgHash) =
                 abi.decode(response.result, (uint256, address, uint256, bytes32));
             IORMP(PROTOCOL).importHash(chainId, channel, msgIndex, msgHash);
-            emit ConsumeResult(requestId, response.result, response.errorCode);
+            emit XAPIConsumeResult(requestId, response.result, response.errorCode);
         } else {
-            emit ConsumeError(requestId, response.errorCode);
+            emit XAPIConsumeError(requestId, response.errorCode);
         }
     }
 
