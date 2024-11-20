@@ -77,7 +77,7 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
             requestData._startNestedParam("variables");
             {
                 requestData._addParamUint("chainId", chainId);
-                requestData._addParamBytes("channel", abi.encodePacked(channel));
+                requestData._addParam("channel", toHexString(channel));
                 requestData._addParamUint("msgIndex", msgIndex);
             }
             requestData._endNestedParam();
@@ -148,5 +148,25 @@ contract XAPIOracle is Verifier, IXAPIConsumer {
         uint256 f = feeOf[toChainId];
         require(f != 0, "!fee");
         return f;
+    }
+
+    // Inspired from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.6/contracts/utils/Strings.sol
+    bytes16 private constant _SYMBOLS = "0123456789abcdef";
+    uint8 private constant _ADDRESS_LENGTH = 20;
+
+    function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
+        bytes memory buffer = new bytes(2 * length + 2);
+        buffer[0] = "0";
+        buffer[1] = "x";
+        for (uint256 i = 2 * length + 1; i > 1; --i) {
+            buffer[i] = _SYMBOLS[value & 0xf];
+            value >>= 4;
+        }
+        require(value == 0, "Strings: hex length insufficient");
+        return string(buffer);
+    }
+
+    function toHexString(address addr) internal pure returns (string memory) {
+        return toHexString(uint256(uint160(addr)), _ADDRESS_LENGTH);
     }
 }
